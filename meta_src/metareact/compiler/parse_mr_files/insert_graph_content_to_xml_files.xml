@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <root>
   <info>
-    <name> insert_missing_io_tags</name>
-    <description> It creates io tags generated from the mr file if they don't already exist. </description>
+    <name> insert_graph_content_to_xml_files</name>
+    <description> It creates the graph tag and its contents. </description>
   </info>
   <inputs>
     <input name="xml_files" side-effect="true">
@@ -13,7 +13,7 @@
   </inputs>
   <outputs>
     <output name="filled_xml_files" side-effect="true">
-      <description>It saves the xml files with additional generated content.</description>
+      <description>It saves the xml files with the additional generated content.</description>
     </output>
     <output name="file_missing_errors" side-effect="true">
       <description>It prints an error when an xml file is not there and exits.</description>
