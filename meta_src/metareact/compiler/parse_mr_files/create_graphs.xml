@@ -4,4 +4,11 @@
     <name> create_graphs</name>
     <description> It creates an object representation of graph present in the mr file. </description>
   </info>
+  <inputs>
+    <input generated="true" name="mr_file_paths"/>
+    <input generated="true" name="srcodes"/>
+  </inputs>
+  <outputs>
+    <output generated="true" name="graphs"/>
+  </outputs>
 </root>

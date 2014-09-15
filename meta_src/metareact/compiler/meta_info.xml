@@ -2,7 +2,8 @@
 <root>
   <name>meta_info </name>
   <description> Parses the meta-info of a project </description>
-  
-  
-  
+  <inputs>
+    <input generated="true" name="cheerio"/>
+    <input generated="true" name="fs"/>
+  </inputs>
 </root>

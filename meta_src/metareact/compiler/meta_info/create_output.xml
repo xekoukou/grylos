@@ -7,9 +7,12 @@
     </input>
     <input name="cheerio">
     </input>
-  <input generated="true" name="test"/></inputs>
+    <input generated="true" name="$"/>
+    <input generated="true" name="test"/>
+  </inputs>
   <outputs>
     <output name="$">
     </output>
-  <output name="$"/><output generated="true" name="$"/><output generated="true" name="test"/></outputs>
+    <output name="$"/>
+  </outputs>
 </root>

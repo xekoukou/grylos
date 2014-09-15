@@ -4,4 +4,10 @@
     <name> split_srcodes_into_lines </name>
     <description> It splits srcodes into lines. </description>
   </info>
+  <inputs>
+    <input generated="true" name="mr_files"/>
+  </inputs>
+  <outputs>
+    <output generated="true" name="srcodes"/>
+  </outputs>
 </root>

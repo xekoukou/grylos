@@ -4,7 +4,10 @@
     <name> find_functions </name>
     <description> Returns the function names of the nodes and their position inside the mr file. </description>
   </info>
-<inputs> 
-<input name="srcodes"/>			
-</inputs>	
+  <inputs>
+    <input name="srcodes"/>
+  </inputs>
+  <outputs>
+    <output generated="true" name="function_names"/>
+  </outputs>
 </root>

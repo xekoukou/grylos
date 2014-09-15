@@ -4,8 +4,9 @@
     <name> path_traversal </name>
     <description> It creates an object representation of the graph that is in the mr files. </description>
   </info>
-<inputs> 
-<input name="srcodes"/>			
-<input name="mr_file_paths"/>			
-<input generated="true" name="end_points"/></inputs>	
+  <inputs>
+    <input name="srcodes"/>
+    <input name="mr_file_paths"/>
+    <input generated="true" name="end_points"/>
+  </inputs>
 </root>

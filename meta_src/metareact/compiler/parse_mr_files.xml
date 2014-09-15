@@ -17,6 +17,7 @@
     <input name="mr_files" side-effect="true">
       <description>It is provided all the mr files of the source_path directory and its subdirectories.</description>
     </input>
+    <input generated="true" name="null"/>
   </inputs>
   <outputs>
     <output name="xml_files" side-effect="true">
