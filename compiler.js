@@ -516,7 +516,7 @@ exec = require('execSync');
                 o("root").append("<outputs/>");
             }
             graph[fn_name].forEach(function(path) {
-                if (o("outputs output[name='"+path.vname+"'").length==0) {
+                if (o("outputs output[name='"+path.vname+"']").length==0) {
                     o("outputs").append("<output generated='true' name='" + path.vname + "'/>");
                 }
                 var ixml_path = mr_file_paths[index] + "/" + path.end_fn_name + ".xml";
