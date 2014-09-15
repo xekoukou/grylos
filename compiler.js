@@ -531,8 +531,8 @@ exec = require('execSync');
                 var i = cheerio.load(ixml_file, {
                     xmlMode: true
                 });
-                if (o("inputs").length == 0) {
-                    o("root").append("<inputs/>");
+                if (i("inputs").length == 0) {
+                    i("root").append("<inputs/>");
                 }
 
                 i("inputs").append("<input generated='true' name='" + path.vname + "'/>");
