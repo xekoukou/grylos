@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<root>
+  <info>
+    <name> format_XML </name>
+    <description> It formats all xml files in the specified folder and all subdirectories. </description>
+  </info>
+  <inputs>
+    <input name="source_path">
+    </input>
+    <input name="fs">
+    </input>
+    <input name="sys">
+    </input>
+    <input name="exec">
+    </input>
+    <input name="path">
+    </input>
+    <input name="xml_files" side-effect="true">
+      <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
+    </input>
+  </inputs>
+  <outputs>
+    <output name="formated_xml_files" side-effect="true">
+      <description>It saves the formated files to disk.</description>
+    </output>
+  </outputs>
+</root>

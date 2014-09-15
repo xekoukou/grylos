@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<root>
+  <info>
+    <name> delete_generated_src </name>
+    <description> Removes all the generated src files. </description>
+  </info>
+  <inputs>
+    <input name="source_path">
+    </input>
+    <input name="fs">
+    </input>
+    <input name="path">
+    </input>
+    <input name="xml_files" side-effect="true">
+      <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
+    </input>
+  </inputs>
+  <outputs>
+    <output name="deleted_src_files" side-effect="true">
+      <description>It deletes all the generated src files.</description>
+    </output>
+    <output name="null"/>
+  </outputs>
+</root>

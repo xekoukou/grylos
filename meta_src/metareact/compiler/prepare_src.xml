@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<root>
+  <info>
+    <name> prepare_src</name>
+    <description> It validates the XML files and removes all previously generated files or parts of files.</description>
+  </info>
+  
+  
+  
+</root>

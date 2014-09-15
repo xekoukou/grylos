@@ -1,0 +1,58 @@
+//check the correctness of xml files
+
+var fs = require("fs");
+var path = require("path");
+var sys = require('sys');
+var exec = require('child_process').exec;
+
+
+function validateXML(cpath) {
+    var files = fs.readdirSync(cpath);
+    files.forEach(function(file, index, files) {
+        var stat = fs.statSync(cpath + "/" + file);
+
+        if (stat.isFile()) {
+            if (path.extname(file) == ".xml") {
+
+                exec("xmllint --format --noout" + cpath + "/" + file, function(error, stdout, stderr) {
+
+                    console.log("xmllint: " + cpath + "/" + file);
+                    sys.print('stdout: ' + stdout);
+                    sys.print('stderr: ' + stderr);
+                    if (error !== null) {
+                        console.log('exec error: ' + error);
+                    }else{
+                exec("xmllint --format" + cpath + "/" + file +" --output " + cpath + "/" + file, function(error, stdout, stderr) {});
+}
+                });
+
+            }
+
+        } else {
+            if (stat.isDirectory()) {
+
+                validateXML(cpath + "/" + file);
+            }
+
+        }
+
+    });
+};
+
+validateXML("./meta_src");
+
+
+
+
+
+
+
+try {
+    fs.mkdirSync("./src");
+} catch (e) {};
+
+var Meta_info = require("./meta_info/meta_info.js");
+var meta_info = new Meta_info();
+
+console.log(meta_info.header());
+meta_info.authors_file();

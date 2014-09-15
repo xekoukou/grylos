@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<root>
+  <info>
+    <name> remove_generated_XML </name>
+    <description> Removes all the generated xml content. </description>
+  </info>
+  <inputs>
+    <input name="source_path">
+    </input>
+    <input name="fs">
+    </input>
+    <input name="cheerio">
+    </input>
+    <input name="path">
+    </input>
+    <input name="xml_files" side-effect="true">
+      <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
+    </input>
+  </inputs>
+  <outputs>
+    <output name="cleaned_xml_files" side-effect="true">
+      <description>It saves the cleaned xml_files.</description>
+    </output>
+    <output name="null"/>
+  </outputs>
+</root>

@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<root>
+  <info>
+    <name> parse_mr_files </name>
+    <description> It parses all mr files and generates the graph tag and content of the xml files. </description>
+  </info>
+  <inputs>
+    <input name="source_path">
+    </input>
+    <input name="fs">
+    </input>
+    <input name="path">
+    </input>
+    <input name="xml_files" side-effect="true">
+      <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
+    </input>
+    <input name="mr_files" side-effect="true">
+      <description>It is provided all the mr files of the source_path directory and its subdirectories.</description>
+    </input>
+  </inputs>
+  <outputs>
+    <output name="xml_files" side-effect="true">
+      <description>It returns all xml files with the graph tag when appropriate.</description>
+    </output>
+    <output name="null"/>
+  </outputs>
+</root>

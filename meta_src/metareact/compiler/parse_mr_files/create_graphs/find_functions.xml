@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<root>
+  <info>
+    <name> find_functions </name>
+    <description> Returns the function names of the nodes and their position inside the mr file. </description>
+  </info>
+<inputs> 
+<input name="srcodes"/>			
+</inputs>	
+</root>

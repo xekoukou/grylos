@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<root>
+  <name>load_meta_info </name>
+  <description>Loads the file and creates a cheerio instance</description>
+  <inputs>
+    <input name="fs">
+    </input>
+    <input name="cheerio">
+    </input>
+  <input generated="true" name="test"/></inputs>
+  <outputs>
+    <output name="$">
+    </output>
+  <output name="$"/><output generated="true" name="$"/><output generated="true" name="test"/></outputs>
+</root>

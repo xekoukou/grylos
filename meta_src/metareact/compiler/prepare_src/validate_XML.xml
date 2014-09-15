@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<root>
+  <info>
+    <name> validate_XML </name>
+    <description> Validates all xml files in the specified folder and all subdirectories. </description>
+  </info>
+  <inputs>
+    <input name="source_path">
+    </input>
+    <input name="fs">
+    </input>
+    <input name="sys">
+    </input>
+    <input name="exec">
+    </input>
+    <input name="path">
+    </input>
+    <input name="xml_files" side-effect="true">
+      <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
+    </input>
+  </inputs>
+  <outputs>
+    <output name="xml_errors" side-effect="true">
+      <description>It prints possible xml errors.</description>
+    </output>
+    <output name="null"/>
+  </outputs>
+</root>

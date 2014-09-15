@@ -1,0 +1,53 @@
+function Troll() {
+    this.foe = 2;
+}
+MetaReact  - A reactive metaprogramming language 
+
+Copyright (C) 2014-2014 contributors as noted in the AUTHORS file
+
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+xmllint: ./meta_src/metareact/reactive.xml
+stdout: 
+stderr: 
+Indenting...
+xmllint: ./meta_src/metareact/compiler.xml
+stdout: 
+stderr: 
+Indenting...
+xmllint: ./meta_src/metareact/compiler/validateXML.xml
+stdout: 
+stderr: 
+Indenting...
+xmllint: ./meta_src/metareact/compiler/meta_info/load_meta_info.xml
+stdout: 
+stderr: 
+Indenting...
+xmllint: ./meta_src/metareact/compiler/meta_info/create_output.xml
+stdout: 
+stderr: 
+Indenting...
+xmllint: ./meta_src/metareact/compiler/meta-info.xml
+stdout: 
+stderr: 
+Indenting...
+xmllint: ./meta_src/hello/hello.xml
+stdout: 
+stderr: 
+Indenting...
+xmllint: ./meta_info/meta_info.xml
+stdout: 
+stderr: 
+Indenting...

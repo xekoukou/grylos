@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<root>
+  <info>
+    <name> compiler </name>
+    <desciption> This is the main program that compiles the meta source code into source code </desciption>
+  </info>
+  
+  
+  
+</root>

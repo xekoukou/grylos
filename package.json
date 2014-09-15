@@ -1,0 +1,12 @@
+{
+    "name": "metareact",
+    "version": "0.0.1",
+    "private": true,
+    "dependencies": {
+      "cheerio":"x",
+      "uglify-js":"x",
+      "sweet.js":"x",
+      "execSync":"x"
+   }
+}
+
