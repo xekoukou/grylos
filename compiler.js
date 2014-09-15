@@ -516,7 +516,7 @@ exec = require('execSync');
                 o("root").append("<outputs/>");
             }
             graph[fn_name].forEach(function(path) {
-                if (o("outputs output[name='"+path.vname+"']").length==0) {
+                if (o("outputs output[name='" + path.vname + "']").length == 0) {
                     o("outputs").append("<output generated='true' name='" + path.vname + "'/>");
                 }
                 var ixml_path = mr_file_paths[index] + "/" + path.end_fn_name + ".xml";
@@ -536,8 +536,10 @@ exec = require('execSync');
                     i("root").append("<inputs/>");
                 }
 
-                i("inputs").append("<input generated='true' name='" + path.vname + "'/>");
-                fs.writeFileSync(ixml_path, i.html());
+                if (i("inputs input[name='" + path.vname + "']").length == 0) {
+                    i("inputs").append("<input generated='true' name='" + path.vname + "'/>");
+                    fs.writeFileSync(ixml_path, i.html());
+                }
             });
             fs.writeFileSync(oxml_path, o.html());
 
