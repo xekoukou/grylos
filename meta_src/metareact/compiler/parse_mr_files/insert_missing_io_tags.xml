@@ -1,15 +1,21 @@
 <?xml version="1.0"?>
 <root>
   <info>
-    <name> find_mr_file_paths </name>
+    <name> insert_missing_io_tags</name>
     <description> It returns all the paths and file objects of mr_files inside the source directory. </description>
   </info>
 <inputs>
-<input name="source_path"/>	
-<input name="fs"/>	
-<input name="path"/>
-    <input name="disk_mr_files" side-effect="true">
-      <description>It is provided all the mr files of the source_path directory and its subdirectories.</description>
+    <input name="xml_files" side-effect="true">
+      <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
     </input>	
  </inputs>	
+<outputs> 
+<output name="filled_xml_files" side-effect="true"> 
+      <description>It saves the xml files with additional generated content.</description>
+</output>	
+<output name="file_missing_errors" side-effect="true"> 
+      <description>It prints an error when an xml file is not there and exits.</description>
+</output>
+<output name="null"/>	
+</outputs>	
 </root>
