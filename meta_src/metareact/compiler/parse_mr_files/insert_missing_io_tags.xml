@@ -18,6 +18,5 @@
     <output name="file_missing_errors" side-effect="true">
       <description>It prints an error when an xml file is not there and exits.</description>
     </output>
-    <output name="null"/>
   </outputs>
 </root>
