@@ -499,40 +499,46 @@ exec = require('execSync');
         Object.keys(graph).forEach(function(fn_name) {
 
 
-            var xml_path = mr_file_paths[index] + "/" + fn_name + ".xml";
+            var oxml_path = mr_file_paths[index] + "/" + fn_name + ".xml";
             try {
-                var xml_file = fs.readFileSync(xml_path, {
+                var oxml_file = fs.readFileSync(oxml_path, {
                     encoding: "utf-8"
                 });
             } catch (e) {
-                console.log("\nError: xml file missing:" + xml_path);
+                console.log("\nError: xml file missing:" + oxml_path);
                 process.exit(0);
             }
 
-            var $o = cheerio.load(xml_file, {
+            var o = cheerio.load(oxml_file, {
                 xmlMode: true
             });
+            if (o("outputs").length == 0) {
+                o("root").append("<outputs/>");
+            }
             graph[fn_name].forEach(function(path) {
-                $o("outputs").append("<output generated='true' name='" + path.vname + "'/>");
-                fs.writeFileSync(xml_path, $o.html());
+                o("outputs").append("<output generated='true' name='" + path.vname + "'/>");
 
-                xml_path = mr_file_paths[index] + "/" + path.end_fn_name + ".xml";
+                var ixml_path = mr_file_paths[index] + "/" + path.end_fn_name + ".xml";
                 try {
-                    xml_file = fs.readFileSync(xml_path, {
+                    var ixml_file = fs.readFileSync(ixml_path, {
                         encoding: "utf-8"
                     });
                 } catch (e) {
-                    console.log("\nError: xml file missing:" + xml_path);
+                    console.log("\nError: xml file missing:" + ixml_path);
                     process.exit(0);
                 }
 
-                var $i = cheerio.load(xml_file, {
+                var i = cheerio.load(ixml_file, {
                     xmlMode: true
                 });
+                if (o("inputs").length == 0) {
+                    o("root").append("<inputs/>");
+                }
 
-                $i("inputs").append("<input generated='true' name='" + path.vname + "'/>");
-                fs.writeFileSync(xml_path, $i.html());
+                i("inputs").append("<input generated='true' name='" + path.vname + "'/>");
+                fs.writeFileSync(ixml_path, i.html());
             });
+            fs.writeFileSync(oxml_path, o.html());
 
 
 
