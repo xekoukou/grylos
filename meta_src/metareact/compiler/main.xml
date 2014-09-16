@@ -12,7 +12,7 @@
     </output>
       <output name="exit" side-effect="true">
         <description>
-The program exits in case it isn't provided the correct number of arguments.
+The program exits in case it isn&apos;t provided the correct number of arguments.
 </description>
       </output>
       <output name="console-text" side-effect="true">

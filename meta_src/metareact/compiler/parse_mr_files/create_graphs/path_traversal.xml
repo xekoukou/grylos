@@ -7,6 +7,6 @@
   <inputs>
     <input name="srcodes"/>
     <input name="mr_file_paths"/>
-    <input generated="true" name="end_points"/>
-  </inputs>
+    
+  <input generated="true" name="end_points"/></inputs>
 </root>

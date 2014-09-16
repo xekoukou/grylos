@@ -603,7 +603,7 @@ exec = require('execSync');
 }
 //endof parse_mr_files
 //////////////////////////////////////////////////////////////////////
-//generate_content_from_children
+//generate_xml_content_from_children
 
 /////////////////////////////
 function generate_xml_content_from_children(cpath, parent) {

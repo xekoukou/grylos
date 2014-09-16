@@ -5,13 +5,13 @@
     <description> It validates the XML files and removes all previously generated files or parts of files.</description>
   </info>
   <inputs>
-    <input generated="true" name="source_path"/>
-    <input generated="true" name="fs"/>
-    <input generated="true" name="exec"/>
-    <input generated="true" name="path"/>
+    
+    
+    
+    
   </inputs>
   <outputs>
-    <output generated="true" name="null"/>
+    
   </outputs>
-  <graph generated="true"> </graph>
+  
 </root>
