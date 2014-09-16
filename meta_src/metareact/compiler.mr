@@ -1,6 +1,7 @@
-main
- |--------------------------------------               parse_mr_files
- |                  prepare_src        \---(source_path)------|
+main                                                                              generate_content_from_children
+ |---------------(source_path)--------------------------------------------------------------|
+ |--------------------------------------               parse_mr_files    /--(null)----------|
+ |                  prepare_src        \---(source_path)------|-----------
  |---(source_path)------|------------------(null)-------------|
                         |
 module_dependencies     |

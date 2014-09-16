@@ -29,15 +29,15 @@ module.exports = function react_iterative(cpath) {
                     if ($("graph").length == 0) {
                         $("root").append("<graph generated='true'> </graph>");
                         Object.keys(graph).forEach(function(fn_name) {
-                            var each = graph[fn_name];
-                            $("graph").append("<node fn_name='" + fn_name + "'>" + " </node>");
+                            var node = graph[fn_name];
+                            $("graph").append("<node fn_name='" + fn_name + "'>" + "</node>");
 
-                            each.forEach(function(output) {
-                                if ($("graph node[fn_name='" + fn_name + "'] output[name='" + output.vname + "']").length == 0) {
-                                    $("graph node[fn_name='" + fn_name + "']").append("<output name='" + output.vname + "'> </ouptut>");
+                            node.forEach(function(path) {
+                                if ($("graph node[fn_name='" + fn_name + "'] output[name='" + path.vname + "']").length == 0) {
+                                    $("graph node[fn_name='" + fn_name + "']").append("<output name='" + path.vname + "'> </ouptut>");
 
                                 }
-                                $("graph node[fn_name='" + fn_name + "'] output[name='" + output.vname + "']").append("<end_point fn_name='" + output.end_fn_name + "' " + ((output.historical) ? "historical='" + output.historical + "' " : "") + ((output.passive) ? "passive='" + output.passive + "' " : "") + ((output.asynchronous) ? "asynchronous='" + output.asynchronous + "' " : "") + "></end_point>");
+                                $("graph node[fn_name='" + fn_name + "'] output[name='" + path.vname + "']").append("<end_point fn_name='" + path.end_fn_name + "' " + ((path.historical) ? "historical='" + path.historical + "' " : "") + ((path.passive) ? "passive='" + path.passive + "' " : "") + ((path.asynchronous) ? "asynchronous='" + path.asynchronous + "' " : "") + "></end_point>");
 
 
                             });

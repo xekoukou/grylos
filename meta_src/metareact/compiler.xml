@@ -4,4 +4,32 @@
     <name> compiler </name>
     <desciption> This is the main program that compiles the meta source code into source code </desciption>
   </info>
+  <graph generated="true">
+    <node fn_name="main">
+      <output name="source_path">
+        <end_point fn_name="parse_mr_files"/>
+        <end_point fn_name="prepare_src"/>
+      </output>
+    </node>
+    <node fn_name="prepare_src">
+      <output name="null">
+        <end_point fn_name="parse_mr_files"/>
+      </output>
+    </node>
+    <node fn_name="module_dependencies">
+      <output name="fs">
+        <end_point fn_name="prepare_src"/>
+        <end_point fn_name="meta_info"/>
+      </output>
+      <output name="exec">
+        <end_point fn_name="prepare_src"/>
+      </output>
+      <output name="path">
+        <end_point fn_name="prepare_src"/>
+      </output>
+      <output name="cheerio">
+        <end_point fn_name="meta_info"/>
+      </output>
+    </node>
+  </graph>
 </root>

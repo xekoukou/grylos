@@ -498,7 +498,7 @@ exec = require('execSync');
     graphs.forEach(function(graph, index) {
         Object.keys(graph).forEach(function(fn_name) {
 
-//Insert the output tag into the originator xml file and do nothing if there is already user content.
+            //Insert the output tag into the originator xml file and do nothing if there is already user content.
             var oxml_path = mr_file_paths[index] + "/" + fn_name + ".xml";
             try {
                 var oxml_file = fs.readFileSync(oxml_path, {
@@ -512,12 +512,12 @@ exec = require('execSync');
             var o = cheerio.load(oxml_file, {
                 xmlMode: true
             });
-//Insert an outputs tag if it is missing.
+            //Insert an outputs tag if it is missing.
             if (o("outputs").length == 0) {
                 o("root").append("<outputs/>");
             }
             graph[fn_name].forEach(function(path) {
-//Add only one output per vname.
+                //Add only one output per vname.
                 if (o("outputs output[name='" + path.vname + "']").length == 0) {
                     o("outputs").append("<output generated='true' name='" + path.vname + "'/>");
                 }
@@ -534,12 +534,12 @@ exec = require('execSync');
                 var i = cheerio.load(ixml_file, {
                     xmlMode: true
                 });
-//Insert an inputs tag if it is missing.
+                //Insert an inputs tag if it is missing.
                 if (i("inputs").length == 0) {
                     i("root").append("<inputs/>");
                 }
 
-//Insert the input tag into the end_point xml file and do nothing if there is already user content.
+                //Insert the input tag into the end_point xml file and do nothing if there is already user content.
                 if (i("inputs input[name='" + path.vname + "']").length == 0) {
                     i("inputs").append("<input generated='true' name='" + path.vname + "'/>");
                     fs.writeFileSync(ixml_path, i.html());
@@ -570,21 +570,21 @@ exec = require('execSync');
         var $ = cheerio.load(xml_file, {
             xmlMode: true
         });
-//Appends the graph tag.
+        //Appends the graph tag.
         $("root").append("<graph generated='true'> </graph>");
         Object.keys(graph).forEach(function(fn_name) {
 
             var node = graph[fn_name];
-//Adds the node.
+            //Adds the node.
             $("graph").append("<node fn_name='" + fn_name + "'>" + "</node>");
 
             node.forEach(function(path) {
-//Adds one output tag per vname.
+                //Adds one output tag per vname.
                 if ($("graph node[fn_name='" + fn_name + "'] output[name='" + path.vname + "']").length == 0) {
                     $("graph node[fn_name='" + fn_name + "']").append("<output name='" + path.vname + "'> </ouptut>");
 
                 }
-//Adds multiple end_points per vname with their properties.
+                //Adds multiple end_points per vname with their properties.
                 $("graph node[fn_name='" + fn_name + "'] output[name='" + path.vname + "']").append("<end_point fn_name='" + path.end_fn_name + "' " + ((path.historical) ? "historical='" + path.historical + "' " : "") + ((path.passive) ? "passive='" + path.passive + "' " : "") + ((path.asynchronous) ? "asynchronous='" + path.asynchronous + "' " : "") + "></end_point>");
 
 
@@ -603,7 +603,143 @@ exec = require('execSync');
 }
 //endof parse_mr_files
 //////////////////////////////////////////////////////////////////////
+//generate_content_from_children
 
+/////////////////////////////
+function generate_xml_content_from_children(cpath, parent) {
+    var files = fs.readdirSync(cpath);
+    files.forEach(function(file_name, index, files) {
+        var stat = fs.statSync(cpath + "/" + file_name);
+        //A deep first algorith.
+        if (stat.isDirectory()) {
+
+            var fxml_file = fs.readFileSync(cpath + "/" + file_name + ".xml", {
+                encoding: "utf-8"
+            });
+
+            var parent = cheerio.load(fxml_file, {
+                xmlMode: true
+            });
+
+            generate_xml_content_from_children(cpath + "/" + file_name, parent);
+            fs.writeFileSync(cpath + "/" + file_name + ".xml", parent.html());
+
+        }
+    });
+
+    files = fs.readdirSync(cpath);
+    files.forEach(function(file_name, index, files) {
+        var stat = fs.statSync(cpath + "/" + file_name);
+
+        if (stat.isFile()) {
+
+            if (path.extname(file_name) == ".xml") {
+
+
+                var xml_file = fs.readFileSync(cpath + "/" + file_name, {
+                    encoding: "utf-8"
+                });
+
+                var $ = cheerio.load(xml_file, {
+                    xmlMode: true
+                });
+
+
+                var fn_name = file_name.substring(0, file_name.length - 4);
+                $("inputs input").each(function(each) {
+                    //To address namespace colisions,we set the origin of the input.
+                    var origin = $(this).attr("origin");
+                    if (origin) {
+                        origin = fn_name;
+                        $(this).attr("origin", origin);
+                    } else {
+                        origin = fn_name + "/" + origin;
+                        $(this).attr("origin", origin);
+                    }
+                    var outerHTML = $("<div/>").append($(this).clone()).html();
+                    var name = $(this).attr("name");
+                    //Add node in case this xml is not in the mr file, meaning it only depends on external ioput.
+                    if (parent("graph node[fn_name='" + fn_name + "']").length == 0) {
+                        parent("graph").append("<node fn_name='" + fn_name + "'></node>");
+                    }
+                    //Add the input in the graph.
+                    parent("graph node[fn_name='" + fn_name + "']").append("<input name='" + name + "'></input>");
+
+                    //Only add it to inputs if it is an external input requirement.
+                    if (parent("graph node output[name='" + name + "']").length == 0) {
+                        //We reject input with the same (name , origin)        
+                        if (parent("inputs input[name='" + name + "'][origin='" + origin + "']").length == 0) {
+                            parent("inputs").append(outerHTML);
+                        }
+
+
+
+
+
+                    }
+
+                });
+
+
+                $("outputs output").each(function(each) {
+
+                    var origin = $(this).attr("origin");
+                    if (origin) {
+                        origin = fn_name;
+                        $(this).attr("origin", origin);
+                    } else {
+                        origin = fn_name + "/" + origin;
+                        $(this).attr("origin", origin);
+                    }
+
+                    var outerHTML = $("<div/>").append($(this).clone()).html();
+                    var name = $(this).attr("name");
+                    //Add node in case this xml is not in the mr file, meaning it only depends on external ioput.
+                    if (parent("graph node[fn_name='" + fn_name + "']").length == 0) {
+                        parent("graph").append("<node fn_name='" + fn_name + "'></node>");
+                    }
+                    //We add the output to the graph only once.
+                    if (parent("graph node output[name='" + name + "']").length == 0) {
+                        parent("graph node[fn_name='" + fn_name + "']").append("<output name='" + name + "'></output>");
+                        //We add the output to the outputs only once only if it is an external output.
+                        if (parent("outputs output name[" + name + "]").length == 0) {
+                            parent("outputs").append(outerHTML);
+                        }
+
+                    }
+
+                });
+
+
+
+
+
+
+            }
+        }
+    });
+
+
+
+}
+
+var xml_file = fs.readFileSync(cpath + ".xml", {
+    encoding: "utf-8"
+});
+
+var $ = cheerio.load(fxml_file, {
+    xmlMode: true
+});
+
+generate_xml_content_from_children(source_path, $);
+fs.writeFileSync(source_path + ".xml", $.html());
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////
 
 /*
 

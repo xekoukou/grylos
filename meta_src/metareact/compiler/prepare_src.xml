@@ -13,4 +13,5 @@
   <outputs>
     <output generated="true" name="null"/>
   </outputs>
+  <graph generated="true"> </graph>
 </root>

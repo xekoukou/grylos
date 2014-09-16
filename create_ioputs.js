@@ -7,13 +7,9 @@ var cheerio = require('cheerio');
 
 
 module.exports = {
-    //initial level=0, iter[0]=new object
     create_ioputs: function(cpath) {
 
-        function create_ioputs(cpath, f$) {
-            //TODO has errors plus it doesnt find the internal inputs outputs so as to remove them
-            console.log("Create_ioputs:");
-            console.log(cpath);
+        function generate_xml_content_from_children(cpath, parent) {
             var files = fs.readdirSync(cpath);
             files.forEach(function(file_name, index, files) {
                 var stat = fs.statSync(cpath + "/" + file_name);
@@ -24,12 +20,12 @@ module.exports = {
                         encoding: "utf-8"
                     });
 
-                    var f$ = cheerio.load(fxml_file, {
+                    var parent = cheerio.load(fxml_file, {
                         xmlMode: true
                     });
 
-                    create_ioputs(cpath + "/" + file_name, f$);
-                    fs.writeFileSync(cpath + "/" + file_name + ".xml", f$.html());
+                    generate_xml_content_from_children(cpath + "/" + file_name, parent);
+                    fs.writeFileSync(cpath + "/" + file_name + ".xml", parent.html());
 
                 }
             });
@@ -54,19 +50,34 @@ module.exports = {
 
                         var fn_name = file_name.substring(0, file_name.length - 4);
                         $("inputs input").each(function(each) {
-                            var outerHTML = $("<div/>").append($(this).clone()).html();
-                            var name = $(this).attr("name").replace(/\n+/g, '').replace(/\s+/g, '');
-                            if (f$("graph node[fn_name='" + fn_name + "']").length == 0) {
-                                f$("graph").append("<node fn_name='" + fn_name + "'></node>");
+                            //To address namespace colisions,we set the origin of the input.
+                            var origin = $(this).attr("origin");
+                            if (origin) {
+                                origin = fn_name;
+                                $(this).attr("origin", origin);
+                            } else {
+                                origin = fn_name + "/" + origin;
+                                $(this).attr("origin", origin);
                             }
-                            console.log("Name:" + name);
+                            var outerHTML = $("<div/>").append($(this).clone()).html();
+                            var name = $(this).attr("name");
+                            //Add node in case this xml is not in the mr file, meaning it only depends on external ioput.
+                            if (parent("graph node[fn_name='" + fn_name + "']").length == 0) {
+                                parent("graph").append("<node fn_name='" + fn_name + "'></node>");
+                            }
+                            //Add the input in the graph.
+                            parent("graph node[fn_name='" + fn_name + "']").append("<input name='" + name + "'></input>");
 
-                            f$("graph node[fn_name='" + fn_name + "']").append("<input name='" + name + "'></input>");
-                            if (f$("graph node[fn_name='" + fn_name + "'] output[name='" + name + "']").length == 0) {
-                                console.log($(this).html());
-                                if (f$("inputs input[name='" + name + "']").length == 0) {
-                                    f$("inputs").append(outerHTML);
+                            //Only add it to inputs if it is an external input requirement.
+                            if (parent("graph node output[name='" + name + "']").length == 0) {
+                                //We reject input with the same (name , origin)        
+                                if (parent("inputs input[name='" + name + "'][origin='" + origin + "']").length == 0) {
+                                    parent("inputs").append(outerHTML);
                                 }
+
+
+
+
 
                             }
 
@@ -74,15 +85,27 @@ module.exports = {
 
                         $("outputs output").each(function(each) {
 
-                            var outerHTML = $("<div/>").append($(this).clone()).html();
-                            var name = $(this).attr("name").replace(/\n+/g, '').replace(/\s+/g, '');
-                            console.log("Name:" + name);
+                            var origin = $(this).attr("origin");
+                            if (origin) {
+                                origin = fn_name;
+                                $(this).attr("origin", origin);
+                            } else {
+                                origin = fn_name + "/" + origin;
+                                $(this).attr("origin", origin);
+                            }
 
-                            if (f$("graph node[fn_name='" + fn_name + "'] output[name='" + name + "']").length == 0) {
-                                console.log($(this).html());
-                                f$("graph node[fn_name='" + fn_name + "']").append("<output name='" + name + "'></output>");
-                                if (f$("outputs output name:contains(" + name + ")").length == 0) {
-                                    f$("outputs").append(outerHTML);
+                            var outerHTML = $("<div/>").append($(this).clone()).html();
+                            var name = $(this).attr("name");
+                            //Add node in case this xml is not in the mr file, meaning it only depends on external ioput.
+                            if (parent("graph node[fn_name='" + fn_name + "']").length == 0) {
+                                parent("graph").append("<node fn_name='" + fn_name + "'></node>");
+                            }
+                            //We add the output to the graph only once.
+                            if (parent("graph node output[name='" + name + "']").length == 0) {
+                                parent("graph node[fn_name='" + fn_name + "']").append("<output name='" + name + "'></output>");
+                                //We add the output to the outputs only once only if it is an external output.
+                                if (parent("outputs output name[" + name + "]").length == 0) {
+                                    parent("outputs").append(outerHTML);
                                 }
 
                             }
@@ -103,16 +126,16 @@ module.exports = {
         }
 
 
-        var fxml_file = fs.readFileSync(cpath + ".xml", {
+        var xml_file = fs.readFileSync(cpath + ".xml", {
             encoding: "utf-8"
         });
 
-        var f$ = cheerio.load(fxml_file, {
+        var $ = cheerio.load(fxml_file, {
             xmlMode: true
         });
 
-        create_ioputs(cpath, f$);
-        fs.writeFileSync(cpath + ".xml", f$.html());
+        generate_xml_content_from_children(cpath, $);
+        fs.writeFileSync(source_path + ".xml", $.html());
 
 
     },
