@@ -656,6 +656,8 @@ function generate_xml_content_from_children(cpath, parent) {
                         origin = fn_name;
                         $(this).attr("origin", origin);
                     }
+                    //Set generated flag to true.
+                    $(this).attr("generated", "true");
                     var outerHTML = $("<div/>").append($(this).clone()).html();
                     var name = $(this).attr("name");
                     //Add node in case this xml is not in the mr file, meaning it only depends on external ioput.
@@ -692,6 +694,8 @@ function generate_xml_content_from_children(cpath, parent) {
                         $(this).attr("origin", origin);
                     }
 
+                    //Set generated flag to true.
+                    $(this).attr("generated", "true");
                     var outerHTML = $("<div/>").append($(this).clone()).html();
                     var name = $(this).attr("name");
                     //Add node in case this xml is not in the mr file, meaning it only depends on external ioput.
