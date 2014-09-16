@@ -650,10 +650,10 @@ function generate_xml_content_from_children(cpath, parent) {
                     //To address namespace colisions,we set the origin of the input.
                     var origin = $(this).attr("origin");
                     if (origin) {
-                        origin = fn_name;
+                        origin = fn_name + "/" + origin;
                         $(this).attr("origin", origin);
                     } else {
-                        origin = fn_name + "/" + origin;
+                        origin = fn_name;
                         $(this).attr("origin", origin);
                     }
                     var outerHTML = $("<div/>").append($(this).clone()).html();
@@ -685,10 +685,10 @@ function generate_xml_content_from_children(cpath, parent) {
 
                     var origin = $(this).attr("origin");
                     if (origin) {
-                        origin = fn_name;
+                        origin = fn_name + "/" + origin;
                         $(this).attr("origin", origin);
                     } else {
-                        origin = fn_name + "/" + origin;
+                        origin = fn_name;
                         $(this).attr("origin", origin);
                     }
 
@@ -727,7 +727,7 @@ var xml_file = fs.readFileSync(source_path + ".xml", {
     encoding: "utf-8"
 });
 
-var $ = cheerio.load(fxml_file, {
+var $ = cheerio.load(xml_file, {
     xmlMode: true
 });
 
