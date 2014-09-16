@@ -5,6 +5,8 @@
     <description> It creates the graph tag and its contents. </description>
   </info>
   <inputs>
+    <input name="cheerio"/>
+    <input name="fs"/>
     <input name="xml_files" side-effect="true">
       <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
     </input>

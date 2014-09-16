@@ -498,7 +498,7 @@ exec = require('execSync');
     graphs.forEach(function(graph, index) {
         Object.keys(graph).forEach(function(fn_name) {
 
-
+//Insert the output tag into the originator xml file and do nothing if there is already user content.
             var oxml_path = mr_file_paths[index] + "/" + fn_name + ".xml";
             try {
                 var oxml_file = fs.readFileSync(oxml_path, {
@@ -512,10 +512,12 @@ exec = require('execSync');
             var o = cheerio.load(oxml_file, {
                 xmlMode: true
             });
+//Insert an outputs tag if it is missing.
             if (o("outputs").length == 0) {
                 o("root").append("<outputs/>");
             }
             graph[fn_name].forEach(function(path) {
+//Add only one output per vname.
                 if (o("outputs output[name='" + path.vname + "']").length == 0) {
                     o("outputs").append("<output generated='true' name='" + path.vname + "'/>");
                 }
@@ -532,10 +534,12 @@ exec = require('execSync');
                 var i = cheerio.load(ixml_file, {
                     xmlMode: true
                 });
+//Insert an inputs tag if it is missing.
                 if (i("inputs").length == 0) {
                     i("root").append("<inputs/>");
                 }
 
+//Insert the input tag into the end_point xml file and do nothing if there is already user content.
                 if (i("inputs input[name='" + path.vname + "']").length == 0) {
                     i("inputs").append("<input generated='true' name='" + path.vname + "'/>");
                     fs.writeFileSync(ixml_path, i.html());
@@ -549,16 +553,59 @@ exec = require('execSync');
     });
 
     //////////////////////////////////////////////////////////////////
+    //insert_graph_content_to_xml_files
+
+    /////////////////////
+    graphs.forEach(function(graph, index) {
+        var xml_path = mr_file_paths[index] + ".xml";
+        try {
+            var xml_file = fs.readFileSync(xml_path, {
+                encoding: "utf-8"
+            });
+        } catch (e) {
+            console.log("\nError: xml file missing:" + xml_path);
+            process.exit(0);
+        }
+
+        var $ = cheerio.load(xml_file, {
+            xmlMode: true
+        });
+//Appends the graph tag.
+        $("root").append("<graph generated='true'> </graph>");
+        Object.keys(graph).forEach(function(fn_name) {
+
+            var node = graph[fn_name];
+//Adds the node.
+            $("graph").append("<node fn_name='" + fn_name + "'>" + "</node>");
+
+            node.forEach(function(path) {
+//Adds one output tag per vname.
+                if ($("graph node[fn_name='" + fn_name + "'] output[name='" + path.vname + "']").length == 0) {
+                    $("graph node[fn_name='" + fn_name + "']").append("<output name='" + path.vname + "'> </ouptut>");
+
+                }
+//Adds multiple end_points per vname with their properties.
+                $("graph node[fn_name='" + fn_name + "'] output[name='" + path.vname + "']").append("<end_point fn_name='" + path.end_fn_name + "' " + ((path.historical) ? "historical='" + path.historical + "' " : "") + ((path.passive) ? "passive='" + path.passive + "' " : "") + ((path.asynchronous) ? "asynchronous='" + path.asynchronous + "' " : "") + "></end_point>");
+
+
+            });
+
+
+
+
+
+
+        });
+        fs.writeFileSync(xml_path, $.html());
+    });
+
+    //////////////////////////////////////////////////////////////////
 }
 //endof parse_mr_files
 //////////////////////////////////////////////////////////////////////
 
 
 /*
-
-
-    var react_iterate = require("./react_iterate.js");
-    react_iterate("./meta_src");
 
     var create_ioputs_tags = require('./create_ioputs.js').create_ioputs_tags;
 
