@@ -12,4 +12,4 @@
     
   <output generated="true" name="graphs"/></outputs>
   
-</root>
+<graph generated="true"> <node fn_name="find_functions"><output name="function_names"> <end_point fn_name="find_end_points"/></output></node><node fn_name="find_end_points"><output name="end_points"> <end_point fn_name="path_traversal"/></output></node></graph></root>

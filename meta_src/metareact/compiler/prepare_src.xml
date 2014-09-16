@@ -9,9 +9,9 @@
     
     
     
-  </inputs>
+  <input generated="true" name="source_path"/><input generated="true" name="fs"/><input generated="true" name="exec"/><input generated="true" name="path"/></inputs>
   <outputs>
     
-  </outputs>
+  <output generated="true" name="null"/></outputs>
   
-</root>
+<graph generated="true"> </graph></root>

@@ -723,7 +723,7 @@ function generate_xml_content_from_children(cpath, parent) {
 
 }
 
-var xml_file = fs.readFileSync(cpath + ".xml", {
+var xml_file = fs.readFileSync(source_path + ".xml", {
     encoding: "utf-8"
 });
 

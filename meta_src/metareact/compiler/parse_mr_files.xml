@@ -18,7 +18,7 @@
       <description>It is provided all the mr files of the source_path directory and its subdirectories.</description>
     </input>
     
-  </inputs>
+  <input generated="true" name="null"/></inputs>
   <outputs>
     <output name="xml_files" side-effect="true">
       <description>It returns all xml files with the graph tag when appropriate.</description>
@@ -26,4 +26,4 @@
     <output name="null"/>
   </outputs>
   
-</root>
+<graph generated="true"> <node fn_name="find_mr_file_paths"><output name="mr_files"> <end_point fn_name="split_srcode_into_lines"/></output><output name="mr_file_paths"> <end_point fn_name="create_graphs"/><end_point fn_name="insert_missing_io_tags"/><end_point fn_name="insert_graph_content_to_xml_files"/></output></node><node fn_name="split_srcode_into_lines"><output name="srcodes"> <end_point fn_name="create_graphs"/></output></node><node fn_name="create_graphs"><output name="graphs"> <end_point fn_name="insert_graph_content_to_xml_files"/><end_point fn_name="insert_missing_io_tags"/></output></node><node fn_name="insert_missing_io_tags"><output name="null"> <end_point fn_name="insert_graph_content_to_xml_files"/></output></node></graph></root>
