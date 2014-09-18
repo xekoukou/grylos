@@ -1,3 +1,3 @@
-var interpret = require("./react.js");
+var str="sdf/sd/ffd/gg";
 
-interpret("./test.r");
+console.log(str.match(new RegExp("/")));

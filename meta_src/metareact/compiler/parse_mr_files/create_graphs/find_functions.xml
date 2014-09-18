@@ -8,6 +8,6 @@
     <input name="srcodes"/>
   </inputs>
   <outputs>
-    
-  <output generated="true" name="function_names"/></outputs>
+    <output generated="true" name="function_names"/>
+  </outputs>
 </root>

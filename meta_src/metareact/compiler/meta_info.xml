@@ -3,8 +3,31 @@
   <name>meta_info </name>
   <description> Parses the meta-info of a project </description>
   <inputs>
-    
-    
-  <input generated="true" name="cheerio"/><input generated="true" name="fs"/></inputs>
-  
-<graph generated="true"> <node fn_name="load_meta_info"><output name="$"> <end_point fn_name="create_output" historical="true" asynchronous="true"/></output><output name="test"> <end_point fn_name="create_output" passive="true"/></output></node></graph></root>
+    <input name="fs" origin="create_output" generated="true">
+    </input>
+    <input name="cheerio" origin="create_output" generated="true">
+    </input>
+    <input name="fs" origin="load_meta_info" generated="true">
+    </input>
+    <input name="cheerio" origin="load_meta_info" generated="true">
+    </input>
+  </inputs>
+  <graph generated="true">
+    <node fn_name="load_meta_info">
+      <output name="$">
+        <end_point fn_name="create_output" historical="true" asynchronous="true"/>
+      </output>
+      <output name="test">
+        <end_point fn_name="create_output" passive="true"/>
+      </output>
+      <input name="fs"/>
+      <input name="cheerio"/>
+    </node>
+    <node fn_name="create_output">
+      <input name="fs"/>
+      <input name="cheerio"/>
+      <input name="$"/>
+      <input name="test"/>
+    </node>
+  </graph>
+</root>

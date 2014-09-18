@@ -521,6 +521,7 @@ exec = require('execSync');
                 if (o("outputs output[name='" + path.vname + "']").length == 0) {
                     o("outputs").append("<output generated='true' name='" + path.vname + "'/>");
                 }
+                //Insert the input tag into the terminator xml file and do nothing if there is already user content.
                 var ixml_path = mr_file_paths[index] + "/" + path.end_fn_name + ".xml";
                 try {
                     var ixml_file = fs.readFileSync(ixml_path, {
@@ -665,12 +666,13 @@ function generate_xml_content_from_children(cpath, parent) {
                         parent("graph").append("<node fn_name='" + fn_name + "'></node>");
                     }
                     //Add the input in the graph.
-                    parent("graph node[fn_name='" + fn_name + "']").append("<input name='" + name + "'></input>");
+                    parent("graph node[fn_name='" + fn_name + "']").append("<input name='" + name + "' origin='" + origin + "'></input>");
 
                     //Only add it to inputs if it is an external input requirement.
                     if (parent("graph node output[name='" + name + "']").length == 0) {
-                        //We reject input with the same (name , origin)        
-                        if (parent("inputs input[name='" + name + "'][origin='" + origin + "']").length == 0) {
+                        //We reject input if the user has already declared it. This way the user can catch values
+                        //that represent the same thing. 
+                        if (parent("inputs input[internal_name='" + name + "'][origin~=" + origin + "]").length == 0) {
                             parent("inputs").append(outerHTML);
                         }
 
@@ -704,11 +706,23 @@ function generate_xml_content_from_children(cpath, parent) {
                     }
                     //We add the output to the graph only once.
                     if (parent("graph node output[name='" + name + "']").length == 0) {
-                        parent("graph node[fn_name='" + fn_name + "']").append("<output name='" + name + "'></output>");
-                        //We add the output to the outputs only once only if it is an external output.
-                        if (parent("outputs output name[" + name + "]").length == 0) {
+                        parent("graph node[fn_name='" + fn_name + "']").append("<output name='" + name + "' origin='" + origin + "'></output>");
+
+                        //We throw an error if we find an  output with the same (name , parent origin).
+                        if (parent("outputs output[name='" + name + "']").filter(function() {
+                            return $(this).attr("origin").match(new RegExp("/")) != null
+                        }).length == 0) {
+                            console.log("Error: MUltiple outputs of the same name");
+                            console.log("Folder: " + cpath);
+                            console.log("Value name: " + name);
+                            process.exit(0);
+                        }
+                        //We reject input if the user has already declared it. This way the user can catch values
+                        //that represent the same thing. 
+                        if (parent("outputs output[internal_name='" + name + "'][origin~=" + origin + "]").length == 0) {
                             parent("outputs").append(outerHTML);
                         }
+
 
                     }
 

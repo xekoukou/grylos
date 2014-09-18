@@ -11,6 +11,6 @@
   <outputs>
     <output name="$">
     </output>
-    
-  <output generated="true" name="test"/></outputs>
+    <output generated="true" name="test"/>
+  </outputs>
 </root>
