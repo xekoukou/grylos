@@ -4,6 +4,9 @@
     <name> prepare_src</name>
     <description> It validates the XML files and removes all previously generated files or parts of files.</description>
   </info>
+  <outputs>
+    <output name="null"/>
+  </outputs>
   <inputs>
     <input name="source_path" origin="delete_generated_src" generated="true">
     </input>
@@ -43,7 +46,6 @@
     <output name="deleted_src_files" side-effect="true" origin="delete_generated_src" generated="true">
       <description>It deletes all the generated src files.</description>
     </output>
-    <output name="null" origin="delete_generated_src" generated="true"/>
     <output name="cleaned_xml_files" side-effect="true" origin="remove_generated_XML" generated="true">
       <description>It saves the cleaned xml_files.</description>
     </output>
@@ -53,29 +55,31 @@
   </outputs>
   <graph generated="true">
     <node fn_name="delete_generated_src">
-      <input name="source_path"/>
-      <input name="fs"/>
-      <input name="path"/>
-      <input name="xml_files"/>
-      <output name="deleted_src_files"/>
-      <output name="null"/>
+      <input name="source_path" origin="delete_generated_src"/>
+      <input name="fs" origin="delete_generated_src"/>
+      <input name="path" origin="delete_generated_src"/>
+      <input name="xml_files" origin="delete_generated_src"/>
+      <output name="deleted_src_files" origin="delete_generated_src"/>
+      <output name="null" origin="delete_generated_src"/>
     </node>
     <node fn_name="remove_generated_XML">
-      <input name="source_path"/>
-      <input name="fs"/>
-      <input name="cheerio"/>
-      <input name="path"/>
-      <input name="xml_files"/>
-      <output name="cleaned_xml_files"/>
+      <input name="source_path" origin="remove_generated_XML"/>
+      <input name="fs" origin="remove_generated_XML"/>
+      <input name="cheerio" origin="remove_generated_XML"/>
+      <input name="path" origin="remove_generated_XML"/>
+      <input name="xml_files" origin="remove_generated_XML"/>
+      <output name="cleaned_xml_files" origin="remove_generated_XML"/>
+      <output name="null" origin="remove_generated_XML"/>
     </node>
     <node fn_name="validate_XML">
-      <input name="source_path"/>
-      <input name="fs"/>
-      <input name="sys"/>
-      <input name="exec"/>
-      <input name="path"/>
-      <input name="xml_files"/>
-      <output name="xml_errors"/>
+      <input name="source_path" origin="validate_XML"/>
+      <input name="fs" origin="validate_XML"/>
+      <input name="sys" origin="validate_XML"/>
+      <input name="exec" origin="validate_XML"/>
+      <input name="path" origin="validate_XML"/>
+      <input name="xml_files" origin="validate_XML"/>
+      <output name="xml_errors" origin="validate_XML"/>
+      <output name="null" origin="validate_XML"/>
     </node>
   </graph>
 </root>

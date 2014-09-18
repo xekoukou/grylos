@@ -672,7 +672,7 @@ function generate_xml_content_from_children(cpath, parent) {
                     if (parent("graph node output[name='" + name + "']").length == 0) {
                         //We reject input if the user has already declared it. This way the user can catch values
                         //that represent the same thing. 
-                        if (parent("inputs input[internal_name='" + name + "'][origin~=" + origin + "]").length == 0) {
+                        if ((parent("inputs input[internal_name='" + name + "'][origin~='" + origin + "']").length == 0) && (parent("inputs input[internal_name='" + name + "']:not([origin])").length == 0)&& (parent("inputs input[name='" + name + "']:not([origin])").length == 0)) {
                             parent("inputs").append(outerHTML);
                         }
 
@@ -704,22 +704,34 @@ function generate_xml_content_from_children(cpath, parent) {
                     if (parent("graph node[fn_name='" + fn_name + "']").length == 0) {
                         parent("graph").append("<node fn_name='" + fn_name + "'></node>");
                     }
-                    //We add the output to the graph only once.
-                    if (parent("graph node output[name='" + name + "']").length == 0) {
+                    //We add the output to the graph if it hasn't been put already with the insert_graph_content_to_xml_files.
+                    if (parent("graph node[fn_name='" + fn_name + "'] output[name='" + name + "']").length == 0) {
                         parent("graph node[fn_name='" + fn_name + "']").append("<output name='" + name + "' origin='" + origin + "'></output>");
 
+                        console.log(name);
+                        console.log(origin + "\n");
                         //We throw an error if we find an  output with the same (name , parent origin).
                         if (parent("outputs output[name='" + name + "']").filter(function() {
-                            return $(this).attr("origin").match(new RegExp("/")) != null
-                        }).length == 0) {
-                            console.log("Error: MUltiple outputs of the same name");
+                            var origin = $(this).attr("origin");
+                            //This happens when the user has already declared that name for all subdirectories, thus not requiring origin.
+                            if (typeof origin == "undefined") {
+                                return false;
+                            }
+                            var cond = origin.match(new RegExp("/"));
+                            return (cond == null)
+                        }).length != 0) {
+                            console.log("Error: Multiple outputs of the same name");
                             console.log("Folder: " + cpath);
                             console.log("Value name: " + name);
                             process.exit(0);
                         }
                         //We reject input if the user has already declared it. This way the user can catch values
-                        //that represent the same thing. 
-                        if (parent("outputs output[internal_name='" + name + "'][origin~=" + origin + "]").length == 0) {
+                        //that represent the same thing.
+                        //To do that it either omits the origin attributes to assume that all the same names of the subdirectories have the same name
+                        //or it introduces an internal_value and origin to differentiate between them.
+                        
+                        
+                        if ((parent("outputs output[internal_name~='" + name + "'][origin~='" + origin + "']").length == 0) && (parent("outputs output[internal_name~='" + name + "']:not([origin])").length == 0)&& (parent("outputs output[name~='" + name + "']:not([origin])").length == 0)) {
                             parent("outputs").append(outerHTML);
                         }
 

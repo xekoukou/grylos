@@ -17,34 +17,20 @@
     <input name="mr_files" side-effect="true">
       <description>It is provided all the mr files of the source_path directory and its subdirectories.</description>
     </input>
-    <input name="source_path" origin="find_mr_file_paths" generated="true"/>
-    <input name="fs" origin="find_mr_file_paths" generated="true"/>
-    <input name="path" origin="find_mr_file_paths" generated="true"/>
     <input name="disk_mr_files" side-effect="true" origin="find_mr_file_paths" generated="true">
       <description>It is provided all the mr files of the source_path directory and its subdirectories.</description>
     </input>
     <input name="cheerio" origin="insert_graph_content_to_xml_files" generated="true"/>
-    <input name="fs" origin="insert_graph_content_to_xml_files" generated="true"/>
-    <input name="xml_files" side-effect="true" origin="insert_graph_content_to_xml_files" generated="true">
-      <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
-    </input>
     <input name="cheerio" origin="insert_missing_io_tags" generated="true"/>
-    <input name="fs" origin="insert_missing_io_tags" generated="true"/>
-    <input name="xml_files" side-effect="true" origin="insert_missing_io_tags" generated="true">
-      <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
-    </input>
   </inputs>
   <outputs>
-    <output name="xml_files" side-effect="true">
+    <output name="xml_files" internal_name="filled_xml_files" side-effect="true">
       <description>It returns all xml files with the graph tag when appropriate.</description>
     </output>
-    <output name="null"/>
-    <output name="filled_xml_files" side-effect="true" origin="insert_graph_content_to_xml_files" generated="true">
-      <description>It saves the xml files with the additional generated content.</description>
-    </output>
-    <output name="file_missing_errors" side-effect="true" origin="insert_graph_content_to_xml_files" generated="true">
+    <output name="file_missing_errors" side-effect="true">
       <description>It prints an error when an xml file is not there and exits.</description>
     </output>
+    <output name="null"/>
   </outputs>
   <graph generated="true">
     <node fn_name="find_mr_file_paths">
@@ -56,48 +42,47 @@
         <end_point fn_name="insert_missing_io_tags"/>
         <end_point fn_name="insert_graph_content_to_xml_files"/>
       </output>
-      <input name="source_path"/>
-      <input name="fs"/>
-      <input name="path"/>
-      <input name="disk_mr_files"/>
+      <input name="source_path" origin="find_mr_file_paths"/>
+      <input name="fs" origin="find_mr_file_paths"/>
+      <input name="path" origin="find_mr_file_paths"/>
+      <input name="disk_mr_files" origin="find_mr_file_paths"/>
     </node>
     <node fn_name="split_srcode_into_lines">
       <output name="srcodes">
         <end_point fn_name="create_graphs"/>
       </output>
-      <input name="mr_files"/>
+      <input name="mr_files" origin="split_srcode_into_lines"/>
     </node>
     <node fn_name="create_graphs">
       <output name="graphs">
         <end_point fn_name="insert_graph_content_to_xml_files"/>
         <end_point fn_name="insert_missing_io_tags"/>
       </output>
-      <input name="mr_file_paths"/>
-      <input name="srcodes"/>
-      <input name="srcodes"/>
-      <input name="srcodes"/>
-      <input name="srcodes"/>
-      <input name="mr_file_paths"/>
+      <input name="mr_file_paths" origin="create_graphs"/>
+      <input name="srcodes" origin="create_graphs"/>
     </node>
     <node fn_name="insert_missing_io_tags">
       <output name="null">
         <end_point fn_name="insert_graph_content_to_xml_files"/>
       </output>
-      <input name="cheerio"/>
-      <input name="fs"/>
-      <input name="xml_files"/>
-      <input name="mr_file_paths"/>
-      <input name="graphs"/>
+      <input name="cheerio" origin="insert_missing_io_tags"/>
+      <input name="fs" origin="insert_missing_io_tags"/>
+      <input name="xml_files" origin="insert_missing_io_tags"/>
+      <input name="mr_file_paths" origin="insert_missing_io_tags"/>
+      <input name="graphs" origin="insert_missing_io_tags"/>
+      <output name="filled_xml_files" origin="insert_missing_io_tags"/>
+      <output name="file_missing_errors" origin="insert_missing_io_tags"/>
     </node>
     <node fn_name="insert_graph_content_to_xml_files">
-      <input name="cheerio"/>
-      <input name="fs"/>
-      <input name="xml_files"/>
-      <input name="mr_file_paths"/>
-      <input name="graphs"/>
-      <input name="null"/>
-      <output name="filled_xml_files"/>
-      <output name="file_missing_errors"/>
+      <input name="cheerio" origin="insert_graph_content_to_xml_files"/>
+      <input name="fs" origin="insert_graph_content_to_xml_files"/>
+      <input name="xml_files" origin="insert_graph_content_to_xml_files"/>
+      <input name="mr_file_paths" origin="insert_graph_content_to_xml_files"/>
+      <input name="graphs" origin="insert_graph_content_to_xml_files"/>
+      <input name="null" origin="insert_graph_content_to_xml_files"/>
+      <output name="filled_xml_files" origin="insert_graph_content_to_xml_files"/>
+      <output name="file_missing_errors" origin="insert_graph_content_to_xml_files"/>
+      <output name="null" origin="insert_graph_content_to_xml_files"/>
     </node>
   </graph>
 </root>
