@@ -20,15 +20,15 @@
       <output name="test">
         <end_point fn_name="create_output" passive="true"/>
       </output>
-      <input name="fs" origin="load_meta_info"/>
-      <input name="cheerio" origin="load_meta_info"/>
+      <input name="fs" origin="."/>
+      <input name="cheerio" origin="."/>
     </node>
     <node fn_name="create_output">
-      <input name="fs" origin="create_output"/>
-      <input name="cheerio" origin="create_output"/>
-      <input name="$" origin="create_output"/>
-      <input name="test" origin="create_output"/>
-      <output name="$" origin="create_output"/>
+      <input name="fs" origin="."/>
+      <input name="cheerio" origin="."/>
+      <input name="$" origin="."/>
+      <input name="test" origin="."/>
+      <output name="$" origin="."/>
     </node>
   </graph>
 </root>

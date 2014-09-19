@@ -16,19 +16,19 @@
       <output name="function_names">
         <end_point fn_name="find_end_points"/>
       </output>
-      <input name="srcodes" origin="find_functions"/>
+      <input name="srcodes" origin="."/>
     </node>
     <node fn_name="find_end_points">
       <output name="end_points">
         <end_point fn_name="path_traversal"/>
       </output>
-      <input name="srcodes" origin="find_end_points"/>
-      <input name="function_names" origin="find_end_points"/>
+      <input name="srcodes" origin="."/>
+      <input name="function_names" origin="."/>
     </node>
     <node fn_name="path_traversal">
-      <input name="srcodes" origin="path_traversal"/>
-      <input name="mr_file_paths" origin="path_traversal"/>
-      <input name="end_points" origin="path_traversal"/>
+      <input name="srcodes" origin="."/>
+      <input name="mr_file_paths" origin="."/>
+      <input name="end_points" origin="."/>
     </node>
   </graph>
 </root>

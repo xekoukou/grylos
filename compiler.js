@@ -666,7 +666,12 @@ function generate_xml_content_from_children(cpath, parent) {
                         parent("graph").append("<node fn_name='" + fn_name + "'></node>");
                     }
                     //Add the input in the graph.
+                    if(path.dirname(origin)=="."){
+
+                    parent("graph node[fn_name='" + fn_name + "']").append("<input name='" + name + "'></input>");
+}else{
                     parent("graph node[fn_name='" + fn_name + "']").append("<input name='" + name + "' origin='" + origin + "'></input>");
+}
 
                     //Only add it to inputs if it is an external input requirement.
                     if (parent("graph node output[name='" + name + "']").length == 0) {
@@ -706,7 +711,7 @@ function generate_xml_content_from_children(cpath, parent) {
                     }
                     //We add the output to the graph if it hasn't been put already with the insert_graph_content_to_xml_files.
                     if (parent("graph node[fn_name='" + fn_name + "'] output[name='" + name + "']").length == 0) {
-                        parent("graph node[fn_name='" + fn_name + "']").append("<output name='" + name + "' origin='" + origin + "'></output>");
+                        parent("graph node[fn_name='" + fn_name + "']").append("<output name='" + name + "' origin='" + path.dirname(origin) + "'></output>");
 
                         console.log(name);
                         console.log(origin + "\n");

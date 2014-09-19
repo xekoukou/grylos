@@ -55,31 +55,31 @@
   </outputs>
   <graph generated="true">
     <node fn_name="delete_generated_src">
-      <input name="source_path" origin="delete_generated_src"/>
-      <input name="fs" origin="delete_generated_src"/>
-      <input name="path" origin="delete_generated_src"/>
-      <input name="xml_files" origin="delete_generated_src"/>
-      <output name="deleted_src_files" origin="delete_generated_src"/>
-      <output name="null" origin="delete_generated_src"/>
+      <input name="source_path" origin="."/>
+      <input name="fs" origin="."/>
+      <input name="path" origin="."/>
+      <input name="xml_files" origin="."/>
+      <output name="deleted_src_files" origin="."/>
+      <output name="null" origin="."/>
     </node>
     <node fn_name="remove_generated_XML">
-      <input name="source_path" origin="remove_generated_XML"/>
-      <input name="fs" origin="remove_generated_XML"/>
-      <input name="cheerio" origin="remove_generated_XML"/>
-      <input name="path" origin="remove_generated_XML"/>
-      <input name="xml_files" origin="remove_generated_XML"/>
-      <output name="cleaned_xml_files" origin="remove_generated_XML"/>
-      <output name="null" origin="remove_generated_XML"/>
+      <input name="source_path" origin="."/>
+      <input name="fs" origin="."/>
+      <input name="cheerio" origin="."/>
+      <input name="path" origin="."/>
+      <input name="xml_files" origin="."/>
+      <output name="cleaned_xml_files" origin="."/>
+      <output name="null" origin="."/>
     </node>
     <node fn_name="validate_XML">
-      <input name="source_path" origin="validate_XML"/>
-      <input name="fs" origin="validate_XML"/>
-      <input name="sys" origin="validate_XML"/>
-      <input name="exec" origin="validate_XML"/>
-      <input name="path" origin="validate_XML"/>
-      <input name="xml_files" origin="validate_XML"/>
-      <output name="xml_errors" origin="validate_XML"/>
-      <output name="null" origin="validate_XML"/>
+      <input name="source_path" origin="."/>
+      <input name="fs" origin="."/>
+      <input name="sys" origin="."/>
+      <input name="exec" origin="."/>
+      <input name="path" origin="."/>
+      <input name="xml_files" origin="."/>
+      <output name="xml_errors" origin="."/>
+      <output name="null" origin="."/>
     </node>
   </graph>
 </root>
