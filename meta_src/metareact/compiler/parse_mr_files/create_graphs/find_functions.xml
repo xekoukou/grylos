@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <root>
-  <info>
-    <name> find_functions </name>
-    <description> Returns the function names of the nodes and their position inside the mr file. </description>
-  </info>
-  <inputs>
-    <input name="srcodes"/>
-  </inputs>
-  <outputs>
-    <output generated="true" name="function_names"/>
-  </outputs>
+    <info>
+        <name> find_functions </name>
+        <description> Returns the function names of the nodes and their position inside the mr file. </description>
+    </info>
+    <inputs>
+        <input name="srcodes"/>
+    </inputs>
+    <outputs>
+        <output generated="true" name="function_names"/>
+    </outputs>
 </root>

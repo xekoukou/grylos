@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <root>
-  <info>
-    <name> find_end_points </name>
-    <description> Returns the position of all the end_points with the function they belong to. </description>
-  </info>
-  <inputs>
-    <input name="srcodes"/>
-    <input generated="true" name="function_names"/>
-  </inputs>
-  <outputs>
-    <output generated="true" name="end_points"/>
-  </outputs>
+    <info>
+        <name> find_end_points </name>
+        <description> Returns the position of all the end_points with the function they belong to. </description>
+    </info>
+    <inputs>
+        <input name="srcodes"/>
+        <input generated="true" name="function_names"/>
+    </inputs>
+    <outputs>
+        <output generated="true" name="end_points"/>
+    </outputs>
 </root>

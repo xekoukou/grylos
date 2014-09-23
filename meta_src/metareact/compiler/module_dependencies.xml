@@ -1,23 +1,23 @@
 <?xml version="1.0"?>
 <root>
-  <info>
-    <name> module_dependencies </name>
-    <description> It provides the dependency modules. </description>
-  </info>
-  <io>
-    <inputs>
+    <info>
+        <name> module_dependencies </name>
+        <description> It provides the dependency modules. </description>
+    </info>
+    <io>
+        <inputs>
   </inputs>
-    <outputs>
-      <output name="fs">
+        <outputs>
+            <output name="fs">
     </output>
-      <output name="sys">
+            <output name="sys">
     </output>
-      <output name="exec">
+            <output name="exec">
     </output>
-      <output name="path">
+            <output name="path">
     </output>
-      <output name="cheerio">
+            <output name="cheerio">
     </output>
-    </outputs>
-  </io>
+        </outputs>
+    </io>
 </root>

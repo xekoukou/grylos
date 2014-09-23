@@ -1,34 +1,26 @@
 <?xml version="1.0"?>
 <root>
-  <info>
-    <name> create_graphs</name>
-    <description> It creates an object representation of graph present in the mr file. </description>
-  </info>
-  <inputs>
-    <input generated="true" name="mr_file_paths"/>
-    <input generated="true" name="srcodes"/>
-  </inputs>
-  <outputs>
-    <output generated="true" name="graphs"/>
-  </outputs>
-  <graph generated="true">
-    <node fn_name="find_functions">
-      <output name="function_names">
-        <end_point fn_name="find_end_points"/>
-      </output>
-      <input name="srcodes" origin="."/>
-    </node>
-    <node fn_name="find_end_points">
-      <output name="end_points">
-        <end_point fn_name="path_traversal"/>
-      </output>
-      <input name="srcodes" origin="."/>
-      <input name="function_names" origin="."/>
-    </node>
-    <node fn_name="path_traversal">
-      <input name="srcodes" origin="."/>
-      <input name="mr_file_paths" origin="."/>
-      <input name="end_points" origin="."/>
-    </node>
-  </graph>
+    <info>
+        <name> create_graphs</name>
+        <description> It creates an object representation of graph present in the mr file. </description>
+    </info>
+    <inputs>
+        <input generated="true" name="mr_file_paths"/>
+        <input generated="true" name="srcodes"/>
+    </inputs>
+    <outputs>
+        <output generated="true" name="graphs"/>
+    </outputs>
+    <graph generated="true">
+        <node fn_name="find_functions">
+            <output name="function_names">
+                <end_point fn_name="find_end_points"/>
+            </output>
+        </node>
+        <node fn_name="find_end_points">
+            <output name="end_points">
+                <end_point fn_name="path_traversal"/>
+            </output>
+        </node>
+    </graph>
 </root>

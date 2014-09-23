@@ -1,88 +1,63 @@
 <?xml version="1.0"?>
 <root>
-  <info>
-    <name> parse_mr_files </name>
-    <description> It parses all mr files and generates the graph tag and content of the xml files. </description>
-  </info>
-  <inputs>
-    <input name="source_path">
+    <info>
+        <name> parse_mr_files </name>
+        <description> It parses all mr files and generates the graph tag and content of the xml files. </description>
+    </info>
+    <inputs>
+        <input name="source_path">
     </input>
-    <input name="fs">
+        <input name="fs">
     </input>
-    <input name="path">
+        <input name="path">
     </input>
-    <input name="xml_files" side-effect="true">
-      <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
-    </input>
-    <input name="mr_files" side-effect="true">
-      <description>It is provided all the mr files of the source_path directory and its subdirectories.</description>
-    </input>
-    <input name="disk_mr_files" side-effect="true" origin="find_mr_file_paths" generated="true">
-      <description>It is provided all the mr files of the source_path directory and its subdirectories.</description>
-    </input>
-    <input name="cheerio" origin="insert_graph_content_to_xml_files" generated="true"/>
-    <input name="cheerio" origin="insert_missing_io_tags" generated="true"/>
-  </inputs>
-  <outputs>
-    <output name="xml_files" internal_name="filled_xml_files" side-effect="true">
-      <description>It returns all xml files with the graph tag when appropriate.</description>
-    </output>
-    <output name="file_missing_errors" side-effect="true">
-      <description>It prints an error when an xml file is not there and exits.</description>
-    </output>
-    <output name="null"/>
-  </outputs>
-  <graph generated="true">
-    <node fn_name="find_mr_file_paths">
-      <output name="mr_files">
-        <end_point fn_name="split_srcode_into_lines"/>
-      </output>
-      <output name="mr_file_paths">
-        <end_point fn_name="create_graphs"/>
-        <end_point fn_name="insert_missing_io_tags"/>
-        <end_point fn_name="insert_graph_content_to_xml_files"/>
-      </output>
-      <input name="source_path" origin="."/>
-      <input name="fs" origin="."/>
-      <input name="path" origin="."/>
-      <input name="disk_mr_files" origin="."/>
-    </node>
-    <node fn_name="split_srcode_into_lines">
-      <output name="srcodes">
-        <end_point fn_name="create_graphs"/>
-      </output>
-      <input name="mr_files" origin="."/>
-    </node>
-    <node fn_name="create_graphs">
-      <output name="graphs">
-        <end_point fn_name="insert_graph_content_to_xml_files"/>
-        <end_point fn_name="insert_missing_io_tags"/>
-      </output>
-      <input name="mr_file_paths" origin="."/>
-      <input name="srcodes" origin="."/>
-    </node>
-    <node fn_name="insert_missing_io_tags">
-      <output name="null">
-        <end_point fn_name="insert_graph_content_to_xml_files"/>
-      </output>
-      <input name="cheerio" origin="."/>
-      <input name="fs" origin="."/>
-      <input name="xml_files" origin="."/>
-      <input name="mr_file_paths" origin="."/>
-      <input name="graphs" origin="."/>
-      <output name="filled_xml_files" origin="."/>
-      <output name="file_missing_errors" origin="."/>
-    </node>
-    <node fn_name="insert_graph_content_to_xml_files">
-      <input name="cheerio" origin="."/>
-      <input name="fs" origin="."/>
-      <input name="xml_files" origin="."/>
-      <input name="mr_file_paths" origin="."/>
-      <input name="graphs" origin="."/>
-      <input name="null" origin="."/>
-      <output name="filled_xml_files" origin="."/>
-      <output name="file_missing_errors" origin="."/>
-      <output name="null" origin="."/>
-    </node>
-  </graph>
+        <input name="xml_files" side-effect="true">
+            <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
+        </input>
+        <input name="mr_files" side-effect="true">
+            <description>It is provided all the mr files of the source_path directory and its subdirectories.</description>
+        </input>
+        <input name="disk_mr_files" side-effect="true" origin="find_mr_file_paths" generated="true">
+            <description>It is provided all the mr files of the source_path directory and its subdirectories.</description>
+        </input>
+        <input name="cheerio" origin="insert_graph_content_to_xml_files" generated="true"/>
+        <input name="cheerio" origin="insert_missing_io_tags" generated="true"/>
+    </inputs>
+    <outputs>
+        <output name="xml_files" internal_name="filled_xml_files" side-effect="true">
+            <description>It returns all xml files with the graph tag when appropriate.</description>
+        </output>
+        <output name="file_missing_errors" side-effect="true">
+            <description>It prints an error when an xml file is not there and exits.</description>
+        </output>
+        <output name="null"/>
+    </outputs>
+    <graph generated="true">
+        <node fn_name="find_mr_file_paths">
+            <output name="mr_files">
+                <end_point fn_name="split_srcode_into_lines"/>
+            </output>
+            <output name="mr_file_paths">
+                <end_point fn_name="create_graphs"/>
+                <end_point fn_name="insert_missing_io_tags"/>
+                <end_point fn_name="insert_graph_content_to_xml_files"/>
+            </output>
+        </node>
+        <node fn_name="split_srcode_into_lines">
+            <output name="srcodes">
+                <end_point fn_name="create_graphs"/>
+            </output>
+        </node>
+        <node fn_name="create_graphs">
+            <output name="graphs">
+                <end_point fn_name="insert_graph_content_to_xml_files"/>
+                <end_point fn_name="insert_missing_io_tags"/>
+            </output>
+        </node>
+        <node fn_name="insert_missing_io_tags">
+            <output name="null">
+                <end_point fn_name="insert_graph_content_to_xml_files"/>
+            </output>
+        </node>
+    </graph>
 </root>
