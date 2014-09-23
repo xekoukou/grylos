@@ -356,7 +356,7 @@ exec = require('execSync');
                         line = code[y];
                         if (x < line.length) {
                             xar = line.charAt(x);
-                            if ((xar != " ")) {
+                            if ((xar != " ") && (xar != "\\") && (xar != "/")) {
                                 right = 1;
                             }
                         }
@@ -492,6 +492,31 @@ exec = require('execSync');
     }
     //endof create_graphs
     ///////////////////////////////////////////////////////////////////
+    //check_same_output_name    
+    ////////////////////////
+
+    graphs.forEach(function(graph, index) {
+        var vnames = {};
+        Object.keys(graph).forEach(function(fn_name) {
+            var lvnames = {};
+            graph[fn_name].forEach(function(path) {
+                lvnames[path.vname] = null;
+            });
+            Object.keys(lvnames).forEach(function(item) {
+                if ((vnames[item] == true)&&(item!="null")) {
+                    console.log("Error: " + mr_file_paths[index]);
+                    console.log("function: " + fn_name + " output name: " + item);
+                    console.log("Multiple outputs with the same name.");
+                    //error
+                } else {
+                    vnames[item] = true;
+                }
+
+            });
+        });
+    });
+
+    ///////////////////////////////////////////////////////////////////
     //insert_missing_io_tags
 
     ///////////////////////////
@@ -607,6 +632,7 @@ exec = require('execSync');
 //generate_xml_content_from_children
 
 /////////////////////////////
+/*
 function generate_xml_content_from_children(cpath, parent) {
     var files = fs.readdirSync(cpath);
     files.forEach(function(file_name, index, files) {
@@ -729,7 +755,7 @@ if(generated=="true"){
                                 var outerHTML = $("<div/>").append($(this).clone()).html();
                                     parent("inputs").append(outerHTML);
 */
-
+/*
                         $("outputs output").each(function(each) {
 
                                 var name = $(this).attr("name");
@@ -832,50 +858,50 @@ if(generated=="true"){
     var po = parsejs("./meta_src/metareact/compiler");
 
 */
-        //////////////////////////////
-        //format_XML
+//////////////////////////////
+//format_XML
 
-        ////////////
-        function format_XML(source_path) {
+////////////
+function format_XML(source_path) {
 
-            //Check if it is a file or a directory.
-            var files = fs.readdirSync(source_path);
-            files.forEach(function(file, index, files) {
-                var stat = fs.statSync(source_path + "/" + file);
+    //Check if it is a file or a directory.
+    var files = fs.readdirSync(source_path);
+    files.forEach(function(file, index, files) {
+        var stat = fs.statSync(source_path + "/" + file);
 
-                if (stat.isFile()) {
-                    if (path.extname(file) == ".xml") {
-                        //Format the xml file.
-                        exec.run("export XMLLINT_INDENT='    '\nxmllint --format " + source_path + "/" + file + " --output " + source_path + "/" + file);
+        if (stat.isFile()) {
+            if (path.extname(file) == ".xml") {
+                //Format the xml file.
+                exec.run("export XMLLINT_INDENT='    '\nxmllint --format " + source_path + "/" + file + " --output " + source_path + "/" + file);
 
-                    }
+            }
 
-                } else {
-                    if (stat.isDirectory()) {
+        } else {
+            if (stat.isDirectory()) {
 
-                        //Recursively operate on the subdirectories.
-                        format_XML(source_path + "/" + file);
-                    }
-
-                }
-
-            });
+                //Recursively operate on the subdirectories.
+                format_XML(source_path + "/" + file);
+            }
 
         }
-        format_XML(source_path);
+
+    });
+
+}
+format_XML(source_path);
 
 
 
-        ///////////////////////////////////
+///////////////////////////////////
 
-        /*
+/*
 var orderjs = require("./order.js");
 orderjs(po.graph,po.async);
 
 */
 
-        //TEST
-        /*
+//TEST
+/*
 
 var Js_lang = require("./js_lang.js");
 var js_lang = new Js_lang();

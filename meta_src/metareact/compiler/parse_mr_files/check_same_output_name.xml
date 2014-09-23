@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<root>
+    <info>
+        <name> check_same_output_name</name>
+        <description> It checks whether there are 2 functions that have an output with the same name and returns an error.</description>
+    </info>
+    <inputs>
+        <input name="graphs"/>
+        <input name="mr_file_paths"/>
+    </inputs>
+    <outputs>
+        <output name="error" side-effect="true">
+            <description>It prints an error message and exits.</description>
+        </output>
+        <output generated="true" name="null"/>
+    </outputs>
+</root>

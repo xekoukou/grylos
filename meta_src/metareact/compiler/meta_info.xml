@@ -3,14 +3,10 @@
     <name>meta_info </name>
     <description> Parses the meta-info of a project </description>
     <inputs>
-        <input name="fs" origin="create_output" generated="true">
-    </input>
-        <input name="cheerio" origin="create_output" generated="true">
-    </input>
-        <input name="fs" origin="load_meta_info" generated="true">
-    </input>
-        <input name="cheerio" origin="load_meta_info" generated="true">
-    </input>
+        
+        
+        
+        
     </inputs>
     <graph generated="true">
         <node fn_name="load_meta_info">

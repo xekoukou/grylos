@@ -8,50 +8,26 @@
         <output name="null"/>
     </outputs>
     <inputs>
-        <input name="source_path" origin="delete_generated_src" generated="true">
-    </input>
-        <input name="fs" origin="delete_generated_src" generated="true">
-    </input>
-        <input name="path" origin="delete_generated_src" generated="true">
-    </input>
-        <input name="xml_files" side-effect="true" origin="delete_generated_src" generated="true">
-            <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
-        </input>
-        <input name="source_path" origin="remove_generated_XML" generated="true">
-    </input>
-        <input name="fs" origin="remove_generated_XML" generated="true">
-    </input>
-        <input name="cheerio" origin="remove_generated_XML" generated="true">
-    </input>
-        <input name="path" origin="remove_generated_XML" generated="true">
-    </input>
-        <input name="xml_files" side-effect="true" origin="remove_generated_XML" generated="true">
-            <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
-        </input>
-        <input name="source_path" origin="validate_XML" generated="true">
-    </input>
-        <input name="fs" origin="validate_XML" generated="true">
-    </input>
-        <input name="sys" origin="validate_XML" generated="true">
-    </input>
-        <input name="exec" origin="validate_XML" generated="true">
-    </input>
-        <input name="path" origin="validate_XML" generated="true">
-    </input>
-        <input name="xml_files" side-effect="true" origin="validate_XML" generated="true">
-            <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
-        </input>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
     </inputs>
     <outputs>
-        <output name="deleted_src_files" side-effect="true" origin="delete_generated_src" generated="true">
-            <description>It deletes all the generated src files.</description>
-        </output>
-        <output name="cleaned_xml_files" side-effect="true" origin="remove_generated_XML" generated="true">
-            <description>It saves the cleaned xml_files.</description>
-        </output>
-        <output name="xml_errors" side-effect="true" origin="validate_XML" generated="true">
-            <description>It prints possible xml errors.</description>
-        </output>
+        
+        
+        
     </outputs>
     <graph generated="true"> </graph>
 </root>

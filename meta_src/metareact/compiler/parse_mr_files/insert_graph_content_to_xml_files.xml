@@ -1,26 +1,26 @@
 <?xml version="1.0"?>
 <root>
-  <info>
-    <name> insert_graph_content_to_xml_files</name>
-    <description> It creates the graph tag and its contents. </description>
-  </info>
-  <inputs>
-    <input name="cheerio"/>
-    <input name="fs"/>
-    <input name="xml_files" side-effect="true">
-      <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
-    </input>
-    <input generated="true" name="mr_file_paths"/>
-    <input generated="true" name="graphs"/>
-    <input generated="true" name="null"/>
-  </inputs>
-  <outputs>
-    <output name="filled_xml_files" side-effect="true">
-      <description>It saves the xml files with the additional generated content.</description>
-    </output>
-    <output name="file_missing_errors" side-effect="true">
-      <description>It prints an error when an xml file is not there and exits.</description>
-    </output>
-    <output name="null"/>
-  </outputs>
+    <info>
+        <name> insert_graph_content_to_xml_files</name>
+        <description> It creates the graph tag and its contents. </description>
+    </info>
+    <inputs>
+        <input name="cheerio"/>
+        <input name="fs"/>
+        <input name="xml_files" side-effect="true">
+            <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
+        </input>
+        <input generated="true" name="mr_file_paths"/>
+        <input generated="true" name="graphs"/>
+        <input generated="true" name="null"/>
+    </inputs>
+    <outputs>
+        <output name="filled_xml_files" side-effect="true">
+            <description>It saves the xml files with the additional generated content.</description>
+        </output>
+        <output name="file_missing_errors" side-effect="true">
+            <description>It prints an error when an xml file is not there and exits.</description>
+        </output>
+        <output name="null"/>
+    </outputs>
 </root>

@@ -12,6 +12,7 @@
         </input>
         <input generated="true" name="mr_file_paths"/>
         <input generated="true" name="graphs"/>
+        <input generated="true" name="null"/>
     </inputs>
     <outputs>
         <output name="filled_xml_files" side-effect="true">

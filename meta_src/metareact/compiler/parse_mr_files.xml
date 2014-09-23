@@ -17,11 +17,6 @@
         <input name="mr_files" side-effect="true">
             <description>It is provided all the mr files of the source_path directory and its subdirectories.</description>
         </input>
-        <input name="disk_mr_files" side-effect="true" origin="find_mr_file_paths" generated="true">
-            <description>It is provided all the mr files of the source_path directory and its subdirectories.</description>
-        </input>
-        <input name="cheerio" origin="insert_graph_content_to_xml_files" generated="true"/>
-        <input name="cheerio" origin="insert_missing_io_tags" generated="true"/>
     </inputs>
     <outputs>
         <output name="xml_files" internal_name="filled_xml_files" side-effect="true">
@@ -41,6 +36,7 @@
                 <end_point fn_name="create_graphs"/>
                 <end_point fn_name="insert_missing_io_tags"/>
                 <end_point fn_name="insert_graph_content_to_xml_files"/>
+                <end_point fn_name="check_same_output_name"/>
             </output>
         </node>
         <node fn_name="split_srcode_into_lines">
@@ -50,6 +46,13 @@
         </node>
         <node fn_name="create_graphs">
             <output name="graphs">
+                <end_point fn_name="insert_graph_content_to_xml_files"/>
+                <end_point fn_name="check_same_output_name"/>
+                <end_point fn_name="insert_missing_io_tags"/>
+            </output>
+        </node>
+        <node fn_name="check_same_output_name">
+            <output name="null">
                 <end_point fn_name="insert_graph_content_to_xml_files"/>
                 <end_point fn_name="insert_missing_io_tags"/>
             </output>

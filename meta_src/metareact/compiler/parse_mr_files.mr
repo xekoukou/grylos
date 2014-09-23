@@ -8,3 +8,7 @@ find_mr_file_paths     split_srcode_into_lines         create_graphs            
        |---------(mr_file_paths)------------------------------------------\\------------|                |
                                                                          \\-------------|                |
                                                                          \-------------------------------|
+
+
+find_mr_file_paths                check_same_output_name
+     |-----------(mr_file_paths)---------|
