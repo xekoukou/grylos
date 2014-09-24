@@ -201,6 +201,7 @@ exec = require('execSync');
     }
     mr_file_paths = [];
     mr_files = [];
+    mr_file_paths.push(source_path);
     find_mr_paths(source_path);
     ////////////////////////////////////////////////////////////////
     //split_srcode_into_lines
@@ -368,6 +369,7 @@ exec = require('execSync');
                             if (xar != "|") {
                                 console.log("\nError: mr_file:" + mr_file_paths[index] + ".mr(line: " + path.y + "," + "position: " + path.x + ")");
                                 console.log("A path with no end.");
+                                format_XML(source_path);
                                 process.exit(0);
                             } else {
                                 return;
@@ -377,6 +379,7 @@ exec = require('execSync');
                         if ((up && down) || (up && right) || (down && right)) {
                             console.log("\nError: mr_file:" + mr_file_paths[index] + ".mr(line: " + path.y + "," + "position: " + path.x + ")");
                             console.log("Multiple paths detected.");
+                            format_XML(source_path);
                             process.exit(0);
                         }
                         //Moving forward.
@@ -405,6 +408,7 @@ exec = require('execSync');
 
                                     console.log("\nError: mr_file:" + mr_file_paths[index] + ".mr(line: " + path.y + "," + "position: " + path.x + ")");
                                     console.log("There is a missing ')'.");
+                                    format_XML(source_path);
                                     process.exit(0);
                                 } else {
                                     path.vname = array[0];
@@ -437,6 +441,7 @@ exec = require('execSync');
                                                     } else {
                                                         console.log("\nError: mr_file:" + mr_file_paths[index] + ".mr(line: " + path.y + "," + "position: " + path.x + ")");
                                                         console.log("Wrong option type.");
+                                                        format_XML(source_path);
                                                         process.exit(0);
 
                                                     }
@@ -470,6 +475,7 @@ exec = require('execSync');
             paths.forEach(function(each) {
                 if (!each.vname) {
                     console.log("Error: (" + each.origin_fn_name + "," + each.end_fn_name + ") : There is a path with no value name ");
+                    format_XML(source_path);
                     process.exit(0);
                 }
 
@@ -531,6 +537,7 @@ exec = require('execSync');
                 });
             } catch (e) {
                 console.log("\nError: xml file missing:" + oxml_path);
+                format_XML(source_path);
                 process.exit(0);
             }
 
@@ -554,6 +561,7 @@ exec = require('execSync');
                     });
                 } catch (e) {
                     console.log("\nError: xml file missing:" + ixml_path);
+                    format_XML(source_path);
                     process.exit(0);
                 }
 
@@ -590,6 +598,7 @@ exec = require('execSync');
             });
         } catch (e) {
             console.log("\nError: xml file missing:" + xml_path);
+            format_XML(source_path);
             process.exit(0);
         }
 
@@ -727,6 +736,7 @@ function generate_xml_content_from_children(cpath, parent) {
                                 console.log("Folder: " + cpath);
                                 console.log("origin name: " + origin_name);
                                 console.log("origin location: " + origin_location);
+                                format_XML(source_path);
                                 process.exit(0);
                             }
                             if (isTrue == 'start') {
@@ -737,6 +747,7 @@ function generate_xml_content_from_children(cpath, parent) {
                                     console.log("Error: IOput contains only part of the origins of an input of a child.");
                                     console.log("Folder: " + cpath);
                                     console.log("Value name: " + name);
+                                    format_XML(source_path);
                                     process.exit(0);
 
                                 }
@@ -749,8 +760,23 @@ function generate_xml_content_from_children(cpath, parent) {
                             if (parent("inputs input[name='" + name + "']").length != 0) {
                                 console.log("Error: Multiple inputs with the same name.");
                                 console.log("Folder: " + cpath);
-                                console.log("name: " + name);
+                                console.log("Name: " + name);
+                                origin_locations.forEach(function(item, index) {
+                                    console.log("Origin name: " + origin_names[index]);
+                                    console.log("Origin location: " + item);
+
+                                });
+                                parent("inputs input[name='" + name + "'] origin").each(function() {
+                                    console.log("Origin name: " + $(this).attr("origin_name"));
+                                    console.log("Origin location: " + $(this).attr("origin_location"));
+                                });
+
+                                format_XML(source_path);
                                 process.exit(0);
+                            }
+                            //Insert an inputs tag if it is missing.
+                            if (parent("inputs").length == 0) {
+                                parent("root").append("<inputs/>");
                             }
                             parent("inputs").append(outerHTML);
                         }
@@ -814,6 +840,7 @@ function generate_xml_content_from_children(cpath, parent) {
                                 console.log("Folder: " + cpath);
                                 console.log("origin name: " + origin_name);
                                 console.log("origin location: " + origin_location);
+                                format_XML(source_path);
                                 process.exit(0);
                             }
                             if (isTrue == 'start') {
@@ -824,6 +851,7 @@ function generate_xml_content_from_children(cpath, parent) {
                                     console.log("Error: IOput contains only part of the origins of an output of a child.");
                                     console.log("Folder: " + cpath);
                                     console.log("Value name: " + name);
+                                    format_XML(source_path);
                                     process.exit(0);
 
                                 }
@@ -834,10 +862,35 @@ function generate_xml_content_from_children(cpath, parent) {
                         if (isTrue == 0) {
                             //We check if there is already an output with the same name.
                             if (parent("outputs output[name='" + name + "']").length != 0) {
-                                console.log("Error: Multiple outputs with the same name.");
-                                console.log("Folder: " + cpath);
-                                console.log("name: " + name);
-                                process.exit(0);
+
+                                //if it is null, we just add the origins since there can be only one null varriable.
+                                if (name == "null") {
+
+                                    origin_locations.forEach(function(item, index) {
+                                        parent("outputs output[name='" + name + "']").append("<origin origin_name='" + origin_names[index] + "' origin_location='" + item + "' generated='true'/>");
+                                    });
+                                } else {
+                                    console.log("Error: Multiple outputs with the same name.");
+                                    console.log("Folder: " + cpath);
+                                    console.log("Name: " + name);
+                                    origin_locations.forEach(function(item, index) {
+                                        console.log("Origin name: " + origin_names[index]);
+                                        console.log("Origin location: " + item);
+
+                                    });
+                                    parent("outputs output[name='" + name + "'] origin").each(function() {
+                                        console.log("Origin name: " + $(this).attr("origin_name"));
+                                        console.log("Origin location: " + $(this).attr("origin_location"));
+                                    });
+
+
+                                    format_XML(source_path);
+                                    process.exit(0);
+                                }
+                            }
+                            //Insert an outputs tag if it is missing.
+                            if (parent("outputs").length == 0) {
+                                parent("root").append("<outputs/>");
                             }
                             parent("outputs").append(outerHTML);
                         }
@@ -900,29 +953,34 @@ fs.writeFileSync(source_path + ".xml", $.html());
 ////////////
 function format_XML(source_path) {
 
-    //Check if it is a file or a directory.
-    var files = fs.readdirSync(source_path);
-    files.forEach(function(file, index, files) {
-        var stat = fs.statSync(source_path + "/" + file);
 
-        if (stat.isFile()) {
-            if (path.extname(file) == ".xml") {
-                //Format the xml file.
-                exec.run("export XMLLINT_INDENT='    '\nxmllint --format " + source_path + "/" + file + " --output " + source_path + "/" + file);
+    function format_XML_rec(source_path) {
+        //Check if it is a file or a directory.
+        var files = fs.readdirSync(source_path);
+        files.forEach(function(file, index, files) {
+            var stat = fs.statSync(source_path + "/" + file);
+
+            if (stat.isFile()) {
+                if (path.extname(file) == ".xml") {
+                    //Format the xml file.
+                    exec.run("export XMLLINT_INDENT='    '\nxmllint --format " + source_path + "/" + file + " --output " + source_path + "/" + file);
+
+                }
+
+            } else {
+                if (stat.isDirectory()) {
+
+                    //Recursively operate on the subdirectories.
+                    format_XML_rec(source_path + "/" + file);
+                }
 
             }
 
-        } else {
-            if (stat.isDirectory()) {
+        });
+    }
+    exec.run("export XMLLINT_INDENT='    '\nxmllint --format " + source_path + ".xml" + " --output " + source_path + ".xml");
 
-                //Recursively operate on the subdirectories.
-                format_XML(source_path + "/" + file);
-            }
-
-        }
-
-    });
-
+    format_XML_rec(source_path);
 }
 format_XML(source_path);
 

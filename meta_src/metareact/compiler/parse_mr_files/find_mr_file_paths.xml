@@ -13,7 +13,7 @@
         </input>
     </inputs>
     <outputs>
-        <output generated="true" name="mr_files"/>
-        <output generated="true" name="mr_file_paths"/>
+        
+        
     </outputs>
 </root>

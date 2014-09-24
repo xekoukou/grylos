@@ -8,14 +8,14 @@
         
         
     </inputs>
-    <graph generated="true">
-        <node fn_name="load_meta_info">
-            <output name="$">
-                <end_point fn_name="create_output" historical="true" asynchronous="true"/>
-            </output>
-            <output name="test">
-                <end_point fn_name="create_output" passive="true"/>
-            </output>
-        </node>
-    </graph>
+    <inputs>
+        <input name="fs">
+            <origin origin_name="fs" origin_location="create_output"/>
+            <origin origin_name="fs" origin_location="load_meta_info"/>
+        </input>
+        <input name="cheerio">
+            <origin origin_name="cheerio" origin_location="create_output"/>
+            <origin origin_name="cheerio" origin_location="load_meta_info"/>
+        </input>
+    </inputs>
 </root>

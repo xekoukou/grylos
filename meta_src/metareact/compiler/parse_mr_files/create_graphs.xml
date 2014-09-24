@@ -5,22 +5,16 @@
         <description> It creates an object representation of graph present in the mr file. </description>
     </info>
     <inputs>
-        <input generated="true" name="mr_file_paths"/>
-        <input generated="true" name="srcodes"/>
+        <input name="srcodes">
+            <origin origin_name="srcodes" origin_location="find_end_points"/>
+            <origin origin_name="srcodes" origin_location="find_functions"/>
+            <origin origin_name="srcodes" origin_location="path_traversal"/>
+        </input>
+        <input name="mr_file_paths">
+            <origin origin_name="mr_file_paths" origin_location="path_traversal"/>
+        </input>
     </inputs>
     <outputs>
-        <output generated="true" name="graphs"/>
+        
     </outputs>
-    <graph generated="true">
-        <node fn_name="find_functions">
-            <output name="function_names">
-                <end_point fn_name="find_end_points"/>
-            </output>
-        </node>
-        <node fn_name="find_end_points">
-            <output name="end_points">
-                <end_point fn_name="path_traversal"/>
-            </output>
-        </node>
-    </graph>
 </root>
