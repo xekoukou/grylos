@@ -503,7 +503,7 @@ exec = require('execSync');
                 lvnames[path.vname] = null;
             });
             Object.keys(lvnames).forEach(function(item) {
-                if ((vnames[item] == true)&&(item!="null")) {
+                if ((vnames[item] == true) && (item != "null")) {
                     console.log("Error: " + mr_file_paths[index]);
                     console.log("function: " + fn_name + " output name: " + item);
                     console.log("Multiple outputs with the same name.");
@@ -625,14 +625,14 @@ exec = require('execSync');
         fs.writeFileSync(xml_path, $.html());
     });
 
-    //////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
 }
 //endof parse_mr_files
 //////////////////////////////////////////////////////////////////////
 //generate_xml_content_from_children
 
 /////////////////////////////
-/*
+
 function generate_xml_content_from_children(cpath, parent) {
     var files = fs.readdirSync(cpath);
     files.forEach(function(file_name, index, files) {
@@ -656,194 +656,230 @@ function generate_xml_content_from_children(cpath, parent) {
 
     files = fs.readdirSync(cpath);
     files.forEach(function(file_name, index, files) {
-            var stat = fs.statSync(cpath + "/" + file_name);
+        var stat = fs.statSync(cpath + "/" + file_name);
 
-            if (stat.isFile()) {
+        if (stat.isFile()) {
 
-                if (path.extname(file_name) == ".xml") {
-
-
-                    var xml_file = fs.readFileSync(cpath + "/" + file_name, {
-                        encoding: "utf-8"
-                    });
-
-                    var $ = cheerio.load(xml_file, {
-                        xmlMode: true
-                    });
+            if (path.extname(file_name) == ".xml") {
 
 
-                    var fn_name = file_name.substring(0, file_name.length - 4);
-                    $("inputs input").each(function(each) {
-                            var name = $(this).attr("name");
-                            var generated = $(this).attr("generated");
+                var xml_file = fs.readFileSync(cpath + "/" + file_name, {
+                    encoding: "utf-8"
+                });
 
-if(generated=="true"){
-
-                            //To address namespace colisions,we set the origin (location and internal name) of the input.
-                            var origin_locations = [];
-                            var origin_names = [];
-                            var origin = $("origin", this).each(function() {
-                                    var origin_location = $(this).attr("location");
-                                    origin_location = fn_name + "/" + origin_location;
-                                    $(this).attr("location", origin_location);
-                                    var origin_name = $(this).attr("origin_name");
-                                    origin_names.push(origin_name);
-                                    origin_locations.push(origin_location);
-});
-                                
-
-                                //Only add it to inputs if it is an external input requirement.
-                                if (parent("graph node output[name='" + name + "']").length == 0) {
-                                    //We reject input if the user has already declared it. This way the user can catch values
-                                    //that represent the same thing.
-                                   
-                                   var only_one_input=true; 
+                var $ = cheerio.load(xml_file, {
+                    xmlMode: true
+                });
 
 
+                var fn_name = file_name.substring(0, file_name.length - 4);
+                $("inputs input").each(function(each) {
+                    var name = $(this).attr("name");
+                    var generated = $(this).attr("generated");
 
-                                    var isTrue = 'start';
-                                    origin_locations.forEach(function(origin_location, index) {
-                                        var origin_name = origin_names[index];
+                    var outerHTML;
 
-                                        var exists = parent("inputs input[name='" + name + "'] origin[origin_name='" + origin_name + "'][origin_location='" + origin_location + "']").length;
+                    //To address namespace colisions,we set the origin (location and internal name) of the input.
+                    var origin_locations = [];
+                    var origin_names = [];
+                    if (generated == "true") {
 
-                                        if (exists > 1) {
-                                            console.log("Error: Multiple origins with the same attributes.");
-                                            console.log("Folder: " + cpath);
-                                            console.log("Value name: " + name);
-                                            process.exit(0);
-                                        }
-                                        if (isTrue == 'start') {
-                                            isTrue = exists;
-                                        } else {
-                                            if (isTrue != exists) {
+                        var origin = $("origin", this).each(function() {
+                            var origin_location = $(this).attr("location");
+                            origin_location = fn_name + "/" + origin_location;
+                            $(this).attr("location", origin_location);
+                            var origin_name = $(this).attr("origin_name");
+                            origin_names.push(origin_name);
+                            origin_locations.push(origin_location);
+                        });
 
-                                                console.log("Error: IOput contains only part of the origins of an input of a child.");
-                                                console.log("Folder: " + cpath);
-                                                console.log("Value name: " + name);
-                                                process.exit(0);
+                    } else {
+                        //if it wasn't generated we add as origin itself and remove all other origins.
 
-                                            }
-
-                                        }
-                                    });
-
-
-}
-
-                                    if(exists){
-                                    parent("inputs").append(outerHTML);
-                                      }
+                        $(this).attr("generated", "true");
+                        $("origin", this).remove();
+                        var origin_location = fn_name;
+                        var origin_name = name;
+                        $(this).append("<origin origin_name='" + origin_name + "' origin_location='" + origin_location + "' generated='true'/>");
+                        origin_names.push(origin_name);
+                        origin_locations.push(origin_location);
 
 
 
+                    }
+                    outerHTML = $("<div/>").append($(this).clone()).html();
 
+                    //Only add it to inputs if it is an external input requirement.
+                    if (parent("graph node output[name='" + name + "']").length == 0) {
+
+                        //We reject input if the user has already declared it. This way the user can catch values
+                        //that represent the same thing.
+
+                        var isTrue = 'start';
+                        origin_locations.forEach(function(origin_location, index) {
+                            var origin_name = origin_names[index];
+
+                            var exists = parent("inputs input origin[origin_name='" + origin_name + "'][origin_location='" + origin_location + "']").length;
+
+                            //Here we also check the existence of multiple inputs that have the same origin.
+                            if (exists > 1) {
+                                console.log("Error: Multiple origins with the same attributes.");
+                                console.log("Folder: " + cpath);
+                                console.log("origin name: " + origin_name);
+                                console.log("origin location: " + origin_location);
+                                process.exit(0);
+                            }
+                            if (isTrue == 'start') {
+                                isTrue = exists;
+                            } else {
+                                if (isTrue != exists) {
+
+                                    console.log("Error: IOput contains only part of the origins of an input of a child.");
+                                    console.log("Folder: " + cpath);
+                                    console.log("Value name: " + name);
+                                    process.exit(0);
 
                                 }
 
-                            });
-/*
-                                if (origin.length == 0) {
-                                    var origin_location = fn_name;
-                                    $(this).append("<origin origin_name='" + name + "' origin_location='" + origin_location + "' generated='true'/>");
-                                    origin_names.push(name);
-                                    origin_locations.push(origin_location);
-                                }
+                            }
+                        });
 
-
-
-                                var outerHTML = $("<div/>").append($(this).clone()).html();
-                                    parent("inputs").append(outerHTML);
-*/
-/*
-                        $("outputs output").each(function(each) {
-
-                                var name = $(this).attr("name");
-                                //To address namespace colisions,we set the origin (location and internal name) of the input.
-                                var origin_locations = [];
-                                var origin_names = [];
-                                var origin = $("origin", this).each(function() {
-                                        var origin_location = $(this).attr("location");
-                                        origin_location = fn_name + "/" + origin_location;
-                                        $(this).attr("location", origin_location);
-                                        //Set generated flag to true.
-                                        $(this).attr("generated", "true");
-                                        var origin_name = $(this).attr("name");
-                                        origin_names.push(origin_name);
-                                        origin_locations.push(origin_location);
-                                    }
-                                    if (origin.length == 0) {
-                                        var origin_location = fn_name;
-                                        $(this).append("<origin name='" + name + "' origin='" + origin_location + "' generated='true'/>");
-                                        origin_names.push(name);
-                                        origin_locations.push(origin_location);
-                                    }
-                                    var outerHTML = $("<div/>").append($(this).clone()).html();
-
-
-                                    if (parent("graph node[fn_name='" + fn_name + "'] output[name='" + name + "']").length == 0) {
-
-                                        //We throw an error if we find an  output with the same (name , parent origin).
-                                        if (parent("outputs output[name='" + name + "']").filter(function() {
-                                            var origin = $("origin", this).text();
-                                            //This happens when the user has already declared that name for all subdirectories, thus not requiring origin.
-                                            if (typeof origin == "undefined") {
-                                                return false;
-                                            }
-                                            var cond = origin.match(new RegExp("/"));
-                                            return (cond == null)
-                                        }).length != 0) {
-                                            console.log("Error: Multiple outputs of the same name");
-                                            console.log("Folder: " + cpath);
-                                            console.log("Value name: " + name);
-                                            process.exit(0);
-                                        }
-                                        //We reject input if the user has already declared it. This way the user can catch values
-                                        //that represent the same thing.
-                                        //To do that it either omits the origin attributes to assume that all the same names of the subdirectories have the same name
-                                        //or it introduces an internal_value and origin to differentiate between them.
-
-
-                                        if ((parent("outputs output[internal_name~='" + name + "'][origin~='" + origin + "']").length == 0) && (parent("outputs output[internal_name~='" + name + "']:not([origin])").length == 0) && (parent("outputs output[name~='" + name + "']:not([origin])").length == 0)) {
-                                            parent("outputs").append(outerHTML);
-                                        }
-
-
-                                    }
-
-                                });
-
-
-
-
-
-
+                        if (isTrue == 0) {
+                            //We check if there is already an input with the same name.
+                            if (parent("inputs input[name='" + name + "']").length != 0) {
+                                console.log("Error: Multiple inputs with the same name.");
+                                console.log("Folder: " + cpath);
+                                console.log("name: " + name);
+                                process.exit(0);
+                            }
+                            parent("inputs").append(outerHTML);
                         }
                     }
+
                 });
 
 
 
+                $("outputs output").each(function(each) {
+                    var name = $(this).attr("name");
+                    var generated = $(this).attr("generated");
+
+                    var outerHTML;
+
+                    //To address namespace colisions,we set the origin (location and internal name) of the output.
+                    var origin_locations = [];
+                    var origin_names = [];
+                    if (generated == "true") {
+
+                        var origin = $("origin", this).each(function() {
+                            var origin_location = $(this).attr("location");
+                            origin_location = fn_name + "/" + origin_location;
+                            $(this).attr("location", origin_location);
+                            var origin_name = $(this).attr("origin_name");
+                            origin_names.push(origin_name);
+                            origin_locations.push(origin_location);
+                        });
+
+                    } else {
+                        //if it wasn't generated we add as origin itself and remove all other origins.
+
+                        $(this).attr("generated", "true");
+                        $("origin", this).remove();
+                        var origin_location = fn_name;
+                        var origin_name = name;
+                        $(this).append("<origin origin_name='" + origin_name + "' origin_location='" + origin_location + "' generated='true'/>");
+                        origin_names.push(origin_name);
+                        origin_locations.push(origin_location);
+
+
+
+                    }
+                    outerHTML = $("<div/>").append($(this).clone()).html();
+
+                    //Only add it to outputs if it is an external output requirement.
+                    if (parent("graph node output[name='" + name + "']").length == 0) {
+
+                        //We reject output if the user has already declared it. This way the user can catch values
+                        //that represent the same thing.
+
+                        var isTrue = 'start';
+                        origin_locations.forEach(function(origin_location, index) {
+                            var origin_name = origin_names[index];
+
+                            var exists = parent("outputs output origin[origin_name='" + origin_name + "'][origin_location='" + origin_location + "']").length;
+
+                            //Here we also check the existence of multiple outputs that have the same origin.
+                            if (exists > 1) {
+                                console.log("Error: Multiple origins with the same attributes.");
+                                console.log("Folder: " + cpath);
+                                console.log("origin name: " + origin_name);
+                                console.log("origin location: " + origin_location);
+                                process.exit(0);
+                            }
+                            if (isTrue == 'start') {
+                                isTrue = exists;
+                            } else {
+                                if (isTrue != exists) {
+
+                                    console.log("Error: IOput contains only part of the origins of an output of a child.");
+                                    console.log("Folder: " + cpath);
+                                    console.log("Value name: " + name);
+                                    process.exit(0);
+
+                                }
+
+                            }
+                        });
+
+                        if (isTrue == 0) {
+                            //We check if there is already an output with the same name.
+                            if (parent("outputs output[name='" + name + "']").length != 0) {
+                                console.log("Error: Multiple outputs with the same name.");
+                                console.log("Folder: " + cpath);
+                                console.log("name: " + name);
+                                process.exit(0);
+                            }
+                            parent("outputs").append(outerHTML);
+                        }
+                    }
+
+                });
+
+
+
+
+
+
+
+
+
+            }
         }
-
-        var xml_file = fs.readFileSync(source_path + ".xml", {
-            encoding: "utf-8"
-        });
-
-        var $ = cheerio.load(xml_file, {
-            xmlMode: true
-        });
-
-        generate_xml_content_from_children(source_path, $); fs.writeFileSync(source_path + ".xml", $.html());
+    });
 
 
 
+}
+
+var xml_file = fs.readFileSync(source_path + ".xml", {
+    encoding: "utf-8"
+});
+
+var $ = cheerio.load(xml_file, {
+    xmlMode: true
+});
+
+generate_xml_content_from_children(source_path, $);
+fs.writeFileSync(source_path + ".xml", $.html());
 
 
 
-        /////////////////////////////////////////////////////////////////////
 
-        /*
+
+
+/////////////////////////////////////////////////////////////////////
+
+/*
 
     var create_ioputs_tags = require('./create_ioputs.js').create_ioputs_tags;
 
