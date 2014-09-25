@@ -10,8 +10,6 @@
         <outputs>
             <output name="fs">
     </output>
-            <output name="sys">
-    </output>
             <output name="exec">
     </output>
             <output name="path">

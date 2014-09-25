@@ -10,11 +10,6 @@
         <outputs>
             <output name="source_path">
     </output>
-            <output name="exit" side-effect="true">
-                <description>
-The program exits in case it isn't provided the correct number of arguments.
-</description>
-            </output>
             <output name="console-text" side-effect="true">
                 <description>The program prints a request to be provided with the correct arguments </description>
             </output>

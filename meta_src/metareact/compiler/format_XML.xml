@@ -9,8 +9,6 @@
     </input>
         <input name="fs">
     </input>
-        <input name="sys">
-    </input>
         <input name="exec">
     </input>
         <input name="path">

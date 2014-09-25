@@ -74,46 +74,68 @@ exec = require('execSync');
     //////////////////////
     function remove_generated_XML(cpath) {
 
-        //Check if it is a file or a directory.
-        var files = fs.readdirSync(cpath);
-        files.forEach(function(file_name, index, files) {
-                var stat = fs.statSync(cpath + "/" + file_name);
 
-                if (stat.isFile()) {
-                    if (path.extname(file_name) == ".xml") {
-                        var xml_file = fs.readFileSync(cpath + "/" + file_name, {
-                            encoding: "utf-8"
-                        });
+        function remove_generated_XML_rec(cpath) {
+            //Check if it is a file or a directory.
+            var files = fs.readdirSync(cpath);
+            files.forEach(function(file_name, index, files) {
+                    var stat = fs.statSync(cpath + "/" + file_name);
 
-                        var $ = cheerio.load(xml_file, {
-                            xmlMode: true
-                        });
-                        $("*").each(function() {
-                            //Remove all tags that have the generated tag set to true.
-                            if ($(this).attr("generated") === "true") {
-                                $(this).remove();
-                            }
-                        });
+                    if (stat.isFile()) {
+                        if (path.extname(file_name) == ".xml") {
+                            var xml_file = fs.readFileSync(cpath + "/" + file_name, {
+                                encoding: "utf-8"
+                            });
 
-                        fs.writeFileSync(cpath + "/" + file_name, $.html());
+                            var $ = cheerio.load(xml_file, {
+                                xmlMode: true
+                            });
+                            $("*").each(function() {
+                                //Remove all tags that have the generated tag set to true.
+                                if ($(this).attr("generated") === "true") {
+                                    $(this).remove();
+                                }
+                            });
 
-
-                    }
-
-                } else {
-                    if (stat.isDirectory()) {
+                            fs.writeFileSync(cpath + "/" + file_name, $.html());
 
 
-                        //Recursively operate on the subdirectories.
-                        remove_generated_XML(cpath + "/" + file_name);
+                        }
+
+                    } else {
+                        if (stat.isDirectory()) {
+
+
+                            //Recursively operate on the subdirectories.
+                            remove_generated_XML_rec(cpath + "/" + file_name);
+                        }
+
                     }
 
                 }
 
+            );
+        }
+
+        remove_generated_XML_rec(cpath);
+
+        //remove for the root xml file
+
+        var xml_file = fs.readFileSync(cpath + ".xml", {
+            encoding: "utf-8"
+        });
+
+        var $ = cheerio.load(xml_file, {
+            xmlMode: true
+        });
+        $("*").each(function() {
+            //Remove all tags that have the generated tag set to true.
+            if ($(this).attr("generated") === "true") {
+                $(this).remove();
             }
+        });
 
-        );
-
+        fs.writeFileSync(cpath + ".xml", $.html());
 
 
     }
@@ -695,9 +717,9 @@ function generate_xml_content_from_children(cpath, parent) {
                     if (generated == "true") {
 
                         var origin = $("origin", this).each(function() {
-                            var origin_location = $(this).attr("location");
+                            var origin_location = $(this).attr("origin_location");
                             origin_location = fn_name + "/" + origin_location;
-                            $(this).attr("location", origin_location);
+                            $(this).attr("origin_location", origin_location);
                             var origin_name = $(this).attr("origin_name");
                             origin_names.push(origin_name);
                             origin_locations.push(origin_location);
@@ -799,9 +821,9 @@ function generate_xml_content_from_children(cpath, parent) {
                     if (generated == "true") {
 
                         var origin = $("origin", this).each(function() {
-                            var origin_location = $(this).attr("location");
+                            var origin_location = $(this).attr("origin_location");
                             origin_location = fn_name + "/" + origin_location;
-                            $(this).attr("location", origin_location);
+                            $(this).attr("origin_location", origin_location);
                             var origin_name = $(this).attr("origin_name");
                             origin_names.push(origin_name);
                             origin_locations.push(origin_location);
