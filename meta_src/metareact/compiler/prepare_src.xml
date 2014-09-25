@@ -31,5 +31,7 @@
             <origin origin_name="xml_files" origin_location="remove_generated_XML"/>
             <origin origin_name="xml_files" origin_location="delete_generated_src"/>
         </input>
+        <input generated="true" name="exec"/>
     </inputs>
+    <graph generated="true"> </graph>
 </root>

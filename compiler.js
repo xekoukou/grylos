@@ -202,6 +202,7 @@ exec = require('execSync');
     mr_file_paths = [];
     mr_files = [];
     mr_file_paths.push(source_path);
+    mr_files.push(fs.readFileSync(source_path + ".mr"));
     find_mr_paths(source_path);
     ////////////////////////////////////////////////////////////////
     //split_srcode_into_lines
