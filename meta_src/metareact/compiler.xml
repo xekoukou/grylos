@@ -8,7 +8,6 @@
         <input name="xml_files" side-effect="true">
             <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
             <origin origin_name="xml_files" origin_location="generate_xml_content_from_children"/>
-            <origin origin_name="xml_files" origin_location="format_XML"/>
             <origin origin_name="xml_files" origin_location="parse_mr_files"/>
             <origin origin_name="xml_files" origin_location="prepare_src"/>
         </input>
@@ -28,7 +27,6 @@
     <outputs>
         <output name="xml_files" side-effect="true">
             <description>It saves the xml files to disk.</description>
-            <origin origin_name="formated_xml_files" origin_location="format_XML"/>
             <origin origin_name="updated_xml_files" origin_location="generate_xml_content_from_children"/>
             <origin origin_name="xml_files" origin_location="parse_mr_files"/>
             <origin origin_name="cleaned_xml_files" origin_location="prepare_src/remove_generated_XML"/>
@@ -45,9 +43,6 @@
             <description>The program prints a request to be provided with the correct arguments </description>
             <origin origin_name="console-text" origin_location="main" generated="true"/>
         </output>
-        <output name="$" generated="true">
-            <origin origin_name="$" origin_location="meta_info/create_output" generated="true"/>
-        </output>
         <output name="deleted_src_files" side-effect="true" generated="true">
             <description>It deletes all the generated src files.</description>
             <origin origin_name="deleted_src_files" origin_location="prepare_src/delete_generated_src" generated="true"/>
@@ -60,7 +55,6 @@
                 <end_point fn_name="parse_mr_files"/>
                 <end_point fn_name="prepare_src"/>
                 <end_point fn_name="check_only_side_effects_exist"/>
-                <end_point fn_name="format_XML"/>
             </output>
         </node>
         <node fn_name="generate_xml_content_from_children">
@@ -82,25 +76,20 @@
         <node fn_name="module_dependencies">
             <output name="fs">
                 <end_point fn_name="prepare_src"/>
-                <end_point fn_name="meta_info"/>
                 <end_point fn_name="generate_xml_content_from_children"/>
-                <end_point fn_name="format_XML"/>
                 <end_point fn_name="parse_mr_files"/>
                 <end_point fn_name="check_only_side_effects_exist"/>
             </output>
             <output name="exec">
                 <end_point fn_name="prepare_src"/>
-                <end_point fn_name="format_XML"/>
             </output>
             <output name="path">
                 <end_point fn_name="prepare_src"/>
                 <end_point fn_name="generate_xml_content_from_children"/>
-                <end_point fn_name="format_XML"/>
                 <end_point fn_name="parse_mr_files"/>
             </output>
             <output name="cheerio">
                 <end_point fn_name="prepare_src"/>
-                <end_point fn_name="meta_info"/>
                 <end_point fn_name="parse_mr_files"/>
                 <end_point fn_name="check_only_side_effects_exist"/>
             </output>

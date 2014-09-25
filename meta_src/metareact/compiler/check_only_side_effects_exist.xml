@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<root>
+    <info>
+        <name> check_only_side_effects_exist </name>
+        <description> The root xml should only contain side effects and this function checks for this and returns an error if not. </description>
+    </info>
+    <inputs>
+        <input name="cheerio">
+        </input>
+        <input name="source_path">
+        </input>
+        <input name="fs">
+        </input>
+        <input name="root_xml_file" side-effect="true">
+            <description>It reads the root xml file..</description>
+        </input>
+        <input generated="true" name="null"/>
+    </inputs>
+    <outputs>
+        <output name="error" side-effect="true">
+            <description>It prints an error when there are ioputs that are not side-effects.</description>
+        </output>
+    </outputs>
+</root>
