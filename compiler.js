@@ -950,12 +950,33 @@ generate_xml_content_from_children(source_path, $);
 fs.writeFileSync(source_path + ".xml", $.html());
 
 
-
-
-
-
 /////////////////////////////////////////////////////////////////////
+//check_only_side_effects_exist
 
+//////////////////////////////
+var xml_file = fs.readFileSync(source_path + ".xml", {
+    encoding: "utf-8"
+});
+
+var $ = cheerio.load(xml_file, {
+    xmlMode: true
+});
+
+$("input").each(function(){
+if($(this).attr("side_effect")!="true"){
+console.log("Error: There is an input which is not a side_effect in the root xml_file.");
+console.log("Name: "+$(this).attr("name"));
+}
+});
+
+$("output").each(function(){
+if($(this).attr("side_effect")!="true"){
+console.log("Error: There is an input which is not a side_effect in the root xml_file.");
+console.log("Name: "+$(this).attr("name"));
+}
+});
+
+////////////////////////////////////////////////////////////////////
 /*
 
     var create_ioputs_tags = require('./create_ioputs.js').create_ioputs_tags;

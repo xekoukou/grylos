@@ -1,35 +1,33 @@
-        main                                                                          generate_xml_content_from_children
-         |---------------(source_path)----------------------------------------------------------|
-         |----------------------------------               parse_mr_files    /--(null)----------|
-         |                  prepare_src    \---(source_path)------|-----------                  |
-         |---(source_path)------|--------------(null)-------------|                             |
-                                |                                                               |
-module_dependencies             |                                                               |
+        main                                                        generate_xml_content_from_children
+         |---------------(source_path)----------------------------------------------------------|   check_only_side_effects_exist
+         |----------------------------------               parse_mr_files    /--(null)----------|--(null)---|
+         |                  prepare_src    \---(source_path)------|-----------                              |
+         |---(source_path)------|--------------(null)-------------|------(null)-----------------------------|
+                                |                 
+module_dependencies             |                                                               
    |------(fs)------------------|
    |-------(exec)---------------|          
    |--------(path)--------------|
    |-------(cheerio)------------|
    |
-   |
    |                 meta_info
    |-----(cheerio)------|
    |-------(fs)---------|
-   |
-   |
    |
    |                        generate_xml_content_from_children
    |-------------------(fs)-------------|
    |-----------------(path)-------------|
    |
-   |
-   |
-   |
-   |
    |                               format_XML
    |---------------(fs)-----------------|
    |--------------(path)----------------|
    |
-   |
-   |
    |                                parse_mr_files
    |--------(cheerio)-------------------|
+   |
+   |                check_only_side_effects_exist
+   |-----(fs)-------------|
+   |----(cheerio)---------|
+                          |
+main                      |
+ |------(source_path)-----|
