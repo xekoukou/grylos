@@ -23,5 +23,6 @@
         <output name="error_msgs" side-effect="true">
             <description>It prints an error msg when there are multiple ioputs with the same name on a folder.</description>
         </output>
+        <output generated="true" name="null"/>
     </outputs>
 </root>

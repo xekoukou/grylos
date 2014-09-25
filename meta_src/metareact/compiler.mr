@@ -21,9 +21,12 @@ module_dependencies             |
    |                               format_XML
    |---------------(fs)-----------------|
    |--------------(path)----------------|
+   |--------(exec)----------------------|
    |
    |                                parse_mr_files
    |--------(cheerio)-------------------|
+   |---------------(fs)-----------------|
+   |--------------(path)----------------|
    |
    |                check_only_side_effects_exist
    |-----(fs)-------------|
@@ -31,3 +34,6 @@ module_dependencies             |
                           |
 main                      |
  |------(source_path)-----|
+ |
+ |                   format_XML
+ |-----(source_path)------|

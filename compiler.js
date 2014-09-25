@@ -514,7 +514,6 @@ exec = require('execSync');
             graphs.push(graph);
 
         });
-        console.log(JSON.stringify(graphs, null, 4));
 
 
         //////////////////////////////////////////////////////////////////
@@ -846,7 +845,7 @@ function generate_xml_content_from_children(cpath, parent) {
                     outerHTML = $("<div/>").append($(this).clone()).html();
 
                     //Only add it to outputs if it is an external output requirement.
-                    if (parent("graph node output[name='" + name + "'] end_point[fn_name='"+fn_name+"']").length == 0) {
+                    if (parent("graph node[fn_name='"+fn_name+"'] output[name='" + name + "']").length == 0) {
 
                         //We reject output if the user has already declared it. This way the user can catch values
                         //that represent the same thing.
@@ -962,17 +961,21 @@ var $ = cheerio.load(xml_file, {
     xmlMode: true
 });
 
-$("input").each(function(){
-if($(this).attr("side_effect")!="true"){
+$("inputs input").each(function(){
+if($(this).attr("side-effect")!="true"){
 console.log("Error: There is an input which is not a side_effect in the root xml_file.");
 console.log("Name: "+$(this).attr("name"));
+format_XML(source_path);
+process.exit(0);
 }
 });
 
-$("output").each(function(){
-if($(this).attr("side_effect")!="true"){
-console.log("Error: There is an input which is not a side_effect in the root xml_file.");
+$("outputs output").each(function(){
+if($(this).attr("side-effect")!="true"){
+console.log("Error: There is an output which is not a side_effect in the root xml_file.");
 console.log("Name: "+$(this).attr("name"));
+format_XML(source_path);
+process.exit(0);
 }
 });
 

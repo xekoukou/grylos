@@ -45,7 +45,9 @@
             <origin origin_name="file_missing_errors" origin_location="insert_missing_io_tags"/>
             <description>It prints an error when an xml file is not there and exits.</description>
         </output>
-        <output name="null"/>
+        <output name="null">
+            <origin origin_name="null" origin_location="insert_graph_content_to_xml_files" generated="true"/>
+        </output>
         <output name="error" side-effect="true" generated="true">
             <description>It prints an error message and exits.</description>
             <origin origin_name="error" origin_location="check_same_output_name" generated="true"/>

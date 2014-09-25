@@ -20,7 +20,7 @@
     </inputs>
     <outputs>
         <output name="$" generated="true">
-            <origin origin_name="$" origin_location="load_meta_info" generated="true"/>
+            <origin origin_name="$" origin_location="create_output" generated="true"/>
         </output>
     </outputs>
     <graph generated="true">
