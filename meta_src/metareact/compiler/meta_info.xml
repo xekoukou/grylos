@@ -18,6 +18,11 @@
             <origin origin_name="cheerio" origin_location="load_meta_info"/>
         </input>
     </inputs>
+    <outputs>
+        <output name="$" generated="true">
+            <origin origin_name="$" origin_location="load_meta_info" generated="true"/>
+        </output>
+    </outputs>
     <graph generated="true">
         <node fn_name="load_meta_info">
             <output name="$">
