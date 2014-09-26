@@ -741,7 +741,7 @@ function generate_xml_content_from_children(cpath, parent) {
                     outerHTML = $("<div/>").append($(this).clone()).html();
 
                     //Only add it to inputs if it is an external input requirement.
-                    if (parent("graph node output[name='" + name + "'] end_point[fn_name='"+fn_name+"']").length == 0) {
+                    if (parent("graph node output[name='" + name + "'] end_point[fn_name='" + fn_name + "']").length == 0) {
 
                         //We reject input if the user has already declared it. This way the user can catch values
                         //that represent the same thing.
@@ -845,7 +845,7 @@ function generate_xml_content_from_children(cpath, parent) {
                     outerHTML = $("<div/>").append($(this).clone()).html();
 
                     //Only add it to outputs if it is an external output requirement.
-                    if (parent("graph node[fn_name='"+fn_name+"'] output[name='" + name + "']").length == 0) {
+                    if (parent("graph node[fn_name='" + fn_name + "'] output[name='" + name + "']").length == 0) {
 
                         //We reject output if the user has already declared it. This way the user can catch values
                         //that represent the same thing.
@@ -891,7 +891,7 @@ function generate_xml_content_from_children(cpath, parent) {
                                     origin_locations.forEach(function(item, index) {
                                         parent("outputs output[name='" + name + "']").append("<origin origin_name='" + origin_names[index] + "' origin_location='" + item + "' generated='true'/>");
                                     });
-                                return;
+                                    return;
                                 } else {
                                     console.log("Error: Multiple outputs with the same name.");
                                     console.log("Folder: " + cpath);
@@ -961,22 +961,22 @@ var $ = cheerio.load(xml_file, {
     xmlMode: true
 });
 
-$("inputs input").each(function(){
-if($(this).attr("side-effect")!="true"){
-console.log("Error: There is an input which is not a side_effect in the root xml_file.");
-console.log("Name: "+$(this).attr("name"));
-format_XML(source_path);
-process.exit(0);
-}
+$("inputs input").each(function() {
+    if ($(this).attr("side-effect") != "true") {
+        console.log("Error: There is an input which is not a side_effect in the root xml_file.");
+        console.log("Name: " + $(this).attr("name"));
+        format_XML(source_path);
+        process.exit(0);
+    }
 });
 
-$("outputs output").each(function(){
-if($(this).attr("side-effect")!="true"){
-console.log("Error: There is an output which is not a side_effect in the root xml_file.");
-console.log("Name: "+$(this).attr("name"));
-format_XML(source_path);
-process.exit(0);
-}
+$("outputs output").each(function() {
+    if ($(this).attr("side-effect") != "true") {
+        console.log("Error: There is an output which is not a side_effect in the root xml_file.");
+        console.log("Name: " + $(this).attr("name"));
+        format_XML(source_path);
+        process.exit(0);
+    }
 });
 
 ////////////////////////////////////////////////////////////////////
