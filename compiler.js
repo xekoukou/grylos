@@ -980,15 +980,12 @@ $("outputs output").each(function() {
 });
 
 ////////////////////////////////////////////////////////////////////
+//flatten_graph
+var flatten_graph;
+////////////////////////
+
+///////////////////////////////////////////////////////////////////
 /*
-
-    var create_ioputs_tags = require('./create_ioputs.js').create_ioputs_tags;
-
-    create_ioputs_tags("./meta_src/metareact");
-
-    var create_ioputs = require('./create_ioputs.js').create_ioputs;
-    create_ioputs("./meta_src/metareact/compiler");
-
 
     var parsejs = require("./parse.js");
 

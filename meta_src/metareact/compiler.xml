@@ -15,6 +15,9 @@
             <description>It reads the root xml file..</description>
             <origin origin_name="root_xml_file" origin_location="check_only_side_effects_exist" generated="true"/>
         </input>
+        <input name="arguments" side-effect="true" generated="true">
+            <origin origin_name="arguments" origin_location="main" generated="true"/>
+        </input>
         <input name="mr_files" side-effect="true" generated="true">
             <description>It is provided all the mr files of the source_path directory and its subdirectories.</description>
             <origin origin_name="mr_files" origin_location="parse_mr_files" generated="true"/>
@@ -55,6 +58,7 @@
                 <end_point fn_name="parse_mr_files"/>
                 <end_point fn_name="prepare_src"/>
                 <end_point fn_name="check_only_side_effects_exist"/>
+                <end_point fn_name="generate_src"/>
             </output>
         </node>
         <node fn_name="generate_xml_content_from_children">
@@ -92,6 +96,11 @@
                 <end_point fn_name="prepare_src"/>
                 <end_point fn_name="parse_mr_files"/>
                 <end_point fn_name="check_only_side_effects_exist"/>
+            </output>
+        </node>
+        <node fn_name="check_only_side_effects_exist">
+            <output name="null">
+                <end_point fn_name="generate_src"/>
             </output>
         </node>
     </graph>

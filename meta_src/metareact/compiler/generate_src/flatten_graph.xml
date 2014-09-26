@@ -4,7 +4,7 @@
         <name> flatten_graph </name>
         <description> It creates a flattened graph. </description>
     </info>
-<inputs> 
-<input name="source_path"> </input>
-</inputs>		
+    <inputs>
+        <input name="source_path"> </input>
+    </inputs>
 </root>
