@@ -980,67 +980,118 @@ $("outputs output").each(function() {
 });
 
 ////////////////////////////////////////////////////////////////////
-//flatten_graph
-var flatten_graph;
-////////////////////////
+//generate_src
+/////////////////
+{
+    ///////////////////////////////////////////////////////////////////
+    //flatten_graph
+    ////////////////
+    {
+        //////////////////////////////////////////////////////////////////
+        //find_starting_points
+        var starting points;
+        /////////////////////
+        starting_points = [];
 
-///////////////////////////////////////////////////////////////////
-/*
+
+        function find_starting_points_rec(cpath,parent) {
+            var files = fs.readdirSync(cpath);
+            files.forEach(function(file_name, index, files) {
+                    var stat = fs.statSync(cpath + "/" + file_name);
+
+                    if (stat.isFile()) {
+                    if (path.extname(file_name) == ".xml") {
+                            var xml_file = fs.readFileSync(cpath + "/" + file_name, {
+                                encoding: "utf-8"
+                            });
+
+                            var $ = cheerio.load(xml_file, {
+                                xmlMode: true
+                            });
+
+                      if($("inputs input[side_effect!='true']").length==0){
+var elememt= parent.slice();
+element.push(file_name);
+starting_points.push(element);
+}
+
+
+                    }}
+                    if (stat.isDirectory()) {
+var elememt= parent.slice();
+element.push(file_name);
+
+                    }
+
+                }
+            }
+            var parent=[];
+            find_starting_points_rec(source_path,parent);
+            console.log(starting_points);
+
+            //////////////////////////////////////////////////////////////////
+        }
+        //endof flatten_graph
+        //////////////////////////////////////////////////////////////////
+    }
+    //endof generate_src
+    ///////////////////////////////////////////////////////////////////
+    /*
 
     var parsejs = require("./parse.js");
 
     var po = parsejs("./meta_src/metareact/compiler");
 
 */
-//////////////////////////////
-//format_XML
+    //////////////////////////////
+    //format_XML
 
-////////////
-function format_XML(source_path) {
+    ////////////
+    function format_XML(source_path) {
 
 
-    function format_XML_rec(source_path) {
-        //Check if it is a file or a directory.
-        var files = fs.readdirSync(source_path);
-        files.forEach(function(file, index, files) {
-            var stat = fs.statSync(source_path + "/" + file);
+        function format_XML_rec(source_path) {
+            //Check if it is a file or a directory.
+            var files = fs.readdirSync(source_path);
+            files.forEach(function(file, index, files) {
+                var stat = fs.statSync(source_path + "/" + file);
 
-            if (stat.isFile()) {
-                if (path.extname(file) == ".xml") {
-                    //Format the xml file.
-                    exec.run("export XMLLINT_INDENT='    '\nxmllint --format " + source_path + "/" + file + " --output " + source_path + "/" + file);
+                if (stat.isFile()) {
+                    if (path.extname(file) == ".xml") {
+                        //Format the xml file.
+                        exec.run("export XMLLINT_INDENT='    '\nxmllint --format " + source_path + "/" + file + " --output " + source_path + "/" + file);
+
+                    }
+
+                } else {
+                    if (stat.isDirectory()) {
+
+                        //Recursively operate on the subdirectories.
+                        format_XML_rec(source_path + "/" + file);
+                    }
 
                 }
 
-            } else {
-                if (stat.isDirectory()) {
+            });
+        }
+        exec.run("export XMLLINT_INDENT='    '\nxmllint --format " + source_path + ".xml" + " --output " + source_path + ".xml");
 
-                    //Recursively operate on the subdirectories.
-                    format_XML_rec(source_path + "/" + file);
-                }
-
-            }
-
-        });
+        format_XML_rec(source_path);
     }
-    exec.run("export XMLLINT_INDENT='    '\nxmllint --format " + source_path + ".xml" + " --output " + source_path + ".xml");
-
-    format_XML_rec(source_path);
-}
-format_XML(source_path);
+    format_XML(source_path);
 
 
 
-///////////////////////////////////
+    ///////////////////////////////////
 
-/*
+    /*
 var orderjs = require("./order.js");
 orderjs(po.graph,po.async);
 
 */
 
-//TEST
-/*
+    //TEST
+    /*
 
 var Js_lang = require("./js_lang.js");
 var js_lang = new Js_lang();
