@@ -43,6 +43,8 @@
         <output name="null">
             <origin origin_name="null" origin_location="insert_graph_content_to_xml_files" generated="true"/>
         </output>
+        <output generated="true" name="mr_file_paths"/>
+        <output generated="true" name="graphs"/>
         <output name="error" side-effect="true" generated="true">
             <description>It prints an error message and exits.</description>
             <origin origin_name="error" origin_location="check_same_output_name" generated="true"/>
@@ -68,16 +70,9 @@
             <output name="graphs">
                 <end_point fn_name="insert_graph_content_to_xml_files"/>
                 <end_point fn_name="check_same_output_name"/>
-                <end_point fn_name="insert_missing_io_tags"/>
             </output>
         </node>
         <node fn_name="check_same_output_name">
-            <output name="null">
-                <end_point fn_name="insert_graph_content_to_xml_files"/>
-                <end_point fn_name="insert_missing_io_tags"/>
-            </output>
-        </node>
-        <node fn_name="insert_missing_io_tags">
             <output name="null">
                 <end_point fn_name="insert_graph_content_to_xml_files"/>
             </output>
