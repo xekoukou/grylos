@@ -15,10 +15,12 @@
             <origin origin_name="fs" origin_location="flatten_graph"/>
         </input>
         <input name="path">
-            <origin origin_name="path" origin_location="flatten_graph"/></input>
+            <origin origin_name="path" origin_location="flatten_graph"/>
+        </input>
         <input name="cheerio">
-            <origin origin_name="cheerio" origin_location="flatten_graph"/></input>
-        
-    <input generated="true" name="null"/></inputs>
-    
-<graph generated="true"> </graph></root>
+            <origin origin_name="cheerio" origin_location="flatten_graph"/>
+        </input>
+        <input generated="true" name="null"/>
+    </inputs>
+    <graph generated="true"> </graph>
+</root>

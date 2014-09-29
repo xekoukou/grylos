@@ -5,9 +5,9 @@
         <description> It splits srcodes into lines. </description>
     </info>
     <inputs>
-        
-    <input generated="true" name="mr_files"/></inputs>
+        <input generated="true" name="mr_files"/>
+    </inputs>
     <outputs>
-        
-    <output generated="true" name="srcodes"/></outputs>
+        <output generated="true" name="srcodes"/>
+    </outputs>
 </root>

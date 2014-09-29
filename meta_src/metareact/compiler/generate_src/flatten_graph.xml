@@ -21,5 +21,5 @@
             <origin origin_name="xml_files" origin_location="find_starting_points"/>
         </input>
     </inputs>
-    
-<graph generated="true"> </graph></root>
+    <graph generated="true"> </graph>
+</root>
