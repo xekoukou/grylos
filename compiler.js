@@ -989,7 +989,7 @@ $("outputs output").each(function() {
     {
         //////////////////////////////////////////////////////////////////
         //find_starting_points
-        var starting points;
+        var starting_points;
         /////////////////////
         starting_points = [];
 
@@ -1023,7 +1023,7 @@ element.push(file_name);
 
                     }
 
-                }
+                });
             }
             var parent=[];
             find_starting_points_rec(source_path,parent);

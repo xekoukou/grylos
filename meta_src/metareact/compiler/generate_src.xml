@@ -8,7 +8,17 @@
         <input name="source_path">
             <origin origin_name="source_path" origin_location="flatten_graph"/>
         </input>
-        <input generated="true" name="null"/>
-    </inputs>
-    <graph generated="true"> </graph>
-</root>
+        <input name="xml_files">
+            <origin origin_name="xml_files" origin_location="flatten_graph"/>
+        </input>
+        <input name="fs">
+            <origin origin_name="fs" origin_location="flatten_graph"/>
+        </input>
+        <input name="path">
+            <origin origin_name="path" origin_location="flatten_graph"/></input>
+        <input name="cheerio">
+            <origin origin_name="cheerio" origin_location="flatten_graph"/></input>
+        
+    <input generated="true" name="null"/></inputs>
+    
+<graph generated="true"> </graph></root>
