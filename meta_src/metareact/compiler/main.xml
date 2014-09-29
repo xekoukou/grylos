@@ -2,16 +2,17 @@
 <root>
     <info>
         <name> main </name>
-        <description> The initial function. It provides the path of the source to be compiled </description>
+        <description> The initial function. It provides the path of the source to be compiled. </description>
     </info>
     <inputs>
         <input name="arguments" side-effect="true"> </input>
     </inputs>
     <outputs>
         <output name="source_path">
-    </output>
+            <description>This is the location of the root directory of the source. </description>
+        </output>
         <output name="console-text" side-effect="true">
-            <description>The program prints a request to be provided with the correct arguments </description>
+            <description>The program prints a request to be provided with the correct arguments. </description>
         </output>
     </outputs>
 </root>

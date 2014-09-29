@@ -1009,7 +1009,7 @@ $("outputs output").each(function() {
                             xmlMode: true
                         });
 
-                        if ($("inputs input[side_effect!='true']").length == 0) {
+                        if ($("inputs input[side-effect!='true']").length == 0) {
                             var element = parent.slice();
                             element.push(file_name.substring(0, file_name.length - 4));
                             starting_points.push(element);

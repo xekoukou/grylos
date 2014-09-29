@@ -53,7 +53,7 @@
             <origin origin_name="file_missing_errors" origin_location="insert_missing_io_tags_from_graph" generated="true"/>
         </output>
         <output name="console-text" side-effect="true" generated="true">
-            <description>The program prints a request to be provided with the correct arguments </description>
+            <description>The program prints a request to be provided with the correct arguments. </description>
             <origin origin_name="console-text" origin_location="main" generated="true"/>
         </output>
         <output name="deleted_src_files" side-effect="true" generated="true">
