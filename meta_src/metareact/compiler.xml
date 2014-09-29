@@ -44,6 +44,9 @@
             <origin origin_name="file_missing_errors" origin_location="parse_mr_files"/>
             <origin origin_name="error" origin_location="check_only_side_effects_exist"/>
         </output>
+        <output name="flattened_graph" generated="true">
+            <origin origin_name="flattened_graph" origin_location="generate_src/flatten_graph/create_flattened_graph" generated="true"/>
+        </output>
         <output name="filled_xml_files" side-effect="true" generated="true">
             <description>It saves the xml files with additional generated content.</description>
             <origin origin_name="filled_xml_files" origin_location="insert_missing_io_tags_from_graph" generated="true"/>
