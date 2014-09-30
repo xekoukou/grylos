@@ -993,7 +993,7 @@ $("outputs output").each(function() {
         /////////////////////
         starting_points = [];
 
-
+        //finds the functions that do not contain inputs and are at the lowest level.
         function find_starting_points_rec(cpath, parent) {
             var files = fs.readdirSync(cpath);
             files.forEach(function(file_name, index, files) {
@@ -1001,21 +1001,24 @@ $("outputs output").each(function() {
 
                 if (stat.isFile()) {
                     if (path.extname(file_name) == ".xml") {
-                        var xml_file = fs.readFileSync(cpath + "/" + file_name, {
-                            encoding: "utf-8"
-                        });
+                        //we check if the directory with the same name exist.
+                        if (!fs.existsSync(file_name.substring(0, file_name.length - 4))) {
+                            var xml_file = fs.readFileSync(cpath + "/" + file_name, {
+                                encoding: "utf-8"
+                            });
 
-                        var $ = cheerio.load(xml_file, {
-                            xmlMode: true
-                        });
+                            var $ = cheerio.load(xml_file, {
+                                xmlMode: true
+                            });
+                            //we check the existance of inputs with no side-effect property.
+                            if ($("inputs input[side-effect!='true']").length == 0) {
+                                var element = parent.slice();
+                                element.push(file_name.substring(0, file_name.length - 4));
+                                starting_points.push(element);
+                            }
 
-                        if ($("inputs input[side-effect!='true']").length == 0) {
-                            var element = parent.slice();
-                            element.push(file_name.substring(0, file_name.length - 4));
-                            starting_points.push(element);
+
                         }
-
-
                     }
                 }
                 if (stat.isDirectory()) {
@@ -1034,10 +1037,11 @@ $("outputs output").each(function() {
         //create_flattened_graph
         var flattened_graph;
         ///////////////////////////
-        starting_points.forEach(function(start){
+        flattened_graph = {};
+        starting_points.forEach(function(pointer) {
 
 
-});
+        });
         /////////////////////////////////////////////////////////////////
     }
     //endof flatten_graph

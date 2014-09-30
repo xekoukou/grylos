@@ -25,6 +25,11 @@
             <origin origin_name="xml_files" origin_location="create_flattened_graph"/>
         </input>
     </inputs>
+    <outputs>
+        <output name="flattened_graph" generated="true">
+            <origin origin_name="flattened_graph" origin_location="create_flattened_graph" generated="true"/>
+        </output>
+    </outputs>
     <graph generated="true">
         <node fn_name="find_starting_points">
             <output name="starting_points">
@@ -32,9 +37,4 @@
             </output>
         </node>
     </graph>
-    <outputs>
-        <output name="flattened_graph" generated="true">
-            <origin origin_name="flattened_graph" origin_location="create_flattened_graph" generated="true"/>
-        </output>
-    </outputs>
 </root>

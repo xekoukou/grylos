@@ -22,10 +22,10 @@
         </input>
         <input generated="true" name="null"/>
     </inputs>
-    <graph generated="true"> </graph>
     <outputs>
         <output name="flattened_graph" generated="true">
             <origin origin_name="flattened_graph" origin_location="flatten_graph/create_flattened_graph" generated="true"/>
         </output>
     </outputs>
+    <graph generated="true"> </graph>
 </root>
