@@ -551,6 +551,13 @@ exec = require('execSync');
     graphs.forEach(function(graph, index) {
         Object.keys(graph).forEach(function(fn_name) {
 
+            //check whether this function contains code or is a subgraph.
+            //If it is a subgraph, all ioputs should have been inserted by the programmer/compiler already, so return an error.
+            var obottom = true;
+            if (fs.existsSync(mr_file_paths[index] + "/" + fn_name + ".mr")) {
+                obottom = false;
+            }
+
             //Insert the output tag into the originator xml file and do nothing if there is already user content.
             var oxml_path = mr_file_paths[index] + "/" + fn_name + ".xml";
             try {
@@ -573,7 +580,17 @@ exec = require('execSync');
             graph[fn_name].forEach(function(path) {
                 //Add only one output per vname.
                 if (o("outputs output[name='" + path.vname + "']").length == 0) {
-                    o("outputs").append("<output generated='true' name='" + path.vname + "'/>");
+                    if (obottom) {
+                        o("outputs").append("<output generated='true' name='" + path.vname + "'/>");
+                    } else {
+                        console.log("Error: There is an output defined in the graph that cannot be automatically generated. Please specify the origin of this output.");
+                        console.log("File:" + mr_file_paths[index] + "/" + fn_name + ".xml");
+                        console.log("name:" + path.vname);
+                    }
+                }
+                var ibottom = true;
+                if (fs.existsSync(mr_file_paths[index] + "/" + path.end_fn_name + ".mr")) {
+                    ibottom = false;
                 }
                 //Insert the input tag into the terminator xml file and do nothing if there is already user content.
                 var ixml_path = mr_file_paths[index] + "/" + path.end_fn_name + ".xml";
@@ -597,8 +614,15 @@ exec = require('execSync');
 
                 //Insert the input tag into the end_point xml file and do nothing if there is already user content.
                 if (i("inputs input[name='" + path.vname + "']").length == 0) {
-                    i("inputs").append("<input generated='true' name='" + path.vname + "'/>");
-                    fs.writeFileSync(ixml_path, i.html());
+                    if (ibottom) {
+                        i("inputs").append("<input generated='true' name='" + path.vname + "'/>");
+                        fs.writeFileSync(ixml_path, i.html());
+                    } else {
+
+                        console.log("Error: There is an input defined in the graph that cannot be automatically generated. Please specify the origin of this input.");
+                        console.log("File:" + mr_file_paths[index] + "/" + path.end_fn_name + ".xml");
+                        console.log("name:" + path.vname);
+                    }
                 }
             });
             fs.writeFileSync(oxml_path, o.html());
