@@ -25,11 +25,11 @@
         <input name="mr_files" side-effect="true">
             <description>It is provided all the mr files of the source_path directory and its subdirectories.</description>
         </input>
-        <input generated="true" name="null"/>
         <input name="disk_mr_files" side-effect="true" generated="true">
             <description>It is provided all the mr files of the source_path directory and its subdirectories.</description>
             <origin origin_name="disk_mr_files" origin_location="find_mr_file_paths" generated="true"/>
         </input>
+        <input generated="true" name="null"/>
     </inputs>
     <outputs>
         <output name="xml_files" side-effect="true">

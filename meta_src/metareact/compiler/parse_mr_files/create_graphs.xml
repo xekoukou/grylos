@@ -15,7 +15,10 @@
         </input>
     </inputs>
     <outputs>
-        <output generated="true" name="graphs"/>
+        <output name="graphs" generated="true">
+            <description> An object representation of the graph that is in the mr files. </description>
+            <origin origin_name="graphs" origin_location="path_traversal" generated="true"/>
+        </output>
     </outputs>
     <graph generated="true">
         <node fn_name="find_functions">
