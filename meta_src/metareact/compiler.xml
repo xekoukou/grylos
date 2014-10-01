@@ -12,6 +12,7 @@
             <origin origin_name="xml_files" origin_location="parse_mr_files"/>
             <origin origin_name="xml_files" origin_location="generate_src"/>
             <origin origin_name="xml_files" origin_location="prepare_src"/>
+            <origin origin_name="xml_files" origin_location="check_ioputs_have_origins"/>
         </input>
         <input name="root_xml_file" side-effect="true" generated="true">
             <description>It reads the root xml file..</description>
@@ -43,6 +44,7 @@
             <origin origin_name="error_msgs" origin_location="generate_xml_content_from_children"/>
             <origin origin_name="file_missing_errors" origin_location="parse_mr_files"/>
             <origin origin_name="error" origin_location="check_only_side_effects_exist"/>
+            <origin origin_name="error" origin_location="check_ioputs_have_origins"/>
         </output>
         <output name="flattened_graph" generated="true">
             <origin origin_name="flattened_graph" origin_location="generate_src/flatten_graph/create_flattened_graph" generated="true"/>
@@ -85,6 +87,7 @@
             </output>
             <output name="mr_file_paths">
                 <end_point fn_name="insert_missing_io_tags_from_graph"/>
+                <end_point fn_name="check_ioputs_have_origins"/>
             </output>
             <output name="graphs">
                 <end_point fn_name="insert_missing_io_tags_from_graph"/>
@@ -97,6 +100,11 @@
         </node>
         <node fn_name="insert_missing_io_tags_from_graph">
             <output name="null">
+                <end_point fn_name="check_ioputs_have_origins"/>
+            </output>
+        </node>
+        <node fn_name="check_ioputs_have_origins">
+            <output name="null">
                 <end_point fn_name="check_only_side_effects_exist"/>
             </output>
         </node>
@@ -105,6 +113,7 @@
                 <end_point fn_name="prepare_src"/>
                 <end_point fn_name="generate_xml_content_from_children"/>
                 <end_point fn_name="insert_missing_io_tags_from_graph"/>
+                <end_point fn_name="check_ioputs_have_origins"/>
                 <end_point fn_name="parse_mr_files"/>
                 <end_point fn_name="generate_src"/>
                 <end_point fn_name="check_only_side_effects_exist"/>
@@ -122,6 +131,7 @@
             <output name="cheerio">
                 <end_point fn_name="prepare_src"/>
                 <end_point fn_name="insert_missing_io_tags_from_graph"/>
+                <end_point fn_name="check_ioputs_have_origins"/>
                 <end_point fn_name="parse_mr_files"/>
                 <end_point fn_name="generate_src"/>
                 <end_point fn_name="check_only_side_effects_exist"/>

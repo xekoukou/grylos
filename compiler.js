@@ -981,7 +981,7 @@ graphs.forEach(function(graph, index) {
 ///////////////////////////////////
 mr_file_paths.forEach(function(item) {
 
-    var xml_path = mr_file_paths[index] + ".xml";
+    var xml_path = item + ".xml";
     try {
         var xml_file = fs.readFileSync(xml_path, {
             encoding: "utf-8"
@@ -996,7 +996,7 @@ mr_file_paths.forEach(function(item) {
         xmlMode: true
     });
 
-    $("inputs input").each(function() {
+    $("inputs input[side-effect!='true']").each(function() {
         if ($(this).attr("name") != "null") {
             if ($("origin", this).length == 0) {
                 console.log("Error: There is an input of a subgraph that doesn't have an origin");
@@ -1008,7 +1008,7 @@ mr_file_paths.forEach(function(item) {
         }
     });
 
-    $("outputs output").each(function() {
+    $("outputs output[side-effect!='true']").each(function() {
         if ($(this).attr("name") != "null") {
             if ($("origin", this).length == 0) {
                 console.log("Error: There is an output of a subgraph that doesn't have an origin");
