@@ -1038,8 +1038,48 @@ $("outputs output").each(function() {
         var flattened_graph;
         ///////////////////////////
         flattened_graph = {};
-        starting_points.forEach(function(pointer) {
 
+        function set_cpath(pointer) {
+            for (var i = 0; i < pointer.length; i++) {
+                cpath = cpath + "/" + pointer[i];;
+            }
+        }
+
+
+        starting_points.forEach(function(pointer) {
+            var cpath = "";
+            var edge = null;
+
+            function traverse(pointer, edge) {
+                set_cpath();
+                //check whether the node has already been traversed
+                if (typeof flattened_graph[cpath] == "undefined") {
+                    //insert the new node
+                    flattened_graph[cpath] = {
+                        pointer: pointer,
+                        inputs: {},
+                        outputs: {}
+                    };
+                    var node = flattened_graph[cpath];
+                    //Add the edge from which we arrived here.
+                    if (edge != null) {
+                        if (typeof node.inputs[edge.o_name] == "undefined") {
+                            node.inputs[edge.o_name] = {};
+                        }
+                        node.inputs[edge.o_name][edge.e_name] = edge;
+                    }
+
+                    var xml_file = fs.readFileSync(cpath + ".xml", {
+                        encoding: "utf-8"
+                    });
+
+                    var $ = cheerio.load(xml_file, {
+                        xmlMode: true
+                    });
+
+
+                }
+            }
 
         });
         /////////////////////////////////////////////////////////////////

@@ -43,8 +43,12 @@
         <output name="null">
             <origin origin_name="null" origin_location="insert_graph_content_to_xml_files" generated="true"/>
         </output>
-        <output generated="true" name="mr_file_paths"/>
-        <output generated="true" name="graphs"/>
+        <output name="mr_file_paths">
+            <origin origin_name="mr_file_paths" origin_location="find_mr_file_paths"/>
+        </output>
+        <output name="graphs">
+            <origin origin_name="graphs" origin_location="create_graphs"/>
+        </output>
         <output name="error" side-effect="true" generated="true">
             <description>It prints an error message and exits.</description>
             <origin origin_name="error" origin_location="check_same_output_name" generated="true"/>
