@@ -975,8 +975,53 @@ graphs.forEach(function(graph, index) {
 
     });
 });
+/////////////////////////////////////////////////////////////////////
+//check_ioputs_have_origins
 
-/*
+///////////////////////////////////
+mr_file_paths.forEach(function(item) {
+
+    var xml_path = mr_file_paths[index] + ".xml";
+    try {
+        var xml_file = fs.readFileSync(xml_path, {
+            encoding: "utf-8"
+        });
+    } catch (e) {
+        console.log("\nError: xml file missing:" + xml_path);
+        format_XML(source_path);
+        process.exit(0);
+    }
+
+    var $ = cheerio.load(xml_file, {
+        xmlMode: true
+    });
+
+    $("inputs input").each(function() {
+        if ($(this).attr("name") != "null") {
+            if ($("origin", this).length == 0) {
+                console.log("Error: There is an input of a subgraph that doesn't have an origin");
+                console.log("File: " + xml_path);
+                console.log("Name: " + $(this).attr("name"));
+                format_XML(source_path);
+                process.exit(0);
+            }
+        }
+    });
+
+    $("outputs output").each(function() {
+        if ($(this).attr("name") != "null") {
+            if ($("origin", this).length == 0) {
+                console.log("Error: There is an output of a subgraph that doesn't have an origin");
+                console.log("File: " + xml_path);
+                console.log("Name: " + $(this).attr("name"));
+                format_XML(source_path);
+                process.exit(0);
+            }
+        }
+    });
+
+});
+
 /////////////////////////////////////////////////////////////////////
 //check_only_side_effects_exist
 
@@ -1006,7 +1051,6 @@ $("outputs output").each(function() {
         process.exit(0);
     }
 });
-*/
 ////////////////////////////////////////////////////////////////////
 //generate_src
 /////////////////
@@ -1105,6 +1149,12 @@ $("outputs output").each(function() {
                         xmlMode: true
                     });
 
+                    $("outputs output[side-effect!='true']").each(function() {
+                        var oname = $(this).attr("name");
+                        if ($("origin", this).length == 0) {} else {
+
+                        }
+                    });
 
                 }
             }
