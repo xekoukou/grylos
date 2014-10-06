@@ -2,7 +2,7 @@
 <root>
     <info>
         <name> insert_missing_io_tag_info_from_graph</name>
-        <description> It creates io tags generated from the mr file if they don't already exist and inserts all ioput attributes found in the mr file. </description>
+        <description> It creates io tags generated from the mr file if they don't already exist. </description>
     </info>
     <inputs>
         <input name="xml_files" side-effect="true">

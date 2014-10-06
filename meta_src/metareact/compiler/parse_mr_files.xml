@@ -49,9 +49,10 @@
         <output name="graphs">
             <origin origin_name="graphs" origin_location="create_graphs"/>
         </output>
-        <output name="error" side-effect="true" generated="true">
+        <output name="error" side-effect="true">
             <description>It prints an error message and exits.</description>
-            <origin origin_name="error" origin_location="check_same_output_name" generated="true"/>
+            <origin origin_name="error" origin_location="check_same_output_name"/>
+            <origin origin_name="error" origin_location="create_graphs/find_functions"/>
         </output>
     </outputs>
     <graph generated="true">

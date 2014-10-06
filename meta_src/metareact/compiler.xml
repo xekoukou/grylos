@@ -39,7 +39,7 @@
         </output>
         <output name="error" side-effect="true">
             <description>It prints an error message and probably exits.</description>
-            <origin origin_name="error" origin_location="parse_mr_files/check_same_output_name"/>
+            <origin origin_name="error" origin_location="parse_mr_files"/>
             <origin origin_name="xml_errors" origin_location="prepare_src/validate_XML"/>
             <origin origin_name="error_msgs" origin_location="generate_xml_content_from_children"/>
             <origin origin_name="file_missing_errors" origin_location="parse_mr_files"/>
@@ -69,7 +69,7 @@
     <graph generated="true">
         <node fn_name="main">
             <output name="source_path">
-                <end_point fn_name="generate_xml_content_from_children"/>
+                <end_point fn_name="generate_xml_content_from_children" historical="true" asynchronous="true"/>
                 <end_point fn_name="parse_mr_files"/>
                 <end_point fn_name="prepare_src"/>
                 <end_point fn_name="check_only_side_effects_exist"/>

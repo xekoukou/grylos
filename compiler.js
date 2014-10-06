@@ -245,7 +245,7 @@ exec = require('execSync');
         var function_names;
         ////////////////////////
         function_names = [];
-        srcodes.forEach(function(code) {
+        srcodes.forEach(function(code, index) {
             var functions = [];
 
             var y = 0;
@@ -261,14 +261,33 @@ exec = require('execSync');
                     } else {
                         var string = line.substring(x).split(" ", 1)[0];
                         //check that they only have alphanumeric or _ characters
-                        var alphanum = string.match(/^[a-z_0-9]+$/i);
+                        var alphanum = string.match(/^[a-z_:0-9]+$/i);
                         if (alphanum) {
-                            //store them
-                            functions.push({
+                            var value = alphanum[0].split(":", 2);
+                            var function_name = {
                                 x: x,
                                 y: y,
-                                fn_name: alphanum[0]
-                            });
+                                fn_name: value[0]
+                            };
+                            if (value.length > 1) {
+                                for (var i = 0; i < value[1].length; i++) {
+                                    var xar = value[1].charAt(i);
+                                    if (xar == "c") {
+                                        function_name.concurrent = "true";
+                                    } else {
+                                        if (xar == "a") {
+                                            function_name.asynchronous = "true";
+                                        } else {
+                                            console.log("Error: There is no option '" + xar + "' for a function");
+                                            console.log("File: " + mr_file_paths[index]);
+                                            console.log("Function Name: " + value[0]);
+                                            process.exit(0);
+                                        }
+                                    }
+                                }
+                            }
+                            //store them
+                            functions.push(function_name);
                         }
                         x = x + string.length - 1;
                     }
@@ -280,6 +299,7 @@ exec = require('execSync');
             //store the function names of this code with the rest of functions
             function_names.push(functions);
         });
+        console.log(function_names);
 
         ///////////////////////////////////////////////////////////////
         //find_end_points
@@ -1111,19 +1131,20 @@ $("outputs output").each(function() {
         ///////////////////////////
         flattened_graph = {};
 
-        function set_cpath(pointer) {
-            for (var i = 0; i < pointer.length; i++) {
-                cpath = cpath + "/" + pointer[i];;
+        function set_cpath(pointer, start, end) {
+            var cpath = pointer[start];
+            for (var i = start + 1; i <= end; i++) {
+                cpath = cpath + "/" + pointer[i];
             }
         }
 
 
         starting_points.forEach(function(pointer) {
-            var cpath = "";
+            var cpath;
             var edge = null;
 
             function traverse(pointer, edge) {
-                set_cpath(pointer);
+                cpath = set_cpath(pointer, 0, pointer.length - 1);
                 //check whether the node has already been traversed
                 if (typeof flattened_graph[cpath] == "undefined") {
                     //insert the new node
@@ -1141,19 +1162,31 @@ $("outputs output").each(function() {
                         node.inputs[edge.origin_name][edge.end_name] = edge;
                     }
 
-                    var xml_file = fs.readFileSync(cpath + ".xml", {
+                    var xml_file = fs.readFileSync(source_path + "/" + cpath + ".xml", {
                         encoding: "utf-8"
                     });
 
                     var $ = cheerio.load(xml_file, {
                         xmlMode: true
                     });
-
+                    //we are at the bottom and for each output, we need to go up till we find where we send the output.
                     $("outputs output[side-effect!='true']").each(function() {
                         var origin_name = $(this).attr("name");
-                        if ($("origin", this).length == 0) {
-                         var edge={ }
-                        } else {}
+                        var i = 1;
+                        while (i <= pointer.length) {
+                            var cpath;
+                            if (pointer.length - i - 1 >= 0) {
+                                cpath = source_path + "/" + set_cpath(pointer, 0, pointer.length - i - 1);
+                            } else {
+                                cpath = source_path;
+                            }
+                            var origin_location = set_cpath(pointer, pointer.length - i, pointer.length - 1);
+
+
+
+
+                            i++;
+                        }
                     });
 
                 }

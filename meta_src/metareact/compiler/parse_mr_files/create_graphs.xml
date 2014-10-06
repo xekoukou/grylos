@@ -12,9 +12,14 @@
         </input>
         <input name="mr_file_paths">
             <origin origin_name="mr_file_paths" origin_location="path_traversal"/>
+            <origin origin_name="mr_file_paths" origin_location="find_functions"/>
         </input>
     </inputs>
     <outputs>
+        <output name="error" generated="true">
+            <description> It returns an error when a type of attribute does not exist.</description>
+            <origin origin_name="error" origin_location="find_functions" generated="true"/>
+        </output>
         <output name="graphs" generated="true">
             <description> An object representation of the graph that is in the mr files. </description>
             <origin origin_name="graphs" origin_location="path_traversal" generated="true"/>

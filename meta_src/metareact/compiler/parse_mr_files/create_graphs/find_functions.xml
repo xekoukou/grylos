@@ -6,8 +6,12 @@
     </info>
     <inputs>
         <input name="srcodes"/>
+        <input name="mr_file_paths"/>
     </inputs>
     <outputs>
+        <output name="error">
+            <description> It returns an error when a type of attribute does not exist.</description>
+        </output>
         <output generated="true" name="function_names"/>
     </outputs>
 </root>
