@@ -14,7 +14,7 @@ module_dependencies             |                                 |--------(mr_f
    |-------------------(fs)-------------|
    |-----------------(path)-------------|
    |
-   |                                  insert_missing_io_tags_from_graph
+   |                                  insert_missing_io_tag_info_from_graph
    |--------(cheerio)-------------------|
    |---------------(fs)-----------------|
    |--------------(path)----------------|

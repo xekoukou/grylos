@@ -8,7 +8,7 @@
         <input name="xml_files" side-effect="true">
             <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
             <origin origin_name="xml_files" origin_location="generate_xml_content_from_children"/>
-            <origin origin_name="xml_files" origin_location="insert_missing_io_tags_from_graph"/>
+            <origin origin_name="xml_files" origin_location="insert_missing_io_tag_info_from_graph"/>
             <origin origin_name="xml_files" origin_location="parse_mr_files"/>
             <origin origin_name="xml_files" origin_location="generate_src"/>
             <origin origin_name="xml_files" origin_location="prepare_src"/>
@@ -51,11 +51,11 @@
         </output>
         <output name="filled_xml_files" side-effect="true" generated="true">
             <description>It saves the xml files with additional generated content.</description>
-            <origin origin_name="filled_xml_files" origin_location="insert_missing_io_tags_from_graph" generated="true"/>
+            <origin origin_name="filled_xml_files" origin_location="insert_missing_io_tag_info_from_graph" generated="true"/>
         </output>
         <output name="file_missing_errors" side-effect="true" generated="true">
             <description>It prints an error when an xml file is not there and exits.</description>
-            <origin origin_name="file_missing_errors" origin_location="insert_missing_io_tags_from_graph" generated="true"/>
+            <origin origin_name="file_missing_errors" origin_location="insert_missing_io_tag_info_from_graph" generated="true"/>
         </output>
         <output name="console-text" side-effect="true" generated="true">
             <description>The program prints a request to be provided with the correct arguments. </description>
@@ -78,7 +78,7 @@
         </node>
         <node fn_name="generate_xml_content_from_children">
             <output name="null">
-                <end_point fn_name="insert_missing_io_tags_from_graph"/>
+                <end_point fn_name="insert_missing_io_tag_info_from_graph"/>
             </output>
         </node>
         <node fn_name="parse_mr_files">
@@ -86,11 +86,11 @@
                 <end_point fn_name="generate_xml_content_from_children"/>
             </output>
             <output name="mr_file_paths">
-                <end_point fn_name="insert_missing_io_tags_from_graph"/>
+                <end_point fn_name="insert_missing_io_tag_info_from_graph"/>
                 <end_point fn_name="check_ioputs_have_origins"/>
             </output>
             <output name="graphs">
-                <end_point fn_name="insert_missing_io_tags_from_graph"/>
+                <end_point fn_name="insert_missing_io_tag_info_from_graph"/>
             </output>
         </node>
         <node fn_name="prepare_src">
@@ -98,7 +98,7 @@
                 <end_point fn_name="parse_mr_files"/>
             </output>
         </node>
-        <node fn_name="insert_missing_io_tags_from_graph">
+        <node fn_name="insert_missing_io_tag_info_from_graph">
             <output name="null">
                 <end_point fn_name="check_ioputs_have_origins"/>
             </output>
@@ -112,7 +112,7 @@
             <output name="fs">
                 <end_point fn_name="prepare_src"/>
                 <end_point fn_name="generate_xml_content_from_children"/>
-                <end_point fn_name="insert_missing_io_tags_from_graph"/>
+                <end_point fn_name="insert_missing_io_tag_info_from_graph"/>
                 <end_point fn_name="check_ioputs_have_origins"/>
                 <end_point fn_name="parse_mr_files"/>
                 <end_point fn_name="generate_src"/>
@@ -124,13 +124,13 @@
             <output name="path">
                 <end_point fn_name="prepare_src"/>
                 <end_point fn_name="generate_xml_content_from_children"/>
-                <end_point fn_name="insert_missing_io_tags_from_graph"/>
+                <end_point fn_name="insert_missing_io_tag_info_from_graph"/>
                 <end_point fn_name="parse_mr_files"/>
                 <end_point fn_name="generate_src"/>
             </output>
             <output name="cheerio">
                 <end_point fn_name="prepare_src"/>
-                <end_point fn_name="insert_missing_io_tags_from_graph"/>
+                <end_point fn_name="insert_missing_io_tag_info_from_graph"/>
                 <end_point fn_name="check_ioputs_have_origins"/>
                 <end_point fn_name="parse_mr_files"/>
                 <end_point fn_name="generate_src"/>
