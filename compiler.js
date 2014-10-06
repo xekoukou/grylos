@@ -885,7 +885,7 @@ generate_xml_content_from_children(source_path, $);
 fs.writeFileSync(source_path + ".xml", $.html());
 
 ///////////////////////////////////////////////////////////////////
-//insert_missing_io_tags
+//insert_missing_io_tag_info_from_graph
 
 ///////////////////////////
 graphs.forEach(function(graph, index) {
@@ -1123,7 +1123,7 @@ $("outputs output").each(function() {
             var edge = null;
 
             function traverse(pointer, edge) {
-                set_cpath();
+                set_cpath(pointer);
                 //check whether the node has already been traversed
                 if (typeof flattened_graph[cpath] == "undefined") {
                     //insert the new node
@@ -1136,9 +1136,9 @@ $("outputs output").each(function() {
                     //Add the edge from which we arrived here.
                     if (edge != null) {
                         if (typeof node.inputs[edge.o_name] == "undefined") {
-                            node.inputs[edge.o_name] = {};
+                            node.inputs[edge.origin_name] = {};
                         }
-                        node.inputs[edge.o_name][edge.e_name] = edge;
+                        node.inputs[edge.origin_name][edge.end_name] = edge;
                     }
 
                     var xml_file = fs.readFileSync(cpath + ".xml", {
@@ -1150,10 +1150,10 @@ $("outputs output").each(function() {
                     });
 
                     $("outputs output[side-effect!='true']").each(function() {
-                        var oname = $(this).attr("name");
-                        if ($("origin", this).length == 0) {} else {
-
-                        }
+                        var origin_name = $(this).attr("name");
+                        if ($("origin", this).length == 0) {
+                         var edge={ }
+                        } else {}
                     });
 
                 }
