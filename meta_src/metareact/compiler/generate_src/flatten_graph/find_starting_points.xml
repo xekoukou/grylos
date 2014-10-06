@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<root>
+    <info>
+        <name> find_starting_points </name>
+        <description> It finds all functions that have no inputs (except from side-effects). </description>
+    </info>
+    <inputs>
+        <input name="source_path"> </input>
+        <input name="fs"/>
+        <input name="path"/>
+        <input name="cheerio"/>
+        <input name="xml_files" side-effect="true"/>
+    </inputs>
+    <outputs>
+        <output generated="true" name="starting_points"/>
+    </outputs>
+</root>

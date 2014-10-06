@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<root>
+    <info>
+        <name> check_ioputs_have_origins </name>
+        <description> All ioputs that that are in the xml of a subgraph should have origin tags. </description>
+    </info>
+    <inputs>
+        <input name="cheerio">
+        </input>
+        <input name="fs">
+        </input>
+        <input name="xml_files" side-effect="true">
+        </input>
+        <input generated="true" name="mr_file_paths"/>
+        <input generated="true" name="null"/>
+    </inputs>
+    <outputs>
+        <output name="error" side-effect="true">
+            <description>It prints an error when there are ioputs that do not have origin tags.</description>
+        </output>
+        <output generated="true" name="null"/>
+    </outputs>
+</root>

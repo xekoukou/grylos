@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<root>
+    <info>
+        <name> flatten_the_graph </name>
+        <description> It flattens the graph. </description>
+    </info>
+    <inputs>
+        <input name="source_path"> </input>
+        <input name="xml_files" side-effect="true"/>
+        <input name="fs"/>
+        <input name="cheerio"/>
+        <input generated="true" name="starting_points"/>
+    </inputs>
+    <outputs>
+        <output name="flattened_graph"/>
+    </outputs>
+</root>

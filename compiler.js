@@ -885,7 +885,7 @@ generate_xml_content_from_children(source_path, $);
 fs.writeFileSync(source_path + ".xml", $.html());
 
 ///////////////////////////////////////////////////////////////////
-//insert_missing_io_tag_info_from_graph
+//insert_missing_io_tags_from_graph
 
 ///////////////////////////
 graphs.forEach(function(graph, index) {
