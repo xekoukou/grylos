@@ -300,7 +300,6 @@ exec = require('execSync');
             //store the function names of this code with the rest of functions
             function_names.push(functions);
         });
-        console.log(function_names);
 
         ///////////////////////////////////////////////////////////////
         //find_end_points
@@ -537,7 +536,6 @@ exec = require('execSync');
 
         });
 
-        console.log(graphs);
 
 
         //////////////////////////////////////////////////////////////////

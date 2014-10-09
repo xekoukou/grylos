@@ -12,6 +12,8 @@
         <input generated="true" name="starting_points"/>
     </inputs>
     <outputs>
+<!--
         <output name="flattened_graph"/>
+-->
     </outputs>
 </root>
