@@ -67,7 +67,7 @@
         </output>
     </outputs>
     <graph generated="true">
-        <node fn_name="main">
+        <node fn_name="main" asynchronous="true" concurrent="true">
             <output name="source_path">
                 <end_point fn_name="generate_xml_content_from_children"/>
                 <end_point fn_name="parse_mr_files"/>

@@ -594,7 +594,7 @@ exec = require('execSync');
             var paths = graph[fn_name]["paths"];
             //Adds the node.
             //TODO add the properties
-            $("graph").append("<node fn_name='" + fn_name + "' " + ((graph[fn_name].properties.asynchronous) ? "asynchronous='" + graph[fn_name].properties.asynchronous + "' " : "") + ">" + "</node>");
+            $("graph").append("<node fn_name='" + fn_name + "' " + ((graph[fn_name].properties.asynchronous) ? "asynchronous='" + graph[fn_name].properties.asynchronous + "'" : "") +" "+ ((graph[fn_name].properties.concurrent) ? "concurrent='" + graph[fn_name].properties.concurrent + "' " : "") + ">" + "</node>");
 
             paths.forEach(function(path) {
                 //Adds one output tag per vname.

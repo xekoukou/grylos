@@ -1,4 +1,4 @@
-        main:c                                                       generate_xml_content_from_children
+        main:ca                                                      generate_xml_content_from_children
          |---------------(source_path)----------------------------------------------------------|         insert_missing_io_tags_from_graph 
          |----------------------------------               parse_mr_files    /--(null)----------|--(null)-----------|                                       
          |                  prepare_src    \---(source_path)------|-----------                                      |          check_ioputs_have_origins     check_only_side_effects_exist                          
