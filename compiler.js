@@ -267,16 +267,17 @@ exec = require('execSync');
                             var function_name = {
                                 x: x,
                                 y: y,
-                                fn_name: value[0]
+                                fn_name: value[0],
+                                properties: {}
                             };
                             if (value.length > 1) {
                                 for (var i = 0; i < value[1].length; i++) {
                                     var xar = value[1].charAt(i);
                                     if (xar == "c") {
-                                        function_name.concurrent = "true";
+                                        function_name.properties.concurrent = "true";
                                     } else {
                                         if (xar == "a") {
-                                            function_name.asynchronous = "true";
+                                            function_name.properties.asynchronous = "true";
                                         } else {
                                             console.log("Error: There is no option '" + xar + "' for a function");
                                             console.log("File: " + mr_file_paths[index]);
@@ -324,7 +325,10 @@ exec = require('execSync');
                             if (!lend_points[y]) {
                                 lend_points[y] = new Object();
                             }
-                            lend_points[y][x] = fn.fn_name;
+                            lend_points[y][x] = {
+                                fn_name: fn.fn_name,
+                                properties: fn.properties
+                            };
 
                             y++;
                             if (y >= code.length) {
@@ -361,7 +365,7 @@ exec = require('execSync');
                     var path = {
                         y: +y_key,
                         x: +x_key,
-                        origin_fn_name: lend_points[y_key][x_key]
+                        origin: lend_points[y_key][x_key]
                     };
                     while (true) {
                         //Checking which way to go next.
@@ -463,7 +467,7 @@ exec = require('execSync');
                                 //Checking if this is the end of the path.
                                 if (xar == "|") {
 
-                                    path.end_fn_name = lend_points[path.y][path.x];
+                                    path.end_fn_name = lend_points[path.y][path.x].fn_name;
                                     break;
 
                                 } else {
@@ -511,7 +515,6 @@ exec = require('execSync');
 
 
 
-
             //check that all paths have value names and concatenate paths with same origin
             var graph = new Object();
 
@@ -522,11 +525,14 @@ exec = require('execSync');
                     process.exit(0);
                 }
 
-                if (!graph[each.origin_fn_name]) {
-                    graph[each.origin_fn_name] = [];
+                if (!graph[each.origin.fn_name]) {
+                    graph[each.origin.fn_name] = {
+                        properties: each.origin.properties,
+                        paths: []
+                    };
                 }
-                graph[each.origin_fn_name].push(each);
-                delete(each.origin_fn_name);
+                graph[each.origin.fn_name]["paths"].push(each);
+                delete(each.origin);
 
             });
 
@@ -534,6 +540,8 @@ exec = require('execSync');
             graphs.push(graph);
 
         });
+
+        console.log(graphs);
 
 
         //////////////////////////////////////////////////////////////////
@@ -547,7 +555,7 @@ exec = require('execSync');
         var vnames = {};
         Object.keys(graph).forEach(function(fn_name) {
             var lvnames = {};
-            graph[fn_name].forEach(function(path) {
+            graph[fn_name]["paths"].forEach(function(path) {
                 lvnames[path.vname] = null;
             });
             Object.keys(lvnames).forEach(function(item) {
@@ -587,11 +595,12 @@ exec = require('execSync');
         $("root").append("<graph generated='true'> </graph>");
         Object.keys(graph).forEach(function(fn_name) {
 
-            var node = graph[fn_name];
+            var paths = graph[fn_name]["paths"];
             //Adds the node.
+            //TODO add the properties
             $("graph").append("<node fn_name='" + fn_name + "'>" + "</node>");
 
-            node.forEach(function(path) {
+            paths.forEach(function(path) {
                 //Adds one output tag per vname.
                 if ($("graph node[fn_name='" + fn_name + "'] output[name='" + path.vname + "']").length == 0) {
                     $("graph node[fn_name='" + fn_name + "']").append("<output name='" + path.vname + "'> </ouptut>");
@@ -937,7 +946,7 @@ graphs.forEach(function(graph, index) {
         if (o("outputs").length == 0) {
             o("root").append("<outputs/>");
         }
-        graph[fn_name].forEach(function(path) {
+        graph[fn_name]["paths"].forEach(function(path) {
             //Add only one output per vname.
             if (o("outputs output[name='" + path.vname + "']").length == 0) {
                 if (obottom || (path.vname == "null")) {

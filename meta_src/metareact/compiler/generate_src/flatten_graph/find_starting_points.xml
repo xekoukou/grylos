@@ -12,6 +12,6 @@
         <input name="xml_files" side-effect="true"/>
     </inputs>
     <outputs>
-        <output generated="true" name="starting_points"/>
+        
     </outputs>
 </root>

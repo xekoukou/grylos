@@ -16,25 +16,8 @@
         </input>
     </inputs>
     <outputs>
-        <output name="error" generated="true">
-            <description> It returns an error when a type of attribute does not exist.</description>
-            <origin origin_name="error" origin_location="find_functions" generated="true"/>
-        </output>
-        <output name="graphs" generated="true">
-            <description> An object representation of the graph that is in the mr files. </description>
-            <origin origin_name="graphs" origin_location="path_traversal" generated="true"/>
-        </output>
+        
+        
     </outputs>
-    <graph generated="true">
-        <node fn_name="find_functions">
-            <output name="function_names">
-                <end_point fn_name="find_end_points"/>
-            </output>
-        </node>
-        <node fn_name="find_end_points">
-            <output name="end_points">
-                <end_point fn_name="path_traversal"/>
-            </output>
-        </node>
-    </graph>
+    
 </root>

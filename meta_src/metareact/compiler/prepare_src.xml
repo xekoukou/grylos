@@ -6,21 +6,9 @@
     </info>
     <outputs>
         <output name="null">
-            <origin origin_name="null" origin_location="delete_generated_src" generated="true"/>
-            <origin origin_name="null" origin_location="remove_generated_XML" generated="true"/>
-            <origin origin_name="null" origin_location="validate_XML" generated="true"/>
-        </output>
-        <output name="deleted_src_files" side-effect="true" generated="true">
-            <description>It deletes all the generated src files.</description>
-            <origin origin_name="deleted_src_files" origin_location="delete_generated_src" generated="true"/>
-        </output>
-        <output name="cleaned_xml_files" side-effect="true" generated="true">
-            <description>It saves the cleaned xml_files.</description>
-            <origin origin_name="cleaned_xml_files" origin_location="remove_generated_XML" generated="true"/>
-        </output>
-        <output name="xml_errors" side-effect="true" generated="true">
-            <description>It prints possible xml errors.</description>
-            <origin origin_name="xml_errors" origin_location="validate_XML" generated="true"/>
+            
+            
+            
         </output>
     </outputs>
     <inputs>
@@ -52,5 +40,5 @@
             <origin origin_name="cheerio" origin_location="remove_generated_XML"/>
         </input>
     </inputs>
-    <graph generated="true"> </graph>
+    
 </root>
