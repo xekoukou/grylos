@@ -27,47 +27,6 @@ exec = require('execSync');
 
 ////////////////
 {
-    /////////////////////////////////////////////////////////////
-    //validate_XML
-    /////////////
-    function validateXML(cpath) {
-
-        //Check if it is a file or a directory.
-        var files = fs.readdirSync(cpath);
-        files.forEach(function(file, index, files) {
-            var stat = fs.statSync(cpath + "/" + file);
-
-            if (stat.isFile()) {
-
-                //If it is an xml file, validate it. 
-                if (path.extname(file) == ".xml") {
-
-                    var result = exec.exec("xmllint --format --noout " + cpath + "/" + file + " 1>&2");
-
-                    if (result.stdout !== "") {
-                        console.log("XML Error:\n" + result.stdout);
-                        process.exit(-1);
-                    }
-
-                }
-
-            } else {
-                if (stat.isDirectory()) {
-                    //Recursively operate on the subdirectories.
-                    validateXML(cpath + "/" + file);
-                }
-
-            }
-
-        });
-
-
-
-
-    }
-
-    validateXML(source_path);
-
     ///////////////////////////////////////////////////////////
     //remove_generated_XML
 
@@ -116,7 +75,6 @@ exec = require('execSync');
 
             );
         }
-
         remove_generated_XML_rec(cpath);
 
         //remove for the root xml file
@@ -141,6 +99,48 @@ exec = require('execSync');
     }
 
     remove_generated_XML(source_path);
+
+
+    /////////////////////////////////////////////////////////////
+    //validate_XML
+    /////////////
+    function validateXML(cpath) {
+
+        //Check if it is a file or a directory.
+        var files = fs.readdirSync(cpath);
+        files.forEach(function(file, index, files) {
+            var stat = fs.statSync(cpath + "/" + file);
+
+            if (stat.isFile()) {
+
+                //If it is an xml file, validate it. 
+                if (path.extname(file) == ".xml") {
+
+                    var result = exec.exec("xmllint --format --noout " + cpath + "/" + file + " 1>&2");
+
+                    if (result.stdout !== "") {
+                        console.log("XML Error:\n" + result.stdout);
+                        process.exit(-1);
+                    }
+
+                }
+
+            } else {
+                if (stat.isDirectory()) {
+                    //Recursively operate on the subdirectories.
+                    validateXML(cpath + "/" + file);
+                }
+
+            }
+
+        });
+
+
+
+
+    }
+
+    validateXML(source_path);
 
     //////////////////////////////////////////////////////////
     //delete_generated_src
@@ -480,9 +480,6 @@ exec = require('execSync');
                                             if (each == "p") {
                                                 path.passive = true;
                                             } else {
-                                                if (each == "a") {
-                                                    path.asynchronous = true;
-                                                } else {
                                                     if (each == "h") {
                                                         path.historical = true;
                                                     } else {
@@ -492,7 +489,6 @@ exec = require('execSync');
                                                         process.exit(0);
 
                                                     }
-                                                }
                                             }
                                         }
 
@@ -598,7 +594,7 @@ exec = require('execSync');
             var paths = graph[fn_name]["paths"];
             //Adds the node.
             //TODO add the properties
-            $("graph").append("<node fn_name='" + fn_name + "'>" + "</node>");
+            $("graph").append("<node fn_name='" + fn_name + "' " + ((graph[fn_name].properties.asynchronous) ? "asynchronous='" + graph[fn_name].properties.asynchronous + "' " : "") + ">" + "</node>");
 
             paths.forEach(function(path) {
                 //Adds one output tag per vname.
@@ -607,7 +603,7 @@ exec = require('execSync');
 
                 }
                 //Adds multiple end_points per vname with their properties.
-                $("graph node[fn_name='" + fn_name + "'] output[name='" + path.vname + "']").append("<end_point fn_name='" + path.end_fn_name + "' " + ((path.historical) ? "historical='" + path.historical + "' " : "") + ((path.passive) ? "passive='" + path.passive + "' " : "") + ((path.asynchronous) ? "asynchronous='" + path.asynchronous + "' " : "") + "></end_point>");
+                $("graph node[fn_name='" + fn_name + "'] output[name='" + path.vname + "']").append("<end_point fn_name='" + path.end_fn_name + "' " + ((path.historical) ? "historical='" + path.historical + "' " : "") + ((path.passive) ? "passive='" + path.passive + "' " : "") + "></end_point>");
 
 
             });

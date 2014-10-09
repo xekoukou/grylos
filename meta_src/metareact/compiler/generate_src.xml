@@ -20,9 +20,12 @@
         <input name="cheerio">
             <origin origin_name="cheerio" origin_location="flatten_graph"/>
         </input>
+        <input generated="true" name="null"/>
     </inputs>
     <outputs>
-        
+        <output name="flattened_graph" generated="true">
+            <origin origin_name="flattened_graph" origin_location="flatten_graph/create_flattened_graph" generated="true"/>
+        </output>
     </outputs>
-    
+    <graph generated="true"> </graph>
 </root>

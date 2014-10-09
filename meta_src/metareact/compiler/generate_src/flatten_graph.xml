@@ -26,7 +26,15 @@
         </input>
     </inputs>
     <outputs>
-        
+        <output name="flattened_graph" generated="true">
+            <origin origin_name="flattened_graph" origin_location="create_flattened_graph" generated="true"/>
+        </output>
     </outputs>
-    
+    <graph generated="true">
+        <node fn_name="find_starting_points">
+            <output name="starting_points">
+                <end_point fn_name="create_flattened_graph"/>
+            </output>
+        </node>
+    </graph>
 </root>

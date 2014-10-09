@@ -9,6 +9,7 @@
         <input name="xml_files" side-effect="true"/>
         <input name="fs"/>
         <input name="cheerio"/>
+        <input generated="true" name="starting_points"/>
     </inputs>
     <outputs>
         <output name="flattened_graph"/>

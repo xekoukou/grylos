@@ -6,8 +6,9 @@
     </info>
     <inputs>
         <input name="srcodes"/>
+        <input generated="true" name="function_names"/>
     </inputs>
     <outputs>
-        
+        <output generated="true" name="end_points"/>
     </outputs>
 </root>

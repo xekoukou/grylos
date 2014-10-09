@@ -14,6 +14,7 @@
         <input name="xml_files" side-effect="true">
             <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
         </input>
+        <input generated="true" name="null"/>
     </inputs>
     <outputs>
         <output name="updated_xml_files" side-effect="true">
@@ -22,5 +23,6 @@
         <output name="error_msgs" side-effect="true">
             <description>It prints an error msg when there are multiple ioputs with the same name on a folder.</description>
         </output>
+        <output generated="true" name="null"/>
     </outputs>
 </root>

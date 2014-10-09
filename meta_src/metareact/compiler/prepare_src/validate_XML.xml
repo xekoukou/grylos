@@ -16,6 +16,7 @@
         <input name="xml_files" side-effect="true">
             <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
         </input>
+        <input generated="true" name="null"/>
     </inputs>
     <outputs>
         <output name="xml_errors" side-effect="true">

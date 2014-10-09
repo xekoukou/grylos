@@ -25,6 +25,11 @@
         <input name="mr_files" side-effect="true">
             <description>It is provided all the mr files of the source_path directory and its subdirectories.</description>
         </input>
+        <input name="disk_mr_files" side-effect="true" generated="true">
+            <description>It is provided all the mr files of the source_path directory and its subdirectories.</description>
+            <origin origin_name="disk_mr_files" origin_location="find_mr_file_paths" generated="true"/>
+        </input>
+        <input generated="true" name="null"/>
     </inputs>
     <outputs>
         <output name="xml_files" side-effect="true">
@@ -36,7 +41,7 @@
             <description>It prints an error when an xml file is not there and exits.</description>
         </output>
         <output name="null">
-            
+            <origin origin_name="null" origin_location="insert_graph_content_to_xml_files" generated="true"/>
         </output>
         <output name="mr_file_paths">
             <origin origin_name="mr_file_paths" origin_location="find_mr_file_paths"/>
@@ -50,5 +55,32 @@
             <origin origin_name="error" origin_location="create_graphs/find_functions"/>
         </output>
     </outputs>
-    
+    <graph generated="true">
+        <node fn_name="find_mr_file_paths">
+            <output name="mr_files">
+                <end_point fn_name="split_srcode_into_lines"/>
+            </output>
+            <output name="mr_file_paths">
+                <end_point fn_name="create_graphs"/>
+                <end_point fn_name="insert_graph_content_to_xml_files"/>
+                <end_point fn_name="check_same_output_name"/>
+            </output>
+        </node>
+        <node fn_name="split_srcode_into_lines">
+            <output name="srcodes">
+                <end_point fn_name="create_graphs"/>
+            </output>
+        </node>
+        <node fn_name="create_graphs">
+            <output name="graphs">
+                <end_point fn_name="insert_graph_content_to_xml_files"/>
+                <end_point fn_name="check_same_output_name"/>
+            </output>
+        </node>
+        <node fn_name="check_same_output_name">
+            <output name="null">
+                <end_point fn_name="insert_graph_content_to_xml_files"/>
+            </output>
+        </node>
+    </graph>
 </root>
