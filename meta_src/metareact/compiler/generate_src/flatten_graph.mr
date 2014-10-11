@@ -1,2 +1,6 @@
 find_starting_points                            create_flattened_graph 
          |--------------(starting_points)-----------|
+                                                    |
+                                                    |       
+find_node_properties                                |
+         |--------------(node_properties)-----------|

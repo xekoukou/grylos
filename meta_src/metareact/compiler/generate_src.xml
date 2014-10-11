@@ -23,8 +23,9 @@
         <input generated="true" name="null"/>
     </inputs>
     <outputs>
-        <output name="flattened_graph" generated="true">
-            <origin origin_name="flattened_graph" origin_location="flatten_graph/create_flattened_graph" generated="true"/>
+        <output name="error" generated="true">
+            <description> It returns an error when we have set the asynchronous property on a "subgraph" node.</description>
+            <origin origin_name="error" origin_location="flatten_graph/find_node_properties" generated="true"/>
         </output>
     </outputs>
     <graph generated="true"> </graph>

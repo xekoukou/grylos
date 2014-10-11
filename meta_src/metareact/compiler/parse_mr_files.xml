@@ -56,7 +56,7 @@
         </output>
     </outputs>
     <graph generated="true">
-        <node fn_name="find_mr_file_paths">
+        <node fn_name="find_mr_file_paths" asynchronous="true" concurrent="true">
             <output name="mr_files">
                 <end_point fn_name="split_srcode_into_lines"/>
             </output>

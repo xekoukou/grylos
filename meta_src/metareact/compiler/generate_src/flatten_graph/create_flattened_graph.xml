@@ -10,9 +10,10 @@
         <input name="fs"/>
         <input name="cheerio"/>
         <input generated="true" name="starting_points"/>
+        <input generated="true" name="node_properties"/>
     </inputs>
     <outputs>
-<!--
+        <!--
         <output name="flattened_graph"/>
 -->
     </outputs>

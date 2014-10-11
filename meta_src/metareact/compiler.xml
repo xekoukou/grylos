@@ -45,9 +45,7 @@
             <origin origin_name="file_missing_errors" origin_location="parse_mr_files"/>
             <origin origin_name="error" origin_location="check_only_side_effects_exist"/>
             <origin origin_name="error" origin_location="check_ioputs_have_origins"/>
-        </output>
-        <output name="flattened_graph" generated="true">
-            <origin origin_name="flattened_graph" origin_location="generate_src/flatten_graph/create_flattened_graph" generated="true"/>
+            <origin origin_name="error" origin_location="generate_src/flatten_graph/find_node_properties"/>
         </output>
         <output name="filled_xml_files" side-effect="true" generated="true">
             <description>It saves the xml files with additional generated content.</description>
@@ -67,7 +65,7 @@
         </output>
     </outputs>
     <graph generated="true">
-        <node fn_name="main" asynchronous="true" concurrent="true">
+        <node fn_name="main">
             <output name="source_path">
                 <end_point fn_name="generate_xml_content_from_children"/>
                 <end_point fn_name="parse_mr_files"/>

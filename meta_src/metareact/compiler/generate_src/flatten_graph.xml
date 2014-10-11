@@ -7,32 +7,43 @@
     <inputs>
         <input name="source_path">
             <origin origin_name="source_path" origin_location="find_starting_points"/>
+            <origin origin_name="source_path" origin_location="find_node_properties"/>
             <origin origin_name="source_path" origin_location="create_flattened_graph"/>
         </input>
         <input name="fs">
             <origin origin_name="fs" origin_location="find_starting_points"/>
+            <origin origin_name="fs" origin_location="find_node_properties"/>
             <origin origin_name="fs" origin_location="create_flattened_graph"/>
         </input>
         <input name="path">
             <origin origin_name="path" origin_location="find_starting_points"/>
+            <origin origin_name="path" origin_location="find_node_properties"/>
         </input>
         <input name="cheerio">
             <origin origin_name="cheerio" origin_location="find_starting_points"/>
+            <origin origin_name="cheerio" origin_location="find_node_properties"/>
             <origin origin_name="cheerio" origin_location="create_flattened_graph"/>
         </input>
         <input name="xml_files">
             <origin origin_name="xml_files" origin_location="find_starting_points"/>
+            <origin origin_name="xml_files" origin_location="find_node_properties"/>
             <origin origin_name="xml_files" origin_location="create_flattened_graph"/>
         </input>
     </inputs>
     <outputs>
-        <output name="flattened_graph" generated="true">
-            <origin origin_name="flattened_graph" origin_location="create_flattened_graph" generated="true"/>
+        <output name="error" generated="true">
+            <description> It returns an error when we have set the asynchronous property on a "subgraph" node.</description>
+            <origin origin_name="error" origin_location="find_node_properties" generated="true"/>
         </output>
     </outputs>
     <graph generated="true">
         <node fn_name="find_starting_points">
             <output name="starting_points">
+                <end_point fn_name="create_flattened_graph"/>
+            </output>
+        </node>
+        <node fn_name="find_node_properties">
+            <output name="node_properties">
                 <end_point fn_name="create_flattened_graph"/>
             </output>
         </node>

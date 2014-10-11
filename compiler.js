@@ -479,15 +479,15 @@ exec = require('execSync');
                                             if (each == "p") {
                                                 path.passive = true;
                                             } else {
-                                                    if (each == "h") {
-                                                        path.historical = true;
-                                                    } else {
-                                                        console.log("\nError: mr_file:" + mr_file_paths[index] + ".mr(line: " + path.y + "," + "position: " + path.x + ")");
-                                                        console.log("Wrong option type.");
-                                                        format_XML(source_path);
-                                                        process.exit(0);
+                                                if (each == "h") {
+                                                    path.historical = true;
+                                                } else {
+                                                    console.log("\nError: mr_file:" + mr_file_paths[index] + ".mr(line: " + path.y + "," + "position: " + path.x + ")");
+                                                    console.log("Wrong option type.");
+                                                    format_XML(source_path);
+                                                    process.exit(0);
 
-                                                    }
+                                                }
                                             }
                                         }
 
@@ -592,7 +592,7 @@ exec = require('execSync');
             var paths = graph[fn_name]["paths"];
             //Adds the node.
             //TODO add the properties
-            $("graph").append("<node fn_name='" + fn_name + "' " + ((graph[fn_name].properties.asynchronous) ? "asynchronous='" + graph[fn_name].properties.asynchronous + "'" : "") +" "+ ((graph[fn_name].properties.concurrent) ? "concurrent='" + graph[fn_name].properties.concurrent + "' " : "") + ">" + "</node>");
+            $("graph").append("<node fn_name='" + fn_name + "' " + ((graph[fn_name].properties.asynchronous) ? "asynchronous='" + graph[fn_name].properties.asynchronous + "'" : "") + " " + ((graph[fn_name].properties.concurrent) ? "concurrent='" + graph[fn_name].properties.concurrent + "' " : "") + ">" + "</node>");
 
             paths.forEach(function(path) {
                 //Adds one output tag per vname.
@@ -1082,6 +1082,16 @@ $("outputs output").each(function() {
     //flatten_graph
     ////////////////
     {
+        //TODO we need to put reusable functions somewhere
+        function set_cpath(pointer, start, end) {
+            var cpath = pointer[start];
+            for (var i = start + 1; i <= end; i++) {
+                cpath = cpath + "/" + pointer[i];
+            }
+            return cpath;
+        }
+
+
         //////////////////////////////////////////////////////////////////
         //find_starting_points
         var starting_points;
@@ -1097,7 +1107,7 @@ $("outputs output").each(function() {
                 if (stat.isFile()) {
                     if (path.extname(file_name) == ".xml") {
                         //we check if the directory with the same name exist.
-                        if (!fs.existsSync(file_name.substring(0, file_name.length - 4))) {
+                        if (!fs.existsSync(cpath + "/" + file_name.substring(0, file_name.length - 4))) {
                             var xml_file = fs.readFileSync(cpath + "/" + file_name, {
                                 encoding: "utf-8"
                             });
@@ -1124,23 +1134,73 @@ $("outputs output").each(function() {
 
             });
         }
-        var parent = [];
+        var parent = [""];
         find_starting_points_rec(source_path, parent);
         console.log(starting_points);
+
+
+        //////////////////////////////////////////////////////////////////
+        //find_node_properties
+        var node_properties;
+        //////////////////////////////
+        node_properties = {};
+
+        function find_node_properties_rec(cpath, parent) {
+
+
+            var xml_file = fs.readFileSync(cpath + ".xml", {
+                encoding: "utf-8"
+            });
+
+            var $ = cheerio.load(xml_file, {
+                xmlMode: true
+            });
+
+            $("graph node").each(function() {
+                var bottom = true;
+                var fn_name = $(this).attr("fn_name");
+                var child = parent.slice();
+                child.push(fn_name);
+                //we check if the directory with the same name exist.
+                if (fs.existsSync(cpath + "/" + fn_name)) {
+                    bottom = false;
+                    find_node_properties_rec(cpath + "/" + fn_name, child);
+                }
+
+                if (Object.keys($(this).get(0).attribs).length > 1) {
+                    var node = {};
+                    if ($(this).attr("concurrent") == "true") {
+                        node.concurrent = "true";
+                    }
+                    if ($(this).attr("asynchronous") == "true") {
+                        if (bottom) {
+                            node.asynchronous = "true";
+                        } else {
+                            console.log("Error: The asynchronus property has been set in a 'subgraph' node");
+                            console.log("File:" + cpath + ".mr");
+                            console.log("Fn_name:" + fn_name);
+                            process.exit(0);
+                        }
+                    }
+
+                    node_properties[set_cpath(child, 0, child.length - 1)] = node;
+
+                }
+
+            });
+
+
+
+        }
+        var parent = [""];
+        find_node_properties_rec(source_path, parent);
+        console.log(node_properties);
 
         //////////////////////////////////////////////////////////////////
         //create_flattened_graph
         var flattened_graph;
         ///////////////////////////
         flattened_graph = {};
-
-        function set_cpath(pointer, start, end) {
-            var cpath = pointer[start];
-            for (var i = start + 1; i <= end; i++) {
-                cpath = cpath + "/" + pointer[i];
-            }
-        }
-
 
         starting_points.forEach(function(pointer) {
             var cpath;
