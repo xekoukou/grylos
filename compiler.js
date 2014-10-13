@@ -1144,6 +1144,7 @@ $("outputs output").each(function() {
         var node_properties;
         //////////////////////////////
         node_properties = {};
+        var concurrent_index = 0;
 
         function find_node_properties_rec(cpath, parent) {
 
@@ -1170,7 +1171,8 @@ $("outputs output").each(function() {
                 if (Object.keys($(this).get(0).attribs).length > 1) {
                     var node = {};
                     if ($(this).attr("concurrent") == "true") {
-                        node.concurrent = "true";
+                        concurrent_index++;
+                        node.concurrent = concurrent_index;
                     }
                     if ($(this).attr("asynchronous") == "true") {
                         if (bottom) {
@@ -1203,23 +1205,31 @@ $("outputs output").each(function() {
         flattened_graph = {};
 
         starting_points.forEach(function(pointer) {
-            var cpath;
-            var edge = null;
 
             function traverse(pointer, edge) {
-                cpath = set_cpath(pointer, 0, pointer.length - 1);
+                var cpath = set_cpath(pointer, 0, pointer.length - 1);
                 //check whether the node has already been traversed
                 if (typeof flattened_graph[cpath] == "undefined") {
                     //insert the new node
                     flattened_graph[cpath] = {
                         pointer: pointer,
                         inputs: {},
-                        outputs: {}
+                        outputs: {},
+                        properties:{}
                     };
+
+                    //add the inherited node properties
+                    for (var key in node_properties) {
+                        if (key.indexOf(cpath) == 0) {
+                            for (var k in node_properties[key]) flattened_graph[cpath]["properties"][k] = node_properties[key][k];
+                        }
+                    };
+
+
                     var node = flattened_graph[cpath];
                     //Add the edge from which we arrived here.
                     if (edge != null) {
-                        if (typeof node.inputs[edge.o_name] == "undefined") {
+                        if (typeof node.inputs[edge.origin_name] == "undefined") {
                             node.inputs[edge.origin_name] = {};
                         }
                         node.inputs[edge.origin_name][edge.end_name] = edge;
@@ -1235,20 +1245,17 @@ $("outputs output").each(function() {
                     //we are at the bottom and for each output, we need to go up till we find where we send the output.
                     $("outputs output[side-effect!='true']").each(function() {
                         var origin_name = $(this).attr("name");
-                        var i = 1;
-                        while (i <= pointer.length) {
-                            var cpath;
-                            if (pointer.length - i - 1 >= 0) {
-                                cpath = source_path + "/" + set_cpath(pointer, 0, pointer.length - i - 1);
-                            } else {
-                                cpath = source_path;
-                            }
-                            var origin_location = set_cpath(pointer, pointer.length - i, pointer.length - 1);
+                         for(var i=pointer.length-2; i>=0; i--){
+var cpath;
+                               if(i!=0){
+                                cpath = source_path + set_cpath(pointer, 0, i);
+}else{
+cpath=source_path;
+}
+                            var origin_location = set_cpath(pointer, i+1, pointer.length - 1);
 
 
 
-
-                            i++;
                         }
                     });
 
