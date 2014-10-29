@@ -1215,7 +1215,7 @@ $("outputs output").each(function() {
                         pointer: pointer,
                         inputs: {},
                         outputs: {},
-                        properties:{}
+                        properties: {}
                     };
 
                     //add the inherited node properties
@@ -1245,14 +1245,14 @@ $("outputs output").each(function() {
                     //we are at the bottom and for each output, we need to go up till we find where we send the output.
                     $("outputs output[side-effect!='true']").each(function() {
                         var origin_name = $(this).attr("name");
-                         for(var i=pointer.length-2; i>=0; i--){
-var cpath;
-                               if(i!=0){
+                        for (var i = pointer.length - 2; i >= 0; i--) {
+                            var cpath;
+                            if (i != 0) {
                                 cpath = source_path + set_cpath(pointer, 0, i);
-}else{
-cpath=source_path;
-}
-                            var origin_location = set_cpath(pointer, i+1, pointer.length - 1);
+                            } else {
+                                cpath = source_path;
+                            }
+                            var origin_location = set_cpath(pointer, i + 1, pointer.length - 1);
 
 
 
