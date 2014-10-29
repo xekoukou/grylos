@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<root>
+    <info>
+        <name> find_node_properties </name>
+        <description> It creates a list with all the node properties of all the nodes. </description>
+    </info>
+    <inputs>
+        <input name="source_path"> </input>
+        <input name="fs"/>
+        <input name="path"/>
+        <input name="cheerio"/>
+        <input name="xml_files" side-effect="true"/>
+    </inputs>
+    <outputs>
+        <output name="error">
+            <description> It returns an error when we have set the asynchronous property on a "subgraph" node.</description>
+        </output>
+        <output generated="true" name="node_properties"/>
+    </outputs>
+</root>
