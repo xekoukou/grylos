@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <root>
     <info>
-        <name> compiler </name>
-        <desciption> This is the main program that compiles the meta source code into source code </desciption>
+        <name> react </name>
+        <desciption> This is the root model of a program that compiles the metareact model and source code into source code </desciption>
     </info>
     <inputs>
         <input name="xml_files" side-effect="true">
