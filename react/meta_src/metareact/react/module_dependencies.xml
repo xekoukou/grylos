@@ -4,18 +4,10 @@
         <name> module_dependencies </name>
         <description> It provides the dependency modules. </description>
     </info>
-    <io>
-        <inputs>
-  </inputs>
-        <outputs>
-            <output name="fs">
-    </output>
-            <output name="exec">
-    </output>
-            <output name="path">
-    </output>
-            <output name="cheerio">
-    </output>
-        </outputs>
-    </io>
+    <outputs>
+        <output generated="true" name="fs"/>
+        <output generated="true" name="exec"/>
+        <output generated="true" name="path"/>
+        <output generated="true" name="cheerio"/>
+    </outputs>
 </root>
