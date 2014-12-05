@@ -7,6 +7,7 @@
     <outputs>
         <output name="null">
             <origin origin_name="null" origin_location="delete_generated_src" generated="true"/>
+            <origin origin_name="null" origin_location="remove_generated_XML" generated="true"/>
             <origin origin_name="null" origin_location="validate_XML" generated="true"/>
         </output>
         <output name="deleted_src_files" side-effect="true" generated="true">

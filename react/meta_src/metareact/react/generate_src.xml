@@ -8,7 +8,7 @@
         <input name="source_path">
             <origin origin_name="source_path" origin_location="flatten_graph"/>
         </input>
-        <input name="xml_files">
+        <input name="xml_files" side-effect="true">
             <origin origin_name="xml_files" origin_location="flatten_graph"/>
         </input>
         <input name="fs">
@@ -23,10 +23,7 @@
         <input generated="true" name="null"/>
     </inputs>
     <outputs>
-        <output name="error" generated="true">
-            <description> It returns an error when we have set the asynchronous property on a "subgraph" node.</description>
-            <origin origin_name="error" origin_location="flatten_graph/find_node_properties" generated="true"/>
-        </output>
+        
     </outputs>
     <graph generated="true"> </graph>
 </root>

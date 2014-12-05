@@ -59,10 +59,6 @@
             <description>The program prints a request to be provided with the correct arguments. </description>
             <origin origin_name="console-text" origin_location="main" generated="true"/>
         </output>
-        <output name="deleted_src_files" side-effect="true" generated="true">
-            <description>It deletes all the generated src files.</description>
-            <origin origin_name="deleted_src_files" origin_location="prepare_src/delete_generated_src" generated="true"/>
-        </output>
     </outputs>
     <graph generated="true">
         <node fn_name="main">

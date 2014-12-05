@@ -667,6 +667,9 @@ function generate_xml_content_from_children(cpath, parent) {
                     var name = $(this).attr("name");
                     var generated = $(this).attr("generated");
 
+                    //We get all the attributes to check that the parent has the same attributes.
+                    var side_effect = $(this).attr("side-effect");
+
                     var outerHTML;
 
                     //To address namespace colisions,we set the origin (location and internal name) of the input.
@@ -713,7 +716,7 @@ function generate_xml_content_from_children(cpath, parent) {
 
                             //Here we also check the existence of multiple inputs that have the same origin.
                             if (exists > 1) {
-                                console.log("Error: Multiple origins with the same attributes.");
+                                console.log("Error: Multiple inputs with the same origin.");
                                 console.log("Folder: " + cpath);
                                 console.log("origin name: " + origin_name);
                                 console.log("origin location: " + origin_location);
@@ -725,7 +728,7 @@ function generate_xml_content_from_children(cpath, parent) {
                             } else {
                                 if (isTrue != exists) {
 
-                                    console.log("Error: IOput contains only part of the origins of an input of a child.");
+                                    console.log("Error: Input contains only part of the origins of an input of a child.");
                                     console.log("Folder: " + cpath);
                                     console.log("Value name: " + name);
                                     format_XML(source_path);
@@ -736,30 +739,61 @@ function generate_xml_content_from_children(cpath, parent) {
                             }
                         });
 
-                        if (isTrue == 0) {
-                            //We check if there is already an input with the same name.
-                            if (parent("inputs input[name='" + name + "']").length != 0) {
-                                console.log("Error: Multiple inputs with the same name.");
+
+                        if (isTrue == 1) {
+                            //check that the attributes of the children are the same with that of the parent.
+                            if (parent("inputs input origin[origin_name='" + origin_names[0] + "'][origin_location='" + origin_locations[0] + "']").parent().attr("side-effect") != side_effect) {
+                                console.log("Error: Child input has different attributes than its parent.");
                                 console.log("Folder: " + cpath);
-                                console.log("Name: " + name);
+                                console.log("Name: " + parent("inputs input origin[origin_name='" + origin_names[0] + "'][origin_location='" + origin_locations[0] + "']").parent().attr("name"));
                                 origin_locations.forEach(function(item, index) {
                                     console.log("Origin name: " + origin_names[index]);
                                     console.log("Origin location: " + item);
-
                                 });
-                                parent("inputs input[name='" + name + "'] origin").each(function() {
-                                    console.log("Origin name: " + $(this).attr("origin_name"));
-                                    console.log("Origin location: " + $(this).attr("origin_location"));
-                                });
-
                                 format_XML(source_path);
                                 process.exit(0);
+
+
                             }
-                            //Insert an inputs tag if it is missing.
-                            if (parent("inputs").length == 0) {
-                                parent("root").append("<inputs/>");
+                        }
+
+                        if (isTrue == 0) {
+                            //We check if there are multiple inputs with the same name.
+                            var inputs = parent("inputs input[name='" + name + "']");
+                            if (inputs.length > 1) {
+                                console.log("Error: Multiple inputs with the same name.");
+                                console.log("Folder: " + cpath);
+                                console.log("Name: " + name);
+                                format_XML(source_path);
+                                process.exit(0);
+                            } else {
+                                if (inputs.length == 1) {
+                                    //check that the attributes of the children are the same with that of the parent.
+                                    if (inputs.attr("side-effect") != side_effect) {
+                                        console.log("Error: There is an input with the same name but different attributes.");
+                                        console.log("Folder: " + cpath);
+                                        console.log("Name: " + inputs.attr("name"));
+                                        origin_locations.forEach(function(item, index) {
+                                            console.log("Origin name: " + origin_names[index]);
+                                            console.log("Origin location: " + item);
+
+                                        });
+                                        format_XML(source_path);
+                                        process.exit(0);
+                                    } else {
+                                        //We add only the contents
+                                        parent(inputs).append($(this).html());
+                                    }
+                                } else {
+                                    //There isn't an input with that name, so we add it. length==0
+                                    //Insert an inputs tag if it is missing.
+                                    if (parent("inputs").length == 0) {
+                                        parent("root").append("<inputs/>");
+                                    }
+                                    parent("inputs").append(outerHTML);
+
+                                }
                             }
-                            parent("inputs").append(outerHTML);
                         }
                     }
 
@@ -771,9 +805,12 @@ function generate_xml_content_from_children(cpath, parent) {
                     var name = $(this).attr("name");
                     var generated = $(this).attr("generated");
 
+                    //We get all the attributes to check that the parent has the same attributes.
+                    var side_effect = $(this).attr("side-effect");
+
                     var outerHTML;
 
-                    //To address namespace colisions,we set the origin (location and internal name) of the output.
+                    //To address namespace colisions,we set the origin (location and internal name) of the input.
                     var origin_locations = [];
                     var origin_names = [];
                     if (generated == "true") {
@@ -790,21 +827,39 @@ function generate_xml_content_from_children(cpath, parent) {
                     } else {
                         //if it wasn't generated we add as origin itself and remove all other origins.
 
-                        $(this).attr("generated", "true");
-                        $("origin", this).remove();
-                        var origin_location = fn_name;
-                        var origin_name = name;
-                        $(this).append("<origin origin_name='" + origin_name + "' origin_location='" + origin_location + "' generated='true'/>");
-                        origin_names.push(origin_name);
-                        origin_locations.push(origin_location);
 
+                        var outerHTML;
 
+                        //To address namespace colisions,we set the origin (location and internal name) of the output.
+                        var origin_locations = [];
+                        var origin_names = [];
+                        if (generated == "true") {
 
-                    }
-                    outerHTML = $("<div/>").append($(this).clone()).html();
+                            //Mulitple origins can exist if they are side-effects, otherwise only one.
+                            var origin = $("origin", this).each(function() {
+                                var origin_location = $(this).attr("origin_location");
+                                origin_location = fn_name + "/" + origin_location;
+                                $(this).attr("origin_location", origin_location);
+                                var origin_name = $(this).attr("origin_name");
+                                origin_names.push(origin_name);
+                                origin_locations.push(origin_location);
 
-                    //Only add it to outputs if it is an external output requirement.
-                    if (parent("graph node[fn_name='" + fn_name + "'] output[name='" + name + "']").length == 0) {
+                            });
+
+                        } else {
+                            //if it wasn't generated we add as origin itself and remove the previous origin.
+
+                            $(this).attr("generated", "true");
+                            $("origin", this).remove();
+                            var origin_location = fn_name;
+                            var origin_name = name;
+                            $(this).append("<origin origin_name='" + origin_name + "' origin_location='" + origin_location + "' generated='true'/>");
+                            origin_names.push(origin_name);
+                            origin_locations.push(origin_location);
+                        }
+
+                        outerHTML = $("<div/>").append($(this).clone()).html();
+
 
                         //We reject output if the user has already declared it. This way the user can catch values
                         //that represent the same thing.
@@ -817,7 +872,7 @@ function generate_xml_content_from_children(cpath, parent) {
 
                             //Here we also check the existence of multiple outputs that have the same origin.
                             if (exists > 1) {
-                                console.log("Error: Multiple origins with the same attributes.");
+                                console.log("Error: Multiple outputs have the same origin.");
                                 console.log("Folder: " + cpath);
                                 console.log("origin name: " + origin_name);
                                 console.log("origin location: " + origin_location);
@@ -829,7 +884,7 @@ function generate_xml_content_from_children(cpath, parent) {
                             } else {
                                 if (isTrue != exists) {
 
-                                    console.log("Error: IOput contains only part of the origins of an output of a child.");
+                                    console.log("Error: Output contains only part of the origins of an output of a child.");
                                     console.log("Folder: " + cpath);
                                     console.log("Value name: " + name);
                                     format_XML(source_path);
@@ -840,61 +895,94 @@ function generate_xml_content_from_children(cpath, parent) {
                             }
                         });
 
+                        if (isTrue == 1) {
+                            //check that the attributes of the children are the same with that of the parent.
+                            if (parent("outputs output origin[origin_name='" + origin_names[0] + "'][origin_location='" + origin_locations[0] + "']").parent().attr("side-effect") != side_effect) {
+                                console.log("Error: Child output has different attributes than its parent.");
+                                console.log("Folder: " + cpath);
+                                console.log("Name: " + parent("outputs output origin[origin_name='" + origin_names[0] + "'][origin_location='" + origin_locations[0] + "']").parent().attr("name"));
+                                origin_locations.forEach(function(item, index) {
+                                    console.log("Origin name: " + origin_names[index]);
+                                    console.log("Origin location: " + item);
+                                });
+                                format_XML(source_path);
+                                process.exit(0);
+
+
+                            }
+                        }
+
+
                         if (isTrue == 0) {
                             //We check if there is already an output with the same name.
-                            if (parent("outputs output[name='" + name + "']").length != 0) {
+                            var outputs = parent("outputs output[name='" + name + "']");
+                            if (outputs.length > 1) {
+                                console.log("Error: Multiple outputs with the same name.");
+                                console.log("Folder: " + cpath);
+                                console.log("Name: " + name);
+                                format_XML(source_path);
+                                process.exit(0);
+                            } else {
+                                if (outputs.length == 1) {
+                                    //check that the attributes of the children are the same with that of the parent.
+                                    if (outputs.attr("side-effect") != side_effect) {
+                                        console.log("Error: There is an output with the same name but different attributes.");
+                                        console.log("Folder: " + cpath);
+                                        console.log("Name: " + outputs.attr("name"));
+                                        origin_locations.forEach(function(item, index) {
+                                            console.log("Origin name: " + origin_names[index]);
+                                            console.log("Origin location: " + item);
+                                        });
+                                        format_XML(source_path);
+                                        process.exit(0);
+                                    } else {
 
-                                //if it is null, we just add the origins since there can be only one null varriable.
-                                if (name == "null") {
 
-                                    origin_locations.forEach(function(item, index) {
-                                        parent("outputs output[name='" + name + "']").append("<origin origin_name='" + origin_names[index] + "' origin_location='" + item + "' generated='true'/>");
-                                    });
-                                    return;
+                                        //There can be only one origin if it isn't a side-effect
+                                        if ((parent("origins", outputs).length > 0) && (side_effect != 'true')) {
+                                            console.log("Error: Multiple origins of the same output.");
+                                            console.log("Folder: " + cpath);
+                                            console.log("Name: " + name);
+                                            origin_locations.forEach(function(item, index) {
+                                                console.log("Origin name: " + origin_names[index]);
+                                                console.log("Origin location: " + item);
+                                            });
+                                            parent("outputs output[name='" + name + "'] origin").each(function() {
+                                                console.log("Origin name: " + $(this).attr("origin_name"));
+                                                console.log("Origin location: " + $(this).attr("origin_location"));
+                                            });
+
+
+                                            format_XML(source_path);
+                                            process.exit(0);
+
+                                        } else {
+                                            //Here this output could also be used from inside the graph.
+                                            //We add only the contents
+                                            parent(outputs).append($(this).html());
+                                        }
+                                    }
                                 } else {
-                                    console.log("Error: Multiple outputs with the same name.");
-                                    console.log("Folder: " + cpath);
-                                    console.log("Name: " + name);
-                                    origin_locations.forEach(function(item, index) {
-                                        console.log("Origin name: " + origin_names[index]);
-                                        console.log("Origin location: " + item);
+                                    //Only add it to outputs if it is an external output requirement.
+                                    if (parent("graph node[fn_name='" + fn_name + "'] output[name='" + name + "']").length == 0) {
+                                        //There isn't an output with that name, so we add it. length==0
+                                        //Insert an outputs tag if it is missing.
+                                        if (parent("outputs").length == 0) {
+                                            parent("root").append("<outputs/>");
+                                        }
+                                        parent("outputs").append(outerHTML);
 
-                                    });
-                                    parent("outputs output[name='" + name + "'] origin").each(function() {
-                                        console.log("Origin name: " + $(this).attr("origin_name"));
-                                        console.log("Origin location: " + $(this).attr("origin_location"));
-                                    });
-
-
-                                    format_XML(source_path);
-                                    process.exit(0);
+                                    }
                                 }
                             }
-                            //Insert an outputs tag if it is missing.
-                            if (parent("outputs").length == 0) {
-                                parent("root").append("<outputs/>");
-                            }
-                            parent("outputs").append(outerHTML);
                         }
                     }
-
                 });
-
-
-
-
-
-
-
-
-
             }
         }
     });
-
-
-
 }
+
 
 var xml_file = fs.readFileSync(source_path + ".xml", {
     encoding: "utf-8"
@@ -1136,7 +1224,6 @@ $("outputs output").each(function() {
         }
         var parent = [""];
         find_starting_points_rec(source_path, parent);
-        console.log(starting_points);
 
 
         //////////////////////////////////////////////////////////////////
@@ -1196,7 +1283,6 @@ $("outputs output").each(function() {
         }
         var parent = [""];
         find_node_properties_rec(source_path, parent);
-        console.log(node_properties);
 
         //////////////////////////////////////////////////////////////////
         //create_flattened_graph

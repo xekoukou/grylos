@@ -24,10 +24,10 @@
             <origin origin_name="cheerio" origin_location="find_node_properties"/>
             <origin origin_name="cheerio" origin_location="create_flattened_graph"/>
         </input>
-        <input name="xml_files">
-            <origin origin_name="xml_files" origin_location="find_starting_points"/>
-            <origin origin_name="xml_files" origin_location="find_node_properties"/>
-            <origin origin_name="xml_files" origin_location="create_flattened_graph"/>
+        <input name="xml_files" side-effect="true">
+            <origin origin_name="xml_files" origin_location="create_flattened_graph" generated="true"/>
+            <origin origin_name="xml_files" origin_location="find_node_properties" generated="true"/>
+            <origin origin_name="xml_files" origin_location="find_starting_points" generated="true"/>
         </input>
     </inputs>
     <outputs>
