@@ -1060,27 +1060,78 @@ mr_file_paths.forEach(function(item) {
         xmlMode: true
     });
 
-    $("inputs input[side-effect!='true']").each(function() {
+    $("inputs input").each(function() {
         if ($(this).attr("name") != "null") {
+            var name = $(this).attr("name");
             if ($("origin", this).length == 0) {
                 console.log("Error: There is an input of a subgraph that doesn't have an origin");
                 console.log("File: " + xml_path);
-                console.log("Name: " + $(this).attr("name"));
+                console.log("Name: " + name);
                 format_XML(source_path);
                 process.exit(0);
             }
+
+            var origins = [];
+            $("origin", this).each(
+                function() {
+                    var origin = {};
+                    origin.name = $(this).attr("origin_name");
+                    origin.location = $(this).attr("origin_location");
+                    origins.push(origin);
+                }
+            );
+            origins.forEach(function(item) {
+                origins.forEach(function(sitem) {
+                    if ((item != sitem) && (item.name == sitem.name) && (sitem.location.indexOf(item.location) == 0)) {
+                        console.log("Error: There is an input that has multiple origins with the same name/(sub)location");
+                        console.log("File: " + xml_path);
+                        console.log("Name: " + name);
+                        console.log("name: " + item.name);
+                        console.log("location: " + item.location);
+                        format_XML(source_path);
+                        process.exit(0);
+
+                    }
+                });
+            });
         }
     });
 
-    $("outputs output[side-effect!='true']").each(function() {
+    $("outputs output").each(function() {
         if ($(this).attr("name") != "null") {
+            var name = $(this).attr("name");
             if ($("origin", this).length == 0) {
                 console.log("Error: There is an output of a subgraph that doesn't have an origin");
                 console.log("File: " + xml_path);
-                console.log("Name: " + $(this).attr("name"));
+                console.log("Name: " + name);
                 format_XML(source_path);
                 process.exit(0);
             }
+            var origins = [];
+            $("origin", this).each(
+                function() {
+                    var origin = {};
+                    origin.name = $(this).attr("origin_name");
+                    origin.location = $(this).attr("origin_location");
+                    origins.push(origin);
+                }
+            );
+            origins.forEach(function(item) {
+                origins.forEach(function(sitem) {
+                    if ((item != sitem) && (item.name == sitem.name) && (sitem.location.indexOf(item.location) == 0)) {
+                        console.log("Error: There is an output that has multiple origins with the same name/(sub)location");
+                        console.log("File: " + xml_path);
+                        console.log("Name: " + name);
+                        console.log("name: " + item.name);
+                        console.log("location: " + item.location);
+                        format_XML(source_path);
+                        process.exit(0);
+
+                    }
+                });
+            });
+
+
         }
     });
 
