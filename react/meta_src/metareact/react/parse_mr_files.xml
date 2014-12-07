@@ -5,88 +5,55 @@
         <description> It parses all mr files and generates the graph tag and content of the xml files. </description>
     </info>
     <inputs>
-        <input name="cheerio">
-            <origin origin_name="cheerio" origin_location="insert_graph_content_to_xml_files"/>
-            <origin origin_name="cheerio" origin_location="insert_missing_io_tags_from_graph" generated="true"/>
-        </input>
-        <input name="source_path">
-            <origin origin_name="source_path" origin_location="find_mr_file_paths"/>
-        </input>
-        <input name="fs">
-            <origin origin_name="fs" origin_location="find_mr_file_paths"/>
-            <origin origin_name="fs" origin_location="insert_graph_content_to_xml_files"/>
-            <origin origin_name="fs" origin_location="insert_missing_io_tags_from_graph" generated="true"/>
-        </input>
-        <input name="path">
-            <origin origin_name="path" origin_location="find_mr_file_paths"/>
-        </input>
-        <input name="xml_files" side-effect="true">
-            <origin origin_name="xml_files" origin_location="insert_graph_content_to_xml_files"/>
-            <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
-            <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
-            <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
-            <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
-            <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
-            <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
-            <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
-            <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
-            <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
-            <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
-            <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
-            <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
-            <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
-            <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
-            <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
-            <origin origin_name="xml_files" origin_location="insert_missing_io_tags_from_graph" generated="true"/>
-        </input>
-        <input name="mr_files" side-effect="true">
-            <description>It is provided all the mr files of the source_path directory and its subdirectories.</description>
+        <input generated="true" name="source_path">
+            <origin origin_name="source_path" origin_location="find_mr_file_paths" generated="true"/>
         </input>
         <input generated="true" name="null"/>
+        <input generated="true" name="cheerio">
+            <origin origin_name="cheerio" origin_location="insert_graph_content_to_xml_files" generated="true"/>
+            <origin origin_name="cheerio" origin_location="insert_missing_io_tags_from_graph" generated="true"/>
+        </input>
+        <input generated="true" name="fs">
+            <origin origin_name="fs" origin_location="find_mr_file_paths" generated="true"/>
+            <origin origin_name="fs" origin_location="insert_graph_content_to_xml_files" generated="true"/>
+            <origin origin_name="fs" origin_location="insert_missing_io_tags_from_graph" generated="true"/>
+        </input>
+        <input generated="true" name="path">
+            <origin origin_name="path" origin_location="find_mr_file_paths" generated="true"/>
+        </input>
         <input name="disk_mr_files" side-effect="true" generated="true">
             <description>It is provided all the mr files of the source_path directory and its subdirectories.</description>
             <origin origin_name="disk_mr_files" origin_location="find_mr_file_paths" generated="true"/>
         </input>
+        <input name="xml_files" side-effect="true" generated="true">
+            <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
+            <origin origin_name="xml_files" origin_location="insert_graph_content_to_xml_files" generated="true"/>
+            <origin origin_name="xml_files" origin_location="insert_missing_io_tags_from_graph" generated="true"/>
+        </input>
     </inputs>
     <outputs>
-        <output name="xml_files" side-effect="true">
-            <origin origin_name="filled_xml_files" origin_location="insert_graph_content_to_xml_files"/>
-            <description>It returns all xml files with the graph tag when appropriate.</description>
-        </output>
-        <output name="file_missing_errors" side-effect="true">
-            <origin origin_name="file_missing_errors" origin_location="insert_graph_content_to_xml_files"/>
-            <description>It prints an error when an xml file is not there and exits.</description>
-            <description>It prints an error when an xml file is not there and exits.</description>
-            <description>It prints an error when an xml file is not there and exits.</description>
-            <description>It prints an error when an xml file is not there and exits.</description>
-            <description>It prints an error when an xml file is not there and exits.</description>
-            <description>It prints an error when an xml file is not there and exits.</description>
-            <description>It prints an error when an xml file is not there and exits.</description>
-            <description>It prints an error when an xml file is not there and exits.</description>
-            <description>It prints an error when an xml file is not there and exits.</description>
-            <description>It prints an error when an xml file is not there and exits.</description>
-            <description>It prints an error when an xml file is not there and exits.</description>
-            <description>It prints an error when an xml file is not there and exits.</description>
-            <description>It prints an error when an xml file is not there and exits.</description>
-            <description>It prints an error when an xml file is not there and exits.</description>
-            <description>It prints an error when an xml file is not there and exits.</description>
-            <origin origin_name="file_missing_errors" origin_location="insert_missing_io_tags_from_graph" generated="true"/>
-        </output>
-        <output name="null">
+        <output generated="true" name="null">
+            <origin origin_name="null" origin_location="check_same_output_name" generated="true"/>
             <origin origin_name="null" origin_location="insert_graph_content_to_xml_files" generated="true"/>
             <origin origin_name="null" origin_location="insert_missing_io_tags_from_graph" generated="true"/>
         </output>
-        <output name="mr_file_paths">
-            <origin origin_name="mr_file_paths" origin_location="find_mr_file_paths"/>
+        <output generated="true" name="mr_file_paths">
+            <origin origin_name="mr_file_paths" origin_location="find_mr_file_paths" generated="true"/>
         </output>
-        <output name="error" side-effect="true">
+        <output name="error" side-effect="true" generated="true">
             <description>It prints an error message and exits.</description>
-            <origin origin_name="error" origin_location="check_same_output_name"/>
-            <origin origin_name="error" origin_location="create_graphs/find_functions"/>
+            <origin origin_name="error" origin_location="check_same_output_name" generated="true"/>
+            <origin origin_name="error" origin_location="create_graphs/find_functions" generated="true"/>
         </output>
         <output name="filled_xml_files" side-effect="true" generated="true">
-            <description>It saves the xml files with additional generated content.</description>
+            <description>It saves the xml files with the additional generated content.</description>
+            <origin origin_name="filled_xml_files" origin_location="insert_graph_content_to_xml_files" generated="true"/>
             <origin origin_name="filled_xml_files" origin_location="insert_missing_io_tags_from_graph" generated="true"/>
+        </output>
+        <output name="file_missing_errors" side-effect="true" generated="true">
+            <description>It prints an error when an xml file is not there and exits.</description>
+            <origin origin_name="file_missing_errors" origin_location="insert_graph_content_to_xml_files" generated="true"/>
+            <origin origin_name="file_missing_errors" origin_location="insert_missing_io_tags_from_graph" generated="true"/>
         </output>
     </outputs>
     <graph generated="true">

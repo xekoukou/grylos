@@ -5,22 +5,21 @@
         <description> It creates an object representation of graph present in the mr file. </description>
     </info>
     <inputs>
-        <input name="srcodes">
-            <origin origin_name="srcodes" origin_location="find_end_points"/>
-            <origin origin_name="srcodes" origin_location="find_functions"/>
-            <origin origin_name="srcodes" origin_location="path_traversal"/>
+        <input generated="true" name="mr_file_paths">
+            <origin origin_name="mr_file_paths" origin_location="find_functions" generated="true"/>
+            <origin origin_name="mr_file_paths" origin_location="path_traversal" generated="true"/>
         </input>
-        <input name="mr_file_paths">
-            <origin origin_name="mr_file_paths" origin_location="path_traversal"/>
-            <origin origin_name="mr_file_paths" origin_location="find_functions"/>
+        <input generated="true" name="srcodes">
+            <origin origin_name="srcodes" origin_location="find_end_points" generated="true"/>
+            <origin origin_name="srcodes" origin_location="find_functions" generated="true"/>
+            <origin origin_name="srcodes" origin_location="path_traversal" generated="true"/>
         </input>
     </inputs>
     <outputs>
         <output generated="true" name="graphs">
-            <description> An object representation of the graph that is in the mr files. </description>
             <origin origin_name="graphs" origin_location="path_traversal" generated="true"/>
         </output>
-        <output name="error" generated="true">
+        <output name="error" side-effect="true" generated="true">
             <description> It returns an error when a type of attribute does not exist.</description>
             <origin origin_name="error" origin_location="find_functions" generated="true"/>
         </output>

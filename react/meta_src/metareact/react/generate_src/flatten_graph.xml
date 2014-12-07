@@ -31,7 +31,7 @@
         </input>
     </inputs>
     <outputs>
-        <output name="error" generated="true">
+        <output name="error" side-effect="true" generated="true">
             <description> It returns an error when we have set the asynchronous property on a "subgraph" node.</description>
             <origin origin_name="error" origin_location="find_node_properties" generated="true"/>
         </output>

@@ -12,7 +12,7 @@
         <input name="xml_files" side-effect="true"/>
     </inputs>
     <outputs>
-        <output name="error">
+        <output name="error" side-effect="true">
             <description> It returns an error when we have set the asynchronous property on a "subgraph" node.</description>
         </output>
         <output generated="true" name="node_properties"/>
