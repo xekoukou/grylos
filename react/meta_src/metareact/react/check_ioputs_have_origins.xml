@@ -11,8 +11,8 @@
         </input>
         <input name="xml_files" side-effect="true">
         </input>
-        <input generated="true" name="mr_file_paths"/>
         <input generated="true" name="null"/>
+        <input generated="true" name="mr_file_paths"/>
     </inputs>
     <outputs>
         <output name="error" side-effect="true">

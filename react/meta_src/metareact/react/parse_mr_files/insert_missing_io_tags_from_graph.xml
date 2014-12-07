@@ -8,12 +8,12 @@
         <input name="xml_files" side-effect="true">
             <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
         </input>
-        <input generated="true" name="null"/>
+        <input name="cheerio">
+        </input>
+        <input name="fs">
+        </input>
         <input generated="true" name="mr_file_paths"/>
         <input generated="true" name="graphs"/>
-        <input generated="true" name="cheerio"/>
-        <input generated="true" name="fs"/>
-        <input generated="true" name="path"/>
     </inputs>
     <outputs>
         <output name="filled_xml_files" side-effect="true">
@@ -22,6 +22,6 @@
         <output name="file_missing_errors" side-effect="true">
             <description>It prints an error when an xml file is not there and exits.</description>
         </output>
-        <output generated="true" name="null"/>
+        <output name="null"/>
     </outputs>
 </root>

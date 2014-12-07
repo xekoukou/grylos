@@ -536,11 +536,76 @@ exec = require('execSync');
 
         });
 
-
+        //TODO remove  console.log(JSON.stringify(graphs, null, 4));
 
         //////////////////////////////////////////////////////////////////
     }
     //endof create_graphs
+    ///////////////////////////////////////////////////////////////////
+    //insert_missing_io_tags_from_graph
+
+    ///////////////////////////
+    graphs.forEach(function(graph, index) {
+        Object.keys(graph).forEach(function(fn_name) {
+
+            //Insert the output tag into the originator xml file and do nothing if there is already user content.
+            var oxml_path = mr_file_paths[index] + "/" + fn_name + ".xml";
+            try {
+                var oxml_file = fs.readFileSync(oxml_path, {
+                    encoding: "utf-8"
+                });
+            } catch (e) {
+                console.log("\nError: xml file missing:" + oxml_path);
+                format_XML(source_path);
+                process.exit(0);
+            }
+
+            var o = cheerio.load(oxml_file, {
+                xmlMode: true
+            });
+            //Insert an outputs tag if it is missing.
+            if (o("outputs").length == 0) {
+                o("root").append("<outputs/>");
+            }
+            graph[fn_name]["paths"].forEach(function(path) {
+                //Add only one output per vname.
+                if (o("outputs output[name='" + path.vname + "']").length == 0) {
+                    o("outputs").append("<output generated='true' name='" + path.vname + "'/>");
+                }
+
+                //Insert the input tag into the terminator xml file and do nothing if there is already user content.
+                var ixml_path = mr_file_paths[index] + "/" + path.end_fn_name + ".xml";
+                try {
+                    var ixml_file = fs.readFileSync(ixml_path, {
+                        encoding: "utf-8"
+                    });
+                } catch (e) {
+                    console.log("\nError: xml file missing:" + ixml_path);
+                    format_XML(source_path);
+                    process.exit(0);
+                }
+
+                var i = cheerio.load(ixml_file, {
+                    xmlMode: true
+                });
+                //Insert an inputs tag if it is missing.
+                if (i("inputs").length == 0) {
+                    i("root").append("<inputs/>");
+                }
+                //Insert the input tag into the end_point xml file and do nothing if there is already user content.
+                if (i("inputs input[name='" + path.vname + "']").length == 0) {
+                    i("inputs").append("<input generated='true' name='" + path.vname + "'/>");
+                }
+                fs.writeFileSync(ixml_path, i.html());
+            });
+            fs.writeFileSync(oxml_path, o.html());
+
+
+
+        });
+    });
+
+
     ///////////////////////////////////////////////////////////////////
     //check_same_output_name    
     ////////////////////////
@@ -995,97 +1060,6 @@ var $ = cheerio.load(xml_file, {
 generate_xml_content_from_children(source_path, $);
 fs.writeFileSync(source_path + ".xml", $.html());
 
-///////////////////////////////////////////////////////////////////
-//insert_missing_io_tags_from_graph
-
-///////////////////////////
-graphs.forEach(function(graph, index) {
-    Object.keys(graph).forEach(function(fn_name) {
-
-        //check whether this function contains code or is a subgraph.
-        //If it is a subgraph, all ioputs should have been inserted by the programmer/compiler already, so return an error.
-        var obottom = true;
-        if (fs.existsSync(mr_file_paths[index] + "/" + fn_name + ".mr")) {
-            obottom = false;
-        }
-
-        //Insert the output tag into the originator xml file and do nothing if there is already user content.
-        var oxml_path = mr_file_paths[index] + "/" + fn_name + ".xml";
-        try {
-            var oxml_file = fs.readFileSync(oxml_path, {
-                encoding: "utf-8"
-            });
-        } catch (e) {
-            console.log("\nError: xml file missing:" + oxml_path);
-            format_XML(source_path);
-            process.exit(0);
-        }
-
-        var o = cheerio.load(oxml_file, {
-            xmlMode: true
-        });
-        //Insert an outputs tag if it is missing.
-        if (o("outputs").length == 0) {
-            o("root").append("<outputs/>");
-        }
-        graph[fn_name]["paths"].forEach(function(path) {
-            //Add only one output per vname.
-            if (o("outputs output[name='" + path.vname + "']").length == 0) {
-                if (obottom || (path.vname == "null")) {
-                    o("outputs").append("<output generated='true' name='" + path.vname + "'/>");
-                } else {
-                    console.log("Error: There is an output defined in the graph that cannot be automatically generated. Please specify the origin of this output.");
-                    console.log("File:" + mr_file_paths[index] + "/" + fn_name + ".xml");
-                    console.log("name:" + path.vname);
-                    format_XML(source_path);
-                    process.exit(0);
-                }
-            }
-            var ibottom = true;
-            if (fs.existsSync(mr_file_paths[index] + "/" + path.end_fn_name + ".mr")) {
-                ibottom = false;
-            }
-            //Insert the input tag into the terminator xml file and do nothing if there is already user content.
-            var ixml_path = mr_file_paths[index] + "/" + path.end_fn_name + ".xml";
-            try {
-                var ixml_file = fs.readFileSync(ixml_path, {
-                    encoding: "utf-8"
-                });
-            } catch (e) {
-                console.log("\nError: xml file missing:" + ixml_path);
-                format_XML(source_path);
-                process.exit(0);
-            }
-
-            var i = cheerio.load(ixml_file, {
-                xmlMode: true
-            });
-            //Insert an inputs tag if it is missing.
-            if (i("inputs").length == 0) {
-                i("root").append("<inputs/>");
-            }
-
-            //Insert the input tag into the end_point xml file and do nothing if there is already user content.
-            if (i("inputs input[name='" + path.vname + "']").length == 0) {
-                if (ibottom || (path.vname == "null")) {
-                    i("inputs").append("<input generated='true' name='" + path.vname + "'/>");
-                    fs.writeFileSync(ixml_path, i.html());
-                } else {
-
-                    console.log("Error: There is an input defined in the graph that cannot be automatically generated. Please specify the origin of this input.");
-                    console.log("File:" + mr_file_paths[index] + "/" + path.end_fn_name + ".xml");
-                    console.log("name:" + path.vname);
-                    format_XML(source_path);
-                    process.exit(0);
-                }
-            }
-        });
-        fs.writeFileSync(oxml_path, o.html());
-
-
-
-    });
-});
 /////////////////////////////////////////////////////////////////////
 //check_ioputs_have_origins
 

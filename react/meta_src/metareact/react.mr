@@ -1,9 +1,9 @@
         main                                                         generate_xml_content_from_children
-         |---------------(source_path)----------------------------------------------------------|         insert_missing_io_tags_from_graph 
-         |----------------------------------               parse_mr_files    /--(null)----------|--(null)-----------|                                       
-         |                  prepare_src    \---(source_path)------|-----------                                      |          check_ioputs_have_origins     check_only_side_effects_exist 
-         |---(source_path)------|--------------(null)-------------|------(mr_file_paths)----------------------------|---(null)---------|----------------------(null)------|
-                                |                                 |------(graphs)-----------------------------------|                  |                      
+         |---------------(source_path)----------------------------------------------------------|       
+         |----------------------------------               parse_mr_files    /--(null)----------|--(null)-----------                                        
+         |                  prepare_src    \---(source_path)------|-----------                                     \           check_ioputs_have_origins     check_only_side_effects_exist 
+         |---(source_path)------|--------------(null)-------------|                                                \----(null)---------|----------------------(null)------|
+                                |                                 |                                                                    |                      
 module_dependencies             |                                 |--------(mr_file_paths)---------------------------------------------|                                                                                           
    |------(fs)------------------|                                                                                                                            
    |-------(exec)---------------|                                                                                                                            
@@ -13,11 +13,6 @@ module_dependencies             |                                 |--------(mr_f
    |                        generate_xml_content_from_children
    |-------------------(fs)-------------|
    |-----------------(path)-------------|
-   |
-   |                                  insert_missing_io_tags_from_graph
-   |--------(cheerio)-------------------|
-   |---------------(fs)-----------------|
-   |--------------(path)----------------|
    |
    |                                check_ioputs_have_origins 
    |--------(cheerio)-------------------|
