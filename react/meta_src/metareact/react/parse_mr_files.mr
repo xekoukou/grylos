@@ -13,3 +13,8 @@ find_mr_file_paths     split_srcode_into_lines         create_graphs            
 
 find_mr_file_paths                check_same_output_name
      |-----------(mr_file_paths)---------|
+     |                              check_node_properties
+     |------(mr_file_paths)--------------|                  insert_graph_content_to_xml_files
+                                         |------(null)-----------------|
+create_graphs                            |
+     |---------------(graphs)------------|

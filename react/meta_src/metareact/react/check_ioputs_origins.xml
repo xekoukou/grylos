@@ -11,13 +11,13 @@
         </input>
         <input name="xml_files" side-effect="true">
         </input>
-        <input generated="true" name="null"/>
-        <input generated="true" name="mr_file_paths"/>
-    </inputs>
+        
+        
+    <input generated="true" name="null"/><input generated="true" name="mr_file_paths"/></inputs>
     <outputs>
         <output name="error" side-effect="true">
             <description>It prints an error when there are ioputs that do not have origin tags.</description>
         </output>
-        <output generated="true" name="null"/>
-    </outputs>
+        
+    <output generated="true" name="null"/></outputs>
 </root>

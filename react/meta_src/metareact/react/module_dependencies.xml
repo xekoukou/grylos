@@ -5,9 +5,9 @@
         <description> It provides the dependency modules. </description>
     </info>
     <outputs>
-        <output generated="true" name="fs"/>
-        <output generated="true" name="exec"/>
-        <output generated="true" name="path"/>
-        <output generated="true" name="cheerio"/>
-    </outputs>
+        
+        
+        
+        
+    <output generated="true" name="fs"/><output generated="true" name="exec"/><output generated="true" name="path"/><output generated="true" name="cheerio"/></outputs>
 </root>

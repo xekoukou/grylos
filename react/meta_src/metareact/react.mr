@@ -1,4 +1,4 @@
-        main                                                         generate_xml_content_from_children
+        main                                                         generate_xml_content_from_children  
          |---------------(source_path)----------------------------------------------------------|       
          |----------------------------------               parse_mr_files    /--(null)----------|--(null)-----------                                        
          |                  prepare_src    \---(source_path)------|-----------                                     \           check_ioputs_origins          check_only_side_effects_exist 

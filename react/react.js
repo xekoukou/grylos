@@ -536,7 +536,8 @@ exec = require('execSync');
 
         });
 
-        //TODO remove  console.log(JSON.stringify(graphs, null, 4));
+        //TODO remove  
+        console.log(JSON.stringify(graphs, null, 4));
 
         //////////////////////////////////////////////////////////////////
     }
@@ -628,6 +629,79 @@ exec = require('execSync');
                 }
 
             });
+        });
+    });
+    //////////////////////////////////////////////////////////////////
+    //check_node_properties
+    ///////////////////////
+    graphs.forEach(function(graph, index) {
+        Object.keys(graph).forEach(function(fn_name) {
+            var node = graph[fn_name];
+            //Concurrency cannot exist on an asynchronous node
+            if (("asynchronous" in node.properties) && ("concurrent" in node.properties)) {
+                console.log("Error: The asynchronous and concurrent property has been set in the same node");
+                console.log("File:" + mr_file_paths[index] + ".mr");
+                console.log("Fn_name:" + fn_name);
+                process.exit(0);
+            }
+
+            //An asynchronous node can not have inputs
+            if ("asynchronous" in node.properties) {
+                //check if it has inputs
+                //Generated from the graph
+                Object.keys(graph).forEach(function(f_name) {
+                    Object.keys(graph[f_name]["paths"]).forEach(function(path) {
+                        if (path.end_fn_name == fn_name) {
+                            console.log("Error: The asynchronous property has been set in a node that has inputs generated from the graph.");
+                            console.log("File:" + mr_file_paths[index] + ".mr");
+                            console.log("Fn_name:" + fn_name);
+                            process.exit(0);
+
+                        }
+                    });
+                });
+
+                //From the xml file
+                var xml_file = fs.readFileSync(mr_file_paths[index] + "/" + fn_name + ".xml", {
+                    encoding: "utf-8"
+                });
+
+                var $ = cheerio.load(xml_file, {
+                    xmlMode: true
+                });
+
+                if ($("inputs input").length > 0) {
+                    console.log("Error: The asynchronous property has been set in a node that has inputs defined in the xml file.");
+                    console.log("File:" + mr_file_paths[index] + ".mr");
+                    console.log("Fn_name:" + fn_name);
+                    process.exit(0);
+
+                }
+
+
+                //The asynchronous property cannot be set in a subgraph.
+                if (fs.existsSync(mr_file_paths[index] + "/" + fn_name)) {
+                    console.log("Error: The asynchronous property has been set in a 'subgraph' node");
+                    console.log("File:" + mr_file_paths[index] + ".mr");
+                    console.log("Fn_name:" + fn_name);
+                    process.exit(0);
+
+                }
+
+                //The asynchronous property can only be set at the top level.
+                if (mr_file_paths[index] != source_path) {
+                    console.log("Error: The asynchronous property has been set in a level that is not the top.");
+                    console.log("File:" + mr_file_paths[index] + ".mr");
+                    console.log("Fn_name:" + fn_name);
+                    process.exit(0);
+
+                }
+
+
+            }
+
+
+
         });
     });
 
@@ -1249,13 +1323,11 @@ $("outputs output").each(function() {
             });
 
             $("graph node").each(function() {
-                var bottom = true;
                 var fn_name = $(this).attr("fn_name");
                 var child = parent.slice();
                 child.push(fn_name);
                 //we check if the directory with the same name exist.
                 if (fs.existsSync(cpath + "/" + fn_name)) {
-                    bottom = false;
                     find_node_properties_rec(cpath + "/" + fn_name, child);
                 }
 
@@ -1266,14 +1338,7 @@ $("outputs output").each(function() {
                         node.concurrent = concurrent_index;
                     }
                     if ($(this).attr("asynchronous") == "true") {
-                        if (bottom) {
-                            node.asynchronous = "true";
-                        } else {
-                            console.log("Error: The asynchronus property has been set in a 'subgraph' node");
-                            console.log("File:" + cpath + ".mr");
-                            console.log("Fn_name:" + fn_name);
-                            process.exit(0);
-                        }
+                        node.asynchronous = "true";
                     }
 
                     node_properties[set_cpath(child, 0, child.length - 1)] = node;

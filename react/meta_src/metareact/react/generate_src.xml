@@ -20,13 +20,10 @@
         <input name="cheerio">
             <origin origin_name="cheerio" origin_location="flatten_graph"/>
         </input>
-        <input generated="true" name="null"/>
-    </inputs>
+        
+    <input generated="true" name="null"/></inputs>
     <outputs>
-        <output name="error" side-effect="true" generated="true">
-            <description> It returns an error when we have set the asynchronous property on a "subgraph" node.</description>
-            <origin origin_name="error" origin_location="flatten_graph/find_node_properties" generated="true"/>
-        </output>
+        
     </outputs>
-    <graph generated="true"> </graph>
+    
 </root>

@@ -7,8 +7,8 @@
     <inputs>
         <input name="srcodes"/>
         <input name="mr_file_paths"/>
-        <input generated="true" name="end_points"/>
-    </inputs>
+        
+    <input generated="true" name="end_points"/></inputs>
     <outputs>
         <output name="graphs">
             <description> An object representation of the graph that is in the mr files. </description>

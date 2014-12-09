@@ -25,27 +25,13 @@
             <origin origin_name="cheerio" origin_location="create_flattened_graph"/>
         </input>
         <input name="xml_files" side-effect="true">
-            <origin origin_name="xml_files" origin_location="create_flattened_graph" generated="true"/>
-            <origin origin_name="xml_files" origin_location="find_node_properties" generated="true"/>
-            <origin origin_name="xml_files" origin_location="find_starting_points" generated="true"/>
+            
+            
+            
         </input>
     </inputs>
     <outputs>
-        <output name="error" side-effect="true" generated="true">
-            <description> It returns an error when we have set the asynchronous property on a "subgraph" node.</description>
-            <origin origin_name="error" origin_location="find_node_properties" generated="true"/>
-        </output>
+        
     </outputs>
-    <graph generated="true">
-        <node fn_name="find_starting_points">
-            <output name="starting_points">
-                <end_point fn_name="create_flattened_graph"/>
-            </output>
-        </node>
-        <node fn_name="find_node_properties">
-            <output name="node_properties">
-                <end_point fn_name="create_flattened_graph"/>
-            </output>
-        </node>
-    </graph>
+    
 </root>
