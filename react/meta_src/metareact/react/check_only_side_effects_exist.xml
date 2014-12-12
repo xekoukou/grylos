@@ -14,12 +14,12 @@
         <input name="root_xml_file" side-effect="true">
             <description>It reads the root xml file..</description>
         </input>
-        
-    <input generated="true" name="null"/></inputs>
+        <input generated="true" name="check_ioputs_origins_dep"/>
+    </inputs>
     <outputs>
         <output name="error" side-effect="true">
             <description>It prints an error when there are ioputs that are not side-effects.</description>
         </output>
-        
-    <output generated="true" name="null"/></outputs>
+        <output generated="true" name="check_only_side_effects_exist_dep"/>
+    </outputs>
 </root>

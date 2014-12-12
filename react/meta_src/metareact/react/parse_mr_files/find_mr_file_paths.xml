@@ -8,12 +8,13 @@
         <input name="source_path"/>
         <input name="fs"/>
         <input name="path"/>
+        <input name="validate_XML_dep" dependency="true"/>
         <input name="disk_mr_files" side-effect="true">
             <description>It is provided all the mr files of the source_path directory and its subdirectories.</description>
         </input>
     </inputs>
     <outputs>
-        
-        
-    <output generated="true" name="mr_files"/><output generated="true" name="mr_file_paths"/></outputs>
+        <output generated="true" name="mr_files"/>
+        <output generated="true" name="mr_file_paths"/>
+    </outputs>
 </root>

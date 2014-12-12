@@ -1,10 +1,10 @@
-        main                                                         generate_xml_content_from_children  
-         |---------------(source_path)----------------------------------------------------------|       
-         |----------------------------------               parse_mr_files    /--(null)----------|--(null)-----------                                        
-         |                  prepare_src    \---(source_path)------|-----------                                     \           check_ioputs_origins          check_only_side_effects_exist 
-         |---(source_path)------|--------------(null)-------------|                                                \----(null)---------|----------------------(null)------|
-                                |                                 |                                                                    |                      
-module_dependencies             |                                 |--------(mr_file_paths)---------------------------------------------|                                                                                           
+        main                                                                                   generate_xml_content_from_children    
+         |---------------(source_path)-hpm------------------------------------------------------------------------|      
+         |----------------------------------          parse_mr_files /-(parse_mr_files_dep)--------------------d--|--                                                      
+         |                  prepare_src    \---(source_path)------|---                                              \                                        check_ioputs_origins          check_only_side_effects_exist 
+         |---(source_path)------|------(validate_XML_dep)----d----|                                                 \-(generate_xml_content_from_children_dep)-d-------|--(check_ioputs_origins_dep)--d---|
+                                |                                 |                                                                                                    |                      
+module_dependencies             |                                 |--------(mr_file_paths)-----------------------------------------------------------------------------|             
    |------(fs)------------------|                                                                                                                            
    |-------(exec)---------------|                                                                                                                            
    |--------(path)--------------|
@@ -35,6 +35,6 @@ module_dependencies             |                                 |--------(mr_f
 main                      |
  |------(source_path)-----|
  |------(source_path)------------
-                                \          generate_src
-check_only_side_effects_exist   \-------------|         
-      |--------(null)-------------------------|
+                                \                  generate_src
+check_only_side_effects_exist   \-----------------------|         
+      |--(check_only_side_effects_exist_dep)-d----------|

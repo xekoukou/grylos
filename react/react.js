@@ -482,11 +482,20 @@ exec = require('execSync');
                                                 if (each == "h") {
                                                     path.historical = true;
                                                 } else {
-                                                    console.log("\nError: mr_file:" + mr_file_paths[index] + ".mr(line: " + path.y + "," + "position: " + path.x + ")");
-                                                    console.log("Wrong option type.");
-                                                    format_XML(source_path);
-                                                    process.exit(0);
+                                                    if (each == "m") {
+                                                        path.mutable = true;
 
+                                                    } else {
+                                                        if (each == "d") {
+                                                            path.dependency = true;
+
+                                                        } else {
+                                                            console.log("\nError: mr_file:" + mr_file_paths[index] + ".mr(line: " + path.y + "," + "position: " + path.x + ")");
+                                                            console.log("Wrong option type.");
+                                                            format_XML(source_path);
+                                                            process.exit(0);
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }
@@ -536,8 +545,7 @@ exec = require('execSync');
 
         });
 
-        //TODO remove  
-        console.log(JSON.stringify(graphs, null, 4));
+        //TODO remove   console.log(JSON.stringify(graphs, null, 4));
 
         //////////////////////////////////////////////////////////////////
     }
@@ -619,10 +627,11 @@ exec = require('execSync');
                 lvnames[path.vname] = null;
             });
             Object.keys(lvnames).forEach(function(item) {
-                if ((vnames[item] == true) && (item != "null")) {
+                if (vnames[item] == true) {
                     console.log("Error: " + mr_file_paths[index]);
                     console.log("function: " + fn_name + " output name: " + item);
                     console.log("Multiple outputs with the same name.");
+                    process.exit(0);
                     //error
                 } else {
                     vnames[item] = true;
@@ -684,6 +693,7 @@ exec = require('execSync');
                     console.log("Error: The asynchronous property has been set in a 'subgraph' node");
                     console.log("File:" + mr_file_paths[index] + ".mr");
                     console.log("Fn_name:" + fn_name);
+                    format_XML(source_path);
                     process.exit(0);
 
                 }
@@ -693,6 +703,7 @@ exec = require('execSync');
                     console.log("Error: The asynchronous property has been set in a level that is not the top.");
                     console.log("File:" + mr_file_paths[index] + ".mr");
                     console.log("Fn_name:" + fn_name);
+                    format_XML(source_path);
                     process.exit(0);
 
                 }
@@ -730,7 +741,7 @@ exec = require('execSync');
 
             var paths = graph[fn_name]["paths"];
             //Adds the node.
-            //TODO add the properties
+            //Add the properties
             $("graph").append("<node fn_name='" + fn_name + "' " + ((graph[fn_name].properties.asynchronous) ? "asynchronous='" + graph[fn_name].properties.asynchronous + "'" : "") + " " + ((graph[fn_name].properties.concurrent) ? "concurrent='" + graph[fn_name].properties.concurrent + "' " : "") + ">" + "</node>");
 
             paths.forEach(function(path) {
@@ -740,7 +751,7 @@ exec = require('execSync');
 
                 }
                 //Adds multiple end_points per vname with their properties.
-                $("graph node[fn_name='" + fn_name + "'] output[name='" + path.vname + "']").append("<end_point fn_name='" + path.end_fn_name + "' " + ((path.historical) ? "historical='" + path.historical + "' " : "") + ((path.passive) ? "passive='" + path.passive + "' " : "") + "></end_point>");
+                $("graph node[fn_name='" + fn_name + "'] output[name='" + path.vname + "']").append("<end_point fn_name='" + path.end_fn_name + "' " + ((path.mutable) ? "mutable='" + path.mutable + "' " : "") + ((path.dependency) ? "dependency='" + path.dependency + "' " : "") + ((path.historical) ? "historical='" + path.historical + "' " : "") + ((path.passive) ? "passive='" + path.passive + "' " : "") + "></end_point>");
 
 
             });
@@ -1135,78 +1146,73 @@ mr_file_paths.forEach(function(item) {
     });
 
     $("inputs input").each(function() {
-        if ($(this).attr("name") != "null") {
-            var name = $(this).attr("name");
-            if ($("origin", this).length == 0) {
-                console.log("Error: There is an input of a subgraph that doesn't have an origin");
-                console.log("File: " + xml_path);
-                console.log("Name: " + name);
-                format_XML(source_path);
-                process.exit(0);
-            }
-
-            var origins = [];
-            $("origin", this).each(
-                function() {
-                    var origin = {};
-                    origin.name = $(this).attr("origin_name");
-                    origin.location = $(this).attr("origin_location");
-                    origins.push(origin);
-                }
-            );
-            origins.forEach(function(item) {
-                origins.forEach(function(sitem) {
-                    if ((item != sitem) && (item.name == sitem.name) && (sitem.location.indexOf(item.location) == 0)) {
-                        console.log("Error: There is an input that has multiple origins with the same name/(sub)location");
-                        console.log("File: " + xml_path);
-                        console.log("Name: " + name);
-                        console.log("name: " + item.name);
-                        console.log("location: " + item.location);
-                        format_XML(source_path);
-                        process.exit(0);
-
-                    }
-                });
-            });
+        var name = $(this).attr("name");
+        if ($("origin", this).length == 0) {
+            console.log("Error: There is an input of a subgraph that doesn't have an origin");
+            console.log("File: " + xml_path);
+            console.log("Name: " + name);
+            format_XML(source_path);
+            process.exit(0);
         }
+
+        var origins = [];
+        $("origin", this).each(
+            function() {
+                var origin = {};
+                origin.name = $(this).attr("origin_name");
+                origin.location = $(this).attr("origin_location");
+                origins.push(origin);
+            }
+        );
+        origins.forEach(function(item) {
+            origins.forEach(function(sitem) {
+                if ((item != sitem) && (item.name == sitem.name) && (sitem.location.indexOf(item.location) == 0)) {
+                    console.log("Error: There is an input that has multiple origins with the same name/(sub)location");
+                    console.log("File: " + xml_path);
+                    console.log("Name: " + name);
+                    console.log("name: " + item.name);
+                    console.log("location: " + item.location);
+                    format_XML(source_path);
+                    process.exit(0);
+
+                }
+            });
+        });
     });
 
     $("outputs output").each(function() {
-        if ($(this).attr("name") != "null") {
-            var name = $(this).attr("name");
-            if ($("origin", this).length == 0) {
-                console.log("Error: There is an output of a subgraph that doesn't have an origin");
-                console.log("File: " + xml_path);
-                console.log("Name: " + name);
-                format_XML(source_path);
-                process.exit(0);
-            }
-            var origins = [];
-            $("origin", this).each(
-                function() {
-                    var origin = {};
-                    origin.name = $(this).attr("origin_name");
-                    origin.location = $(this).attr("origin_location");
-                    origins.push(origin);
-                }
-            );
-            origins.forEach(function(item) {
-                origins.forEach(function(sitem) {
-                    if ((item != sitem) && (item.name == sitem.name) && (sitem.location.indexOf(item.location) == 0)) {
-                        console.log("Error: There is an output that has multiple origins with the same name/(sub)location");
-                        console.log("File: " + xml_path);
-                        console.log("Name: " + name);
-                        console.log("name: " + item.name);
-                        console.log("location: " + item.location);
-                        format_XML(source_path);
-                        process.exit(0);
-
-                    }
-                });
-            });
-
-
+        var name = $(this).attr("name");
+        if ($("origin", this).length == 0) {
+            console.log("Error: There is an output of a subgraph that doesn't have an origin");
+            console.log("File: " + xml_path);
+            console.log("Name: " + name);
+            format_XML(source_path);
+            process.exit(0);
         }
+        var origins = [];
+        $("origin", this).each(
+            function() {
+                var origin = {};
+                origin.name = $(this).attr("origin_name");
+                origin.location = $(this).attr("origin_location");
+                origins.push(origin);
+            }
+        );
+        origins.forEach(function(item) {
+            origins.forEach(function(sitem) {
+                if ((item != sitem) && (item.name == sitem.name) && (sitem.location.indexOf(item.location) == 0)) {
+                    console.log("Error: There is an output that has multiple origins with the same name/(sub)location");
+                    console.log("File: " + xml_path);
+                    console.log("Name: " + name);
+                    console.log("name: " + item.name);
+                    console.log("location: " + item.location);
+                    format_XML(source_path);
+                    process.exit(0);
+
+                }
+            });
+        });
+
     });
 
 });
@@ -1295,6 +1301,7 @@ $("outputs output").each(function() {
                 if (stat.isDirectory()) {
                     var element = parent.slice();
                     element.push(file_name);
+                    find_starting_points_rec(cpath + "/" + file_name, element);
 
                 }
 
@@ -1326,10 +1333,6 @@ $("outputs output").each(function() {
                 var fn_name = $(this).attr("fn_name");
                 var child = parent.slice();
                 child.push(fn_name);
-                //we check if the directory with the same name exist.
-                if (fs.existsSync(cpath + "/" + fn_name)) {
-                    find_node_properties_rec(cpath + "/" + fn_name, child);
-                }
 
                 if (Object.keys($(this).get(0).attribs).length > 1) {
                     var node = {};
@@ -1345,6 +1348,12 @@ $("outputs output").each(function() {
 
                 }
 
+                //we check if the directory with the same name exist.
+                //This should happen at this place because the concurrency property can be rewritten by the lower levels.
+                if (fs.existsSync(cpath + "/" + fn_name)) {
+                    find_node_properties_rec(cpath + "/" + fn_name, child);
+                }
+
             });
 
 
@@ -1352,6 +1361,7 @@ $("outputs output").each(function() {
         }
         var parent = [""];
         find_node_properties_rec(source_path, parent);
+        console.log("Node_properties: \n" + JSON.stringify(node_properties, null, 4));
 
         //////////////////////////////////////////////////////////////////
         //create_flattened_graph
@@ -1360,64 +1370,173 @@ $("outputs output").each(function() {
         flattened_graph = {};
 
         starting_points.forEach(function(pointer) {
+            traverse(pointer, null);
 
             function traverse(pointer, edge) {
                 var cpath = set_cpath(pointer, 0, pointer.length - 1);
-                //check whether the node has already been traversed
-                if (typeof flattened_graph[cpath] == "undefined") {
+
+                //check whether the node has already been traversed.
+                var traversed = typeof flattened_graph[cpath] != "undefined";
+
+                //Create the node if it doesn't exist.
+                if (!traversed) {
+
                     //insert the new node
+
                     flattened_graph[cpath] = {
                         pointer: pointer,
                         inputs: {},
                         outputs: {},
                         properties: {}
                     };
+                }
+
+                //Add the edge from which we arrived here.
+                //If this is a starting point the edge is null.
+                var node = flattened_graph[cpath];
+
+                if (edge != null) {
+
+                    node.inputs[edge.end_vname] = JSON.parse(JSON.stringify(edge));
+
+                }
+
+
+                //If it hasn't been traversed, continue.
+                if (!traversed) {
 
                     //add the inherited node properties
+                    //Only the concurrent property is inherited at the moment.
+
                     for (var key in node_properties) {
                         if (key.indexOf(cpath) == 0) {
                             for (var k in node_properties[key]) flattened_graph[cpath]["properties"][k] = node_properties[key][k];
                         }
                     };
 
-
-                    var node = flattened_graph[cpath];
-                    //Add the edge from which we arrived here.
-                    if (edge != null) {
-                        if (typeof node.inputs[edge.origin_name] == "undefined") {
-                            node.inputs[edge.origin_name] = {};
-                        }
-                        node.inputs[edge.origin_name][edge.end_name] = edge;
-                    }
-
-                    var xml_file = fs.readFileSync(source_path + "/" + cpath + ".xml", {
+                    //We check all output tags.
+                    var xml_file = fs.readFileSync(source_path + cpath + ".xml", {
                         encoding: "utf-8"
                     });
 
                     var $ = cheerio.load(xml_file, {
                         xmlMode: true
                     });
-                    //we are at the bottom and for each output, we need to go up till we find where we send the output.
                     $("outputs output[side-effect!='true']").each(function() {
-                        var origin_name = $(this).attr("name");
+                        var n_edge = {
+                            "origin_pointer": pointer,
+                            "properties": {}
+                        };
+                        n_edge.origin_vname = $(this).attr("name");
+
+                        //we are at the bottom and for each output, we need to go up till we find where we sent the output.
+                        var caught_level = pointer.length - 1;
+                        var vname = n_edge.origin_vname;
                         for (var i = pointer.length - 2; i >= 0; i--) {
-                            var cpath;
-                            if (i != 0) {
-                                cpath = source_path + set_cpath(pointer, 0, i);
-                            } else {
-                                cpath = source_path;
+                            var up_cpath = source_path + set_cpath(pointer, 0, i);
+
+                            var parent_xml_file = fs.readFileSync(up_cpath + ".xml", {
+                                encoding: "utf-8"
+                            });
+                            var parent = cheerio.load(parent_xml_file, {
+                                xmlMode: true
+                            });
+
+                            //Check whether that output is part of the current graph
+                            parent("graph node[fn_name='" + pointer[i + 1] + "'] output[name='" + vname + "'] end_point").each(function() {
+                                //Create an edge for each end_point and traverse it.
+                                var nn_edge = JSON.parse(JSON.stringify(n_edge));
+
+                                //Get the edge properties
+                                if (parent(this).attr("mutable") == "true") {
+                                    nn_edge.properties.mutable = "true";
+                                }
+                                if (parent(this).attr("historical") == "true") {
+                                    nn_edge.properties.historical = "true";
+                                }
+                                if (parent(this).attr("dependency") == "true") {
+                                    nn_edge.properties.dependency = "true";
+                                }
+                                if (parent(this).attr("passive") == "true") {
+                                    nn_edge.properties.passive = "true";
+                                }
+
+                                //Find the end_point and traverse it.
+                                var fn_name = parent(this).attr("fn_name");
+                                var end_pointer = JSON.parse(JSON.stringify(pointer.slice(0, i + 1)));
+                                end_pointer.push(fn_name);
+                                go_down(end_pointer, vname, nn_edge);
+                            });
+
+
+                            var origin_location = set_cpath(pointer, i + 1, caught_level);
+
+                            //Check whether the output is used in the upper graph.
+                            var temp = parent("outputs output origin[origin_name='" + vname + "'][origin_location='" + origin_location + "']");
+                            if (temp.length == 0) {
+                                //The output has been consummed in a lower level and no other consumption happens in the upper levels.
+                                break;
                             }
-                            var origin_location = set_cpath(pointer, i + 1, pointer.length - 1);
 
+                            //Check if the output has been caught.
+                            output = parent(temp).parent();
+                            if (parent(output).attr("generated") != "true") {
+                                vname = parent(output).attr("name");
+                                caught_level = i;
 
-
+                            }
+                            //We continue to go up.
                         }
                     });
 
                 }
             }
 
+            function go_down(pointer, vname, edge) {
+                var cpath = source_path + set_cpath(pointer, 0, pointer.length - 1);
+
+                //Go down till you find all inputs that use that output.
+                var xml_file = fs.readFileSync(cpath + ".xml", {
+                    encoding: "utf-8"
+                });
+                var $ = cheerio.load(xml_file, {
+                    xmlMode: true
+                });
+
+                //Check if it is bottom
+                var temp = $("inputs input[name='" + vname + "']");
+                if ($("origin", temp).length == 0) {
+                    //We are at the bottom
+                    var n_edge = JSON.parse(JSON.stringify(edge));
+                    n_edge.end_pointer = pointer;
+                    n_edge.end_vname = vname;
+
+                    //Add the edge to the output of the original node.
+                    var edge_origin = set_cpath(n_edge.origin_pointer, 0, n_edge.origin_pointer.length - 1);
+                    var prev_node = flattened_graph[edge_origin];
+                    if (typeof prev_node.outputs[n_edge.origin_vname] == "undefined") {
+                        prev_node.outputs[n_edge.origin_vname] = [];
+                    }
+                    prev_node.outputs[n_edge.origin_vname].push(JSON.parse(JSON.stringify(n_edge)));
+
+                    //Continue traversing.
+                    traverse(n_edge.end_pointer, n_edge);
+                } else {
+                    //We go lower
+                    $("origin", temp).each(function() {
+                        var n_pointer = pointer.concat($(this).attr("origin_location").split("/"));
+                        var n_vname = $(this).attr("origin_name");
+                        go_down(n_pointer, n_vname, edge);
+                    });
+                }
+
+            }
+
         });
+
+        //TODO remove   
+        console.log(JSON.stringify(flattened_graph, null, 4));
+
         /////////////////////////////////////////////////////////////////
     }
     //endof flatten_graph

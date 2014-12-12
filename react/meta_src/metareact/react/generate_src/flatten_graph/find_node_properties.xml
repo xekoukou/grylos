@@ -9,12 +9,13 @@
         <input name="fs"/>
         <input name="path"/>
         <input name="cheerio"/>
+        <input name="check_only_side_effects_exist_dep" dependency="true"/>
         <input name="xml_files" side-effect="true"/>
     </inputs>
     <outputs>
         <output name="error" side-effect="true">
-            <description> It returns an error when we have set the asynchronous property on a &quot;subgraph&quot; node.</description>
+            <description> It returns an error when we have set the asynchronous property on a "subgraph" node.</description>
         </output>
-        
-    <output generated="true" name="node_properties"/></outputs>
+        <output generated="true" name="node_properties"/>
+    </outputs>
 </root>

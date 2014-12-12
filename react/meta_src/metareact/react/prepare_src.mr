@@ -1,2 +1,5 @@
-remove_generated_XML     validate_XML
-     |-------(null)----------|
+remove_generated_XML                       validate_XML
+     |-------(remove_generated_XML_dep)-d------|
+                                               |
+delete_generated_src                           |
+     |-------(delete_generated_src_dep)-d------|

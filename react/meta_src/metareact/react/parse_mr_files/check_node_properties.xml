@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<root>
+    <info>
+        <name>check_node_properties</name>
+        <description>It performs multiple checks on the attributes of nodes based on some rules.</description>
+    </info>
+    <inputs>
+        <input name="fs"/>
+        <input name="cheerio"/>
+        <input name="xml_files" side-effect="true"/>
+        <input name="source_path"/>
+        <input generated="true" name="mr_file_paths"/>
+        <input generated="true" name="graphs"/>
+    </inputs>
+    <outputs>
+        <output generated="true" name="dep_2"/>
+    </outputs>
+</root>

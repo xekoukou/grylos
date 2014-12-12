@@ -19,6 +19,6 @@
         <output name="deleted_src_files" side-effect="true">
             <description>It deletes all the generated src files.</description>
         </output>
-        <output name="null"/>
+        <output generated="true" name="delete_generated_src_dep"/>
     </outputs>
 </root>

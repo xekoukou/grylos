@@ -5,25 +5,40 @@
         <description> It generates the source code. </description>
     </info>
     <inputs>
-        <input name="source_path">
-            <origin origin_name="source_path" origin_location="flatten_graph"/>
+        <input generated="true" name="source_path">
+            <origin origin_name="source_path" origin_location="flatten_graph/create_flattened_graph" generated="true"/>
+            <origin origin_name="source_path" origin_location="flatten_graph/find_node_properties" generated="true"/>
+            <origin origin_name="source_path" origin_location="flatten_graph/find_starting_points" generated="true"/>
         </input>
-        <input name="xml_files" side-effect="true">
-            <origin origin_name="xml_files" origin_location="flatten_graph"/>
+        <input generated="true" name="fs">
+            <origin origin_name="fs" origin_location="flatten_graph/create_flattened_graph" generated="true"/>
+            <origin origin_name="fs" origin_location="flatten_graph/find_node_properties" generated="true"/>
+            <origin origin_name="fs" origin_location="flatten_graph/find_starting_points" generated="true"/>
         </input>
-        <input name="fs">
-            <origin origin_name="fs" origin_location="flatten_graph"/>
+        <input generated="true" name="path">
+            <origin origin_name="path" origin_location="flatten_graph/find_node_properties" generated="true"/>
+            <origin origin_name="path" origin_location="flatten_graph/find_starting_points" generated="true"/>
         </input>
-        <input name="path">
-            <origin origin_name="path" origin_location="flatten_graph"/>
+        <input generated="true" name="cheerio">
+            <origin origin_name="cheerio" origin_location="flatten_graph/create_flattened_graph" generated="true"/>
+            <origin origin_name="cheerio" origin_location="flatten_graph/find_node_properties" generated="true"/>
+            <origin origin_name="cheerio" origin_location="flatten_graph/find_starting_points" generated="true"/>
         </input>
-        <input name="cheerio">
-            <origin origin_name="cheerio" origin_location="flatten_graph"/>
+        <input generated="true" name="check_only_side_effects_exist_dep">
+            <origin origin_name="check_only_side_effects_exist_dep" origin_location="flatten_graph/find_node_properties" generated="true"/>
+            <origin origin_name="check_only_side_effects_exist_dep" origin_location="flatten_graph/find_starting_points" generated="true"/>
         </input>
-        
-    <input generated="true" name="null"/></inputs>
+        <input name="xml_files" side-effect="true" generated="true">
+            <origin origin_name="xml_files" origin_location="flatten_graph/create_flattened_graph" generated="true"/>
+            <origin origin_name="xml_files" origin_location="flatten_graph/find_node_properties" generated="true"/>
+            <origin origin_name="xml_files" origin_location="flatten_graph/find_starting_points" generated="true"/>
+        </input>
+    </inputs>
     <outputs>
-        
+        <output name="error" side-effect="true" generated="true">
+            <description> It returns an error when we have set the asynchronous property on a "subgraph" node.</description>
+            <origin origin_name="error" origin_location="flatten_graph/find_node_properties" generated="true"/>
+        </output>
     </outputs>
-    
+    <graph generated="true"> </graph>
 </root>
