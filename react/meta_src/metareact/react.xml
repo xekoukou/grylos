@@ -69,7 +69,7 @@
     <graph generated="true">
         <node fn_name="main">
             <output name="source_path">
-                <end_point fn_name="generate_xml_content_from_children" mutable="true" historical="true" passive="true"/>
+                <end_point fn_name="generate_xml_content_from_children"/>
                 <end_point fn_name="parse_mr_files"/>
                 <end_point fn_name="prepare_src"/>
                 <end_point fn_name="check_only_side_effects_exist"/>
@@ -99,6 +99,11 @@
                 <end_point fn_name="check_only_side_effects_exist" dependency="true"/>
             </output>
         </node>
+        <node fn_name="check_only_side_effects_exist">
+            <output name="check_only_side_effects_exist_dep">
+                <end_point fn_name="generate_src" dependency="true"/>
+            </output>
+        </node>
         <node fn_name="module_dependencies">
             <output name="fs">
                 <end_point fn_name="prepare_src"/>
@@ -125,10 +130,6 @@
                 <end_point fn_name="check_only_side_effects_exist"/>
             </output>
         </node>
-        <node fn_name="check_only_side_effects_exist">
-            <output name="check_only_side_effects_exist_dep">
-                <end_point fn_name="generate_src" dependency="true"/>
-            </output>
-        </node>
+        <node fn_name="generate_src" concurrent="true"/>
     </graph>
 </root>

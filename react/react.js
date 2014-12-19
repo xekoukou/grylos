@@ -301,6 +301,9 @@ exec = require('execSync');
             function_names.push(functions);
         });
 
+
+
+        //TODO Find a better name for this. Find all the output origin positions
         ///////////////////////////////////////////////////////////////
         //find_end_points
         var end_points;
@@ -324,10 +327,8 @@ exec = require('execSync');
                             if (!lend_points[y]) {
                                 lend_points[y] = new Object();
                             }
-                            lend_points[y][x] = {
-                                fn_name: fn.fn_name,
-                                properties: fn.properties
-                            };
+                            lend_points[y][x] =
+                                fn.fn_name;
 
                             y++;
                             if (y >= code.length) {
@@ -353,9 +354,10 @@ exec = require('execSync');
 
         /////////////////////////////////////////////////////////////////
         //path_traversal
-        var graphs;
+        var gpaths;
         ///////////////////////////
-        graphs = [];
+        gpaths = [];
+
         end_points.forEach(function(lend_points, index) {
             var code = srcodes[index];
             var paths = [];
@@ -466,7 +468,7 @@ exec = require('execSync');
                                 //Checking if this is the end of the path.
                                 if (xar == "|") {
 
-                                    path.end_fn_name = lend_points[path.y][path.x].fn_name;
+                                    path.end_fn_name = lend_points[path.y][path.x];
                                     break;
 
                                 } else {
@@ -488,12 +490,16 @@ exec = require('execSync');
                                                     } else {
                                                         if (each == "d") {
                                                             path.dependency = true;
-
                                                         } else {
-                                                            console.log("\nError: mr_file:" + mr_file_paths[index] + ".mr(line: " + path.y + "," + "position: " + path.x + ")");
-                                                            console.log("Wrong option type.");
-                                                            format_XML(source_path);
-                                                            process.exit(0);
+                                                            if (each == "l") {
+                                                                path.lossless = true;
+
+                                                            } else {
+                                                                console.log("\nError: mr_file:" + mr_file_paths[index] + ".mr(line: " + path.y + "," + "position: " + path.x + ")");
+                                                                console.log("Wrong option type.");
+                                                                format_XML(source_path);
+                                                                process.exit(0);
+                                                            }
                                                         }
                                                     }
                                                 }
@@ -518,9 +524,40 @@ exec = require('execSync');
             });
 
 
+            gpaths.push(paths);
+        });
 
-            //check that all paths have value names and concatenate paths with same origin
+        ///////////////////////////////////////////////////////////////////////////////////////
+        //build graph
+        var graphs;
+        //////////////////
+        graphs = [];
+
+        //Generate all the nodes of the graphs and their properties.
+        function_names.forEach(function(functions) {
             var graph = new Object();
+            functions.forEach(function(fn) {
+                //Add the properties if we had the same name twice or more
+                if (typeof graph[fn.fn_name] != "undefined") {
+                    for (var attrname in fn.properties) {
+                        graph[fn.fn_name].properties[attrname] = fn.properties[attrname];
+                    }
+                } else {
+                    graph[fn.fn_name] = {
+                        "properties": fn.properties,
+                        "paths": []
+                    };
+                }
+
+
+            });
+            graphs.push(graph);
+        });
+
+        gpaths.forEach(function(paths, index) {
+
+            var graph = graphs[index];
+            //check that all paths have value names and concatenate paths with same origin
 
             paths.forEach(function(each) {
                 if (!each.vname) {
@@ -529,21 +566,14 @@ exec = require('execSync');
                     process.exit(0);
                 }
 
-                if (!graph[each.origin.fn_name]) {
-                    graph[each.origin.fn_name] = {
-                        properties: each.origin.properties,
-                        paths: []
-                    };
-                }
-                graph[each.origin.fn_name]["paths"].push(each);
+                graph[each.origin]["paths"].push(each);
                 delete(each.origin);
 
             });
 
 
-            graphs.push(graph);
-
         });
+
 
         //TODO remove   console.log(JSON.stringify(graphs, null, 4));
 
@@ -751,7 +781,7 @@ exec = require('execSync');
 
                 }
                 //Adds multiple end_points per vname with their properties.
-                $("graph node[fn_name='" + fn_name + "'] output[name='" + path.vname + "']").append("<end_point fn_name='" + path.end_fn_name + "' " + ((path.mutable) ? "mutable='" + path.mutable + "' " : "") + ((path.dependency) ? "dependency='" + path.dependency + "' " : "") + ((path.historical) ? "historical='" + path.historical + "' " : "") + ((path.passive) ? "passive='" + path.passive + "' " : "") + "></end_point>");
+                $("graph node[fn_name='" + fn_name + "'] output[name='" + path.vname + "']").append("<end_point fn_name='" + path.end_fn_name + "' " + ((path.mutable) ? "mutable='" + path.mutable + "' " : "") + ((path.dependency) ? "dependency='" + path.dependency + "' " : "") + ((path.lossless) ? "lossless='" + path.lossless + "' " : "") + ((path.historical) ? "historical='" + path.historical + "' " : "") + ((path.passive) ? "passive='" + path.passive + "' " : "") + "></end_point>");
 
 
             });
@@ -1250,19 +1280,23 @@ $("outputs output").each(function() {
 //generate_src
 /////////////////
 {
+
+    //TODO we need to put reusable functions somewhere
+    function set_cpath(pointer, start, end) {
+        var cpath = pointer[start];
+        for (var i = start + 1; i <= end; i++) {
+            cpath = cpath + "/" + pointer[i];
+        }
+        return cpath;
+    }
+
+
+
     ///////////////////////////////////////////////////////////////////
     //flatten_graph
+    var flattened_graph;
     ////////////////
     {
-        //TODO we need to put reusable functions somewhere
-        function set_cpath(pointer, start, end) {
-            var cpath = pointer[start];
-            for (var i = start + 1; i <= end; i++) {
-                cpath = cpath + "/" + pointer[i];
-            }
-            return cpath;
-        }
-
 
         //////////////////////////////////////////////////////////////////
         //find_starting_points
@@ -1365,7 +1399,7 @@ $("outputs output").each(function() {
 
         //////////////////////////////////////////////////////////////////
         //create_flattened_graph
-        var flattened_graph;
+        //var flattened_graph;
         ///////////////////////////
         flattened_graph = {};
 
@@ -1409,7 +1443,7 @@ $("outputs output").each(function() {
                     //Only the concurrent property is inherited at the moment.
 
                     for (var key in node_properties) {
-                        if (key.indexOf(cpath) == 0) {
+                        if (cpath.indexOf(key) == 0) {
                             for (var k in node_properties[key]) flattened_graph[cpath]["properties"][k] = node_properties[key][k];
                         }
                     };
@@ -1453,6 +1487,9 @@ $("outputs output").each(function() {
                                 }
                                 if (parent(this).attr("historical") == "true") {
                                     nn_edge.properties.historical = "true";
+                                }
+                                if (parent(this).attr("lossless") == "true") {
+                                    nn_edge.properties.lossless = "true";
                                 }
                                 if (parent(this).attr("dependency") == "true") {
                                     nn_edge.properties.dependency = "true";
@@ -1534,13 +1571,175 @@ $("outputs output").each(function() {
 
         });
 
-        //TODO remove   
-        console.log(JSON.stringify(flattened_graph, null, 4));
+        //TODO remove    console.log(JSON.stringify(flattened_graph, null, 4));
 
         /////////////////////////////////////////////////////////////////
     }
     //endof flatten_graph
     //////////////////////////////////////////////////////////////////
+    //determine_subgraphs
+
+    //mutable input to output flattened graph
+    /////////////////////
+
+    //We need to determine if subgraphs
+    //that have the same concurrent value have a path from outside which connects 2 of its nodes.
+    //If this happens, then the thread would have to block if we dont split it into 2 threads/subgraphs.
+
+    //TODO remove  console.log(starting_points);
+
+    var iter_pointers = [];
+
+    //Start the iter_pointers.
+    starting_points.forEach(function(pointer) {
+
+        var cpath = set_cpath(pointer, 0, pointer.length - 1);
+        var node = flattened_graph[cpath];
+
+        //The node concurrency number.
+        var conc;
+        if ("concurrent" in node.properties) {
+            conc = node.properties.concurrent;
+        } else {
+            conc = 0;
+        }
+
+        iter_pointers.push({
+            "pointer": pointer,
+            "prev_conc": conc,
+            "prev_real_conc": 0
+        });
+    });
+
+
+    //Real concurrency (real_conc) is the current number of threads/subgraphs that we split.
+    //Prev_real_conc  represents the real_conc number of the node from which we arrived at this node.
+    //Prev_conc is the conc number of the previous node.
+
+    var real_conc = 0;
+
+    while (iter_pointers.length > 0) {
+        var iter = iter_pointers[iter_pointers.length - 1];
+        var pointer = iter.pointer;
+        var cpath = set_cpath(pointer, 0, pointer.length - 1);
+        var node = flattened_graph[cpath];
+
+        //The currrent node concurrency number.
+        var conc;
+        if ("concurrent" in node.properties) {
+            conc = node.properties.concurrent;
+        } else {
+            conc = 0;
+        }
+
+        //Has this node been traversed before?
+        //Old_real_conc is the real_conc that was assigned when it was last traversed.
+        var old_real_conc = null;
+        if ("real_conc" in node.properties) {
+            old_real_conc = node.properties.real_conc;
+        }
+
+        //This is the real_conc that we will assign to the node.
+        var new_real_conc;
+
+        //Update the real_conc if necessary
+        //Here we increase the real_conc only if it is necessary.
+        if ((conc != iter.prev_conc) && (old_real_conc == null)) {
+            real_conc++;
+            new_real_conc = real_conc;
+        } else {
+            if (conc != iter.prev_conc) {
+                //We just use the old value.
+                new_real_conc = old_real_conc;
+            } else {
+                //We update the value with the prev_real_conc if conc==iter.prev_conc.
+                new_real_conc = iter.prev_real_conc;
+
+            }
+        }
+
+        //We need to update the convex set that we have already previously traversed to the real_conc if it is different than the old.
+        if (old_real_conc != new_real_conc) {
+            // propagate the new real conc backwards.
+            propagate_backwards(pointer, new_real_conc, old_real_conc);
+        }
+        //Update the real_conc of the node.
+        node.properties.real_conc = new_real_conc;
+
+        //Stop this iter.
+        iter_pointers.pop();
+
+        //Go forward if possible.
+        //Add the output edges as new iter pointers.
+        Object.keys(node.outputs).forEach(function(key) {
+            var output = node.outputs[key];
+            output.forEach(function(item) {
+                iter_pointers.push({
+                    "pointer": item.end_pointer,
+                    "prev_conc": conc,
+                    "prev_real_conc": new_real_conc
+                });
+            });
+
+        });
+
+
+
+    }
+
+    //We only update already trraversed nodes that have the old_real_conc as a real_conc
+    function propagate_backwards(pointer, real_conc, old_real_conc) {
+
+        var iter_pointers = [
+            pointer
+        ];
+
+        while (iter_pointers.length > 0) {
+            var pointer = iter_pointers[iter_pointers.length - 1];
+            var cpath = set_cpath(pointer, 0, pointer.length - 1);
+            var node = flattened_graph[cpath];
+
+            //Has this node been traversed before and does it have a different real_conc than the old_real_conc?
+            if (("real_conc" in node.properties) && (node.properties.real_conc == old_real_conc)) {
+                node.properties.real_conc = real_conc;
+
+            } else {
+                //Stop here
+                iter_pointers.pop();
+                continue;
+            }
+
+            //Stop this iter.
+            iter_pointers.pop();
+
+            //Go backwards if possible.
+            //Add the input edges as new iter pointers.
+            Object.keys(node.inputs).forEach(function(key) {
+                var input = node.inputs[key];
+                iter_pointers.push(
+                    input.origin_pointer
+                );
+            });
+            //Go forward if possible.
+            //Add the output edges as new iter pointers.
+            Object.keys(node.outputs).forEach(function(key) {
+                var output = node.outputs[key];
+                output.forEach(function(item) {
+                    iter_pointers.push(
+                        item.end_pointer
+                    );
+                });
+            });
+
+        }
+    }
+
+
+
+    //TODO remove       console.log("Determine Subgraphs");
+    //TODO remove     console.log(JSON.stringify(flattened_graph, null, 4));
+
+    /////////////////////////////////////////////////////////////////
 }
 //endof generate_src
 ///////////////////////////////////////////////////////////////////

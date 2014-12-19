@@ -10,6 +10,10 @@
             <origin origin_name="source_path" origin_location="flatten_graph/find_node_properties" generated="true"/>
             <origin origin_name="source_path" origin_location="flatten_graph/find_starting_points" generated="true"/>
         </input>
+        <input generated="true" name="check_only_side_effects_exist_dep">
+            <origin origin_name="check_only_side_effects_exist_dep" origin_location="flatten_graph/find_node_properties" generated="true"/>
+            <origin origin_name="check_only_side_effects_exist_dep" origin_location="flatten_graph/find_starting_points" generated="true"/>
+        </input>
         <input generated="true" name="fs">
             <origin origin_name="fs" origin_location="flatten_graph/create_flattened_graph" generated="true"/>
             <origin origin_name="fs" origin_location="flatten_graph/find_node_properties" generated="true"/>
@@ -24,10 +28,6 @@
             <origin origin_name="cheerio" origin_location="flatten_graph/find_node_properties" generated="true"/>
             <origin origin_name="cheerio" origin_location="flatten_graph/find_starting_points" generated="true"/>
         </input>
-        <input generated="true" name="check_only_side_effects_exist_dep">
-            <origin origin_name="check_only_side_effects_exist_dep" origin_location="flatten_graph/find_node_properties" generated="true"/>
-            <origin origin_name="check_only_side_effects_exist_dep" origin_location="flatten_graph/find_starting_points" generated="true"/>
-        </input>
         <input name="xml_files" side-effect="true" generated="true">
             <origin origin_name="xml_files" origin_location="flatten_graph/create_flattened_graph" generated="true"/>
             <origin origin_name="xml_files" origin_location="flatten_graph/find_node_properties" generated="true"/>
@@ -40,5 +40,15 @@
             <origin origin_name="error" origin_location="flatten_graph/find_node_properties" generated="true"/>
         </output>
     </outputs>
-    <graph generated="true"> </graph>
+    <graph generated="true">
+        <node fn_name="flatten_graph">
+            <output name="flattened_graph">
+                <end_point fn_name="determine_subgraphs" mutable="true"/>
+            </output>
+            <output name="starting_points">
+                <end_point fn_name="determine_subgraphs"/>
+            </output>
+        </node>
+        <node fn_name="determine_subgraphs" concurrent="true"/>
+    </graph>
 </root>

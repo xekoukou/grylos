@@ -2,7 +2,7 @@
 <root>
     <info>
         <name> path_traversal </name>
-        <description> It creates an object representation of the graph that is in the mr files. </description>
+        <description> It finds all the paths of the graphs. </description>
     </info>
     <inputs>
         <input name="srcodes"/>
@@ -10,8 +10,6 @@
         <input generated="true" name="end_points"/>
     </inputs>
     <outputs>
-        <output name="graphs">
-            <description> An object representation of the graph that is in the mr files. </description>
-        </output>
+        <output generated="true" name="gpaths"/>
     </outputs>
 </root>

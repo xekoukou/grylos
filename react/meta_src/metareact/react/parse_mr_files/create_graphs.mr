@@ -1,2 +1,3 @@
-find_functions                   find_end_points              path_traversal
-   |-----------(function_names)-------|--------(end_points)---------|
+find_functions                   find_end_points              path_traversal        build_graph
+   |-----------(function_names)-------|--------(end_points)---------|-------(gpaths)----|
+   |------------(function_names)--------------------------------------------------------|

@@ -35,6 +35,12 @@
         </input>
     </inputs>
     <outputs>
+        <output generated="true" name="flattened_graph">
+            <origin origin_name="flattened_graph" origin_location="create_flattened_graph" generated="true"/>
+        </output>
+        <output generated="true" name="starting_points">
+            <origin origin_name="starting_points" origin_location="find_starting_points" generated="true"/>
+        </output>
         <output name="error" side-effect="true" generated="true">
             <description> It returns an error when we have set the asynchronous property on a "subgraph" node.</description>
             <origin origin_name="error" origin_location="find_node_properties" generated="true"/>
@@ -46,6 +52,7 @@
                 <end_point fn_name="create_flattened_graph"/>
             </output>
         </node>
+        <node fn_name="create_flattened_graph"/>
         <node fn_name="find_node_properties">
             <output name="node_properties">
                 <end_point fn_name="create_flattened_graph"/>

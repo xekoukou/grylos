@@ -56,6 +56,7 @@
                 <end_point fn_name="validate_XML" dependency="true"/>
             </output>
         </node>
+        <node fn_name="validate_XML"/>
         <node fn_name="delete_generated_src">
             <output name="delete_generated_src_dep">
                 <end_point fn_name="validate_XML" dependency="true"/>

@@ -17,7 +17,7 @@
     </inputs>
     <outputs>
         <output generated="true" name="graphs">
-            <origin origin_name="graphs" origin_location="path_traversal" generated="true"/>
+            <origin origin_name="graphs" origin_location="build_graph" generated="true"/>
         </output>
         <output name="error" side-effect="true" generated="true">
             <description> It returns an error when a type of attribute does not exist.</description>
@@ -28,6 +28,7 @@
         <node fn_name="find_functions">
             <output name="function_names">
                 <end_point fn_name="find_end_points"/>
+                <end_point fn_name="build_graph"/>
             </output>
         </node>
         <node fn_name="find_end_points">
@@ -35,5 +36,11 @@
                 <end_point fn_name="path_traversal"/>
             </output>
         </node>
+        <node fn_name="path_traversal">
+            <output name="gpaths">
+                <end_point fn_name="build_graph"/>
+            </output>
+        </node>
+        <node fn_name="build_graph"/>
     </graph>
 </root>
