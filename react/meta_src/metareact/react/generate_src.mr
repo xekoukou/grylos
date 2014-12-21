@@ -1,3 +1,4 @@
-flatten_graph                    determine_subgraphs 
-      |------(flattened_graph)--m--------|
-      |-----(starting_points)------------|
+flatten_graph                    determine_subgraphs_and_their_order 
+      |------(flattened_graph)--m--------|               order_subgraph_nodes
+      |-----(starting_points)------------|------(null)--------|
+      |-------(flattened_graph)-------------------------------|

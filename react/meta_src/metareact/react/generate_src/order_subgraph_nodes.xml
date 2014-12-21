@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<root>
+    <info>
+        <name> order_subgraphs </name>
+        <description> It orders the execution of the different nodes/functions inside each thread.  </description>
+    </info>
+    <inputs>
+        <input name="prog_lang"/>
+        <input generated="true" name="flattened_graph"/>
+        <input generated="true" name="null"/>
+    </inputs>
+    <outputs/>
+</root>

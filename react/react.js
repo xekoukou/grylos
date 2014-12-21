@@ -1613,10 +1613,12 @@ $("outputs output").each(function() {
     }
     //endof flatten_graph
     //////////////////////////////////////////////////////////////////
-    //determine_subgraphs
+    //determine_subgraphs_and_their_order
 
     //mutable input to output flattened graph
+    var subgraph_order;
     /////////////////////
+    subgraph_order = {};
 
     //We need to determine if subgraphs
     //that have the same concurrent value have a path from outside which connects 2 of its nodes.
@@ -1647,6 +1649,8 @@ $("outputs output").each(function() {
         });
     });
 
+    //Used to update the subgraph_order.
+    var rev_subgraph_order = {};
 
     //Real concurrency (real_conc) is the current number of threads/subgraphs that we split.
     //Prev_real_conc  represents the real_conc number of the node from which we arrived at this node.
@@ -1683,10 +1687,31 @@ $("outputs output").each(function() {
         if ((conc != iter.prev_conc) && (old_real_conc == null)) {
             real_conc++;
             new_real_conc = real_conc;
+
+            //Update the subgraph_order
+            if (!(iter.prev_real_conc in subgraph_order)) {
+                subgraph_order[iter.prev_real_conc] = {};
+            }
+            if (!(new_real_conc in rev_subgraph_order)) {
+                rev_subgraph_order[new_real_conc] = {};
+            }
+            subgraph_order[iter.prev_real_conc][new_real_conc] = null;
+            rev_subgraph_order[new_real_conc][iter.prev_real_conc] = null;
         } else {
             if (conc != iter.prev_conc) {
                 //We just use the old value.
                 new_real_conc = old_real_conc;
+
+                //Update the subgraph_order
+                if (!(iter.prev_real_conc in subgraph_order)) {
+                    subgraph_order[iter.prev_real_conc] = {};
+                }
+                if (!(new_real_conc in rev_subgraph_order)) {
+                    rev_subgraph_order[new_real_conc] = {};
+                }
+
+                subgraph_order[iter.prev_real_conc][new_real_conc] = null;
+                rev_subgraph_order[new_real_conc][iter.prev_real_conc] = null;
             } else {
                 //We update the value with the prev_real_conc if conc==iter.prev_conc.
                 new_real_conc = iter.prev_real_conc;
@@ -1698,6 +1723,27 @@ $("outputs output").each(function() {
         if (old_real_conc != new_real_conc) {
             // propagate the new real conc backwards.
             propagate_backwards(pointer, new_real_conc, old_real_conc);
+
+            //Update the subgraph_order
+            if (old_real_conc in subgraph_order) {
+                subgraph_order[new_real_conc] = subgraph_order[old_real_conc];
+                delete subgraph_order[old_real_conc];
+                for (key in subgraph_order[new_real_conc]) {
+                    delete rev_subgraph_order[key][old_real_conc];
+                    rev_subgraph_order[key][new_real_conc] = null;
+                }
+            }
+
+            if (old_real_conc in rev_subgraph_order) {
+                rev_subgraph_order[new_real_conc] = rev_subgraph_order[old_real_conc];
+                delete rev_subgraph_order[old_real_conc];
+                for (key in rev_subgraph_order[new_real_conc]) {
+                    delete subgraph_order[key][old_real_conc];
+                    subgraph_order[key][new_real_conc] = null;
+                }
+            }
+
+
         }
         //Update the real_conc of the node.
         node.properties.real_conc = new_real_conc;
@@ -1778,8 +1824,27 @@ $("outputs output").each(function() {
     //TODO remove       console.log("Determine Subgraphs");
     //TODO remove  
     console.log(JSON.stringify(flattened_graph, null, 4));
+    console.log(JSON.stringify(subgraph_order, null, 4));
 
     /////////////////////////////////////////////////////////////////
+    //order_subgraph_nodes
+    var ordered_list;
+    //////////////////////
+    ordered_lists = {};
+    if (prog_lang == "js") {
+        //TODO Optimize this.
+
+        //A deep first algorithm with opportunistic avoidance of outputs with multiple end nodes.
+        Object.keys(flattened_graph).forEach(function() {
+
+        });
+
+
+    } else {
+        if (prog_lang == "c") {}
+    }
+
+    ////////////////////////////////////////////////////////////////
 }
 //endof generate_src
 ///////////////////////////////////////////////////////////////////

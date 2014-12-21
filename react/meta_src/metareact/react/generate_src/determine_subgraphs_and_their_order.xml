@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<root>
+    <info>
+        <name> determine_subgraphs_and_their_order </name>
+        <description> It finds the subgraphs that are to be computed by threads and their order so as to implement prioritization on them.  </description>
+    </info>
+    <inputs>
+        <input name="starting_points"/>
+        <input generated="true" name="flattened_graph"/>
+    </inputs>
+    <outputs>
+        <output name="subgraph_order">
+            <description> It contains the directed inter-links between the subgraphs.</description>
+        </output>
+        <output generated="true" name="null"/>
+    </outputs>
+</root>
