@@ -5,6 +5,7 @@
         <description> It generates the source code. </description>
     </info>
     <inputs>
+        <input generated="true" name="prog_lang"/>
         <input generated="true" name="source_path">
             <origin origin_name="source_path" origin_location="flatten_graph/create_flattened_graph" generated="true"/>
             <origin origin_name="source_path" origin_location="flatten_graph/find_node_properties" generated="true"/>
@@ -49,6 +50,6 @@
                 <end_point fn_name="determine_subgraphs"/>
             </output>
         </node>
-        <node fn_name="determine_subgraphs" concurrent="true"/>
+        <node fn_name="determine_subgraphs"/>
     </graph>
 </root>

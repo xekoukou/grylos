@@ -11,6 +11,9 @@
         <output name="source_path">
             <description>This is the location of the root directory of the source. </description>
         </output>
+        <output name="prog_lang">
+            <description>This is the language of the source that is to be compiled. </description>
+        </output>
         <output name="console-text" side-effect="true">
             <description>The program prints a request to be provided with the correct arguments. </description>
         </output>

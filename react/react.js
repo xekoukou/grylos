@@ -1,14 +1,50 @@
 //////////////////////////////////////////////////////////////
 //main
 var source_path;
+var prog_lang;
 ///////////////
+source_path = null;
+prog_lang = null;
 
-if (process.argv.length != 3) {
-    console.log("Please provide the source directory of your project.");
+var error = false;
+var prev = null;
+for (var i = 2; i < process.argv.length; i++) {
+    var arg = process.argv[i];
+    //We update the prev
+    if (arg == "-lang") {
+        if (!prev) {
+            prev = "lang";
+        } else {
+            error = true;
+        }
+    } else {
+        //We assign the value
+        if (prev == null) {
+            if (!source_path) {
+                source_path = arg;
+            } else {
+                error = true;
+            }
+        } else {
+            if (prev == "lang") {
+                if (!prog_lang) {
+                    prog_lang = arg;
+                    prev = null;
+                } else {
+                    error = true;
+                }
+            }
+        }
+    }
+
+}
+
+if ((!source_path) || (!prog_lang) || error) {
+    console.log("Please provide the language and source directory of your project.");
+    console.log("Example: -lang js ./meta_src/metareact/react");
     return -1;
 }
 
-source_path = process.argv[2];
 /////////////////////////////////////////////////////////////
 //module_dependencies
 var fs;
@@ -1674,11 +1710,14 @@ $("outputs output").each(function() {
         Object.keys(node.outputs).forEach(function(key) {
             var output = node.outputs[key];
             output.forEach(function(item) {
-                iter_pointers.push({
-                    "pointer": item.end_pointer,
-                    "prev_conc": conc,
-                    "prev_real_conc": new_real_conc
-                });
+                //If the edge is passive, that means that the computation stops here.
+                if (item.properties.passive != "true") {
+                    iter_pointers.push({
+                        "pointer": item.end_pointer,
+                        "prev_conc": conc,
+                        "prev_real_conc": new_real_conc
+                    });
+                }
             });
 
         });
@@ -1737,7 +1776,8 @@ $("outputs output").each(function() {
 
 
     //TODO remove       console.log("Determine Subgraphs");
-    //TODO remove     console.log(JSON.stringify(flattened_graph, null, 4));
+    //TODO remove  
+    console.log(JSON.stringify(flattened_graph, null, 4));
 
     /////////////////////////////////////////////////////////////////
 }

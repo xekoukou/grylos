@@ -34,7 +34,8 @@ module_dependencies             |                                 |--------(mr_f
                           |
 main                      |
  |------(source_path)-----|
- |------(source_path)------------
-                                \                  generate_src
+ |-----(prog_lang)----------------
+ |------(source_path)------------\                 generate_src
+                                \\----------------------|      
 check_only_side_effects_exist   \-----------------------|         
       |--(check_only_side_effects_exist_dep)-d----------|
