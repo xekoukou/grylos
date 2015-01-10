@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<root>
+    <info>
+        <name> determine_subgraph_order_str_points </name>
+        <description> It determines the subgraph order and the starting points of each subgraph.  </description>
+    </info>
+    <inputs>
+        <input name="starting_points"/>
+        <input generated="true" name="flattened_graph"/>
+        <input generated="true" name="null"/>
+    </inputs>
+    <outputs>
+        <output generated="true" name="thread_starting_points"/>
+    </outputs>
+</root>

@@ -1457,7 +1457,9 @@ $("outputs output").each(function() {
                         pointer: pointer,
                         inputs: {},
                         outputs: {},
-                        properties: {}
+                        properties: {
+                            concurrent: 0
+                        }
                     };
                 }
 
@@ -1475,9 +1477,9 @@ $("outputs output").each(function() {
                 //If it hasn't been traversed, continue.
                 if (!traversed) {
 
+
                     //add the inherited node properties
                     //Only the concurrent property is inherited at the moment.
-
                     for (var key in node_properties) {
                         if (cpath.indexOf(key) == 0) {
                             for (var k in node_properties[key]) flattened_graph[cpath]["properties"][k] = node_properties[key][k];
@@ -1613,229 +1615,258 @@ $("outputs output").each(function() {
     }
     //endof flatten_graph
     //////////////////////////////////////////////////////////////////
-    //determine_subgraphs_and_their_order
+    //determine_subgraphs
 
     //mutable input to output flattened graph
-    var subgraph_order;
-    /////////////////////
-    subgraph_order = {};
+    /////////////////////////////////////
 
     //We need to determine if subgraphs
     //that have the same concurrent value have a path from outside which connects 2 of its nodes.
     //If this happens, then the thread would have to block if we dont split it into 2 threads/subgraphs.
 
-    //TODO remove  console.log(starting_points);
 
-    var iter_pointers = [];
+    var set_index = 0;
 
-    //Start the iter_pointers.
+    var iter_pointers = {};
+    var siter_pointers = {};
+
+    //Group the pointers according to their concurrent number.
+
     starting_points.forEach(function(pointer) {
-
         var cpath = set_cpath(pointer, 0, pointer.length - 1);
         var node = flattened_graph[cpath];
+        var conc = node.properties.concurrent;
 
-        //The node concurrency number.
-        var conc;
-        if ("concurrent" in node.properties) {
-            conc = node.properties.concurrent;
-        } else {
-            conc = 0;
+        if (!(conc in iter_pointers)) {
+            iter_pointers[conc] = {};
         }
 
-        iter_pointers.push({
-            "pointer": pointer,
-            "prev_conc": conc,
-            "prev_real_conc": 0
-        });
+        iter_pointers[conc][cpath] = pointer;
     });
 
-    //Used to update the subgraph_order.
-    var rev_subgraph_order = {};
 
-    //Real concurrency (real_conc) is the current number of threads/subgraphs that we split.
-    //Prev_real_conc  represents the real_conc number of the node from which we arrived at this node.
-    //Prev_conc is the conc number of the previous node.
+    while (Object.keys(iter_pointers).length > 0) {
 
-    var real_conc = 0;
+        //For each group of pointers, we add all the nodes we can to the set and determine the new starting pointers that we put in the siter_pointers.
+        //We do this iteratively until there are no more starting pointers.
 
-    while (iter_pointers.length > 0) {
-        var iter = iter_pointers[iter_pointers.length - 1];
-        var pointer = iter.pointer;
-        var cpath = set_cpath(pointer, 0, pointer.length - 1);
-        var node = flattened_graph[cpath];
+        Object.keys(iter_pointers).forEach(function(conc) {
+            //Once checks the existence of of at least one starting point.
+            var group = iter_pointers[conc];
 
-        //The currrent node concurrency number.
-        var conc;
-        if ("concurrent" in node.properties) {
-            conc = node.properties.concurrent;
-        } else {
-            conc = 0;
-        }
+            set_index++;
 
-        //Has this node been traversed before?
-        //Old_real_conc is the real_conc that was assigned when it was last traversed.
-        var old_real_conc = null;
-        if ("real_conc" in node.properties) {
-            old_real_conc = node.properties.real_conc;
-        }
+            Object.keys(group).forEach(function(key) {
+                var pointer = group[key];
 
-        //This is the real_conc that we will assign to the node.
-        var new_real_conc;
+                var trav_pointers = [pointer];
 
-        //Update the real_conc if necessary
-        //Here we increase the real_conc only if it is necessary.
-        if ((conc != iter.prev_conc) && (old_real_conc == null)) {
-            real_conc++;
-            new_real_conc = real_conc;
+                while (trav_pointers.length > 0) {
 
-            //Update the subgraph_order
-            if (!(iter.prev_real_conc in subgraph_order)) {
-                subgraph_order[iter.prev_real_conc] = {};
-            }
-            if (!(new_real_conc in rev_subgraph_order)) {
-                rev_subgraph_order[new_real_conc] = {};
-            }
-            subgraph_order[iter.prev_real_conc][new_real_conc] = null;
-            rev_subgraph_order[new_real_conc][iter.prev_real_conc] = null;
-        } else {
-            if (conc != iter.prev_conc) {
-                //We just use the old value.
-                new_real_conc = old_real_conc;
+                    var pointer = trav_pointers[trav_pointers.length - 1];
+                    var cpath = set_cpath(pointer, 0, pointer.length - 1);
+                    var node = flattened_graph[cpath];
 
-                //Update the subgraph_order
-                if (!(iter.prev_real_conc in subgraph_order)) {
-                    subgraph_order[iter.prev_real_conc] = {};
-                }
-                if (!(new_real_conc in rev_subgraph_order)) {
-                    rev_subgraph_order[new_real_conc] = {};
-                }
-
-                subgraph_order[iter.prev_real_conc][new_real_conc] = null;
-                rev_subgraph_order[new_real_conc][iter.prev_real_conc] = null;
-            } else {
-                //We update the value with the prev_real_conc if conc==iter.prev_conc.
-                new_real_conc = iter.prev_real_conc;
-
-            }
-        }
-
-        //We need to update the convex set that we have already previously traversed to the real_conc if it is different than the old.
-        if (old_real_conc != new_real_conc) {
-            // propagate the new real conc backwards.
-            propagate_backwards(pointer, new_real_conc, old_real_conc);
-
-            //Update the subgraph_order
-            if (old_real_conc in subgraph_order) {
-                subgraph_order[new_real_conc] = subgraph_order[old_real_conc];
-                delete subgraph_order[old_real_conc];
-                for (key in subgraph_order[new_real_conc]) {
-                    delete rev_subgraph_order[key][old_real_conc];
-                    rev_subgraph_order[key][new_real_conc] = null;
-                }
-            }
-
-            if (old_real_conc in rev_subgraph_order) {
-                rev_subgraph_order[new_real_conc] = rev_subgraph_order[old_real_conc];
-                delete rev_subgraph_order[old_real_conc];
-                for (key in rev_subgraph_order[new_real_conc]) {
-                    delete subgraph_order[key][old_real_conc];
-                    subgraph_order[key][new_real_conc] = null;
-                }
-            }
+                    trav_pointers.pop();
 
 
-        }
-        //Update the real_conc of the node.
-        node.properties.real_conc = new_real_conc;
+                    //Check if it has the same conc.
+                    if (node.properties.concurrent == conc) {
 
-        //Stop this iter.
-        iter_pointers.pop();
+                        //If it is already set, all previous nodes of the same conc have also been set.
+                        if (!('set' in node.properties)) {
 
-        //Go forward if possible.
-        //Add the output edges as new iter pointers.
-        Object.keys(node.outputs).forEach(function(key) {
-            var output = node.outputs[key];
-            output.forEach(function(item) {
-                //If the edge is passive, that means that the computation stops here.
-                if (item.properties.passive != "true") {
-                    iter_pointers.push({
-                        "pointer": item.end_pointer,
-                        "prev_conc": conc,
-                        "prev_real_conc": new_real_conc
+                            //We add the node to the set if it doesn't have paths outside of the conc that link to a node of the current set or to a node of the same conc that hasn't been traversed yet and we add its paths to the set as well.
+                            if (check_backwards(set_index, pointer, conc) == false) {
+                                if (!(conc in siter_pointers)) {
+                                    siter_pointers[conc] = {};
+                                }
+                                siter_pointers[conc][cpath] = pointer;
+                            };
+                        }
+                    } else {
+                        if (!(node.properties.concurrent in siter_pointers)) {
+                            siter_pointers[node.properties.concurrent] = {};
+                        }
+                        siter_pointers[node.properties.concurrent][cpath] = pointer;
+                    }
+
+                    //Go forward.
+                    Object.keys(node.outputs).forEach(function(key) {
+                        var output = node.outputs[key];
+                        output.forEach(function(item) {
+                            //If the edge is passive, that means that the computation stops here.
+                            if (item.properties.passive != "true") {
+                                trav_pointers.push(
+                                    item.end_pointer
+                                );
+                            }
+                        });
+
                     });
                 }
             });
-
         });
 
-
+        iter_pointers = siter_pointers;
+        siter_pointers = {};
 
     }
 
-    //We only update already trraversed nodes that have the old_real_conc as a real_conc
-    function propagate_backwards(pointer, real_conc, old_real_conc) {
+    function check_backwards(set_index, starting_pointer, conc) {
 
-        var iter_pointers = [
-            pointer
-        ];
+        var iter_pointers = [{
+            "pointer": starting_pointer,
+            "outside": false
+        }];
+        var can_guarantee_convexity = true;
 
         while (iter_pointers.length > 0) {
-            var pointer = iter_pointers[iter_pointers.length - 1];
+
+            var iter = iter_pointers[iter_pointers.length - 1];
+            var pointer = iter.pointer;
             var cpath = set_cpath(pointer, 0, pointer.length - 1);
             var node = flattened_graph[cpath];
 
-            //Has this node been traversed before and does it have a different real_conc than the old_real_conc?
-            if (("real_conc" in node.properties) && (node.properties.real_conc == old_real_conc)) {
-                node.properties.real_conc = real_conc;
-
-            } else {
-                //Stop here
-                iter_pointers.pop();
-                continue;
-            }
-
-            //Stop this iter.
             iter_pointers.pop();
 
-            //Go backwards if possible.
-            //Add the input edges as new iter pointers.
             Object.keys(node.inputs).forEach(function(key) {
                 var input = node.inputs[key];
-                iter_pointers.push(
-                    input.origin_pointer
-                );
-            });
-            //Go forward if possible.
-            //Add the output edges as new iter pointers.
-            Object.keys(node.outputs).forEach(function(key) {
-                var output = node.outputs[key];
-                output.forEach(function(item) {
-                    iter_pointers.push(
-                        item.end_pointer
-                    );
-                });
+                var prev_cpath = set_cpath(input.origin_pointer, 0, input.origin_pointer.length - 1);
+                var prev_node = flattened_graph[prev_cpath];
+
+                if (prev_node.properties.concurrent != conc) {
+                    iter.outside = true;
+
+                    iter_pointers.push({
+                        "pointer": input.origin_pointer,
+                        "outside": iter.outside
+                    });
+
+                } else {
+                    if ((iter.outside == true) && ((!("set" in prev_node.properties)) || (prev_node.properties.set == set_index))) {
+                        can_guarantee_convexity = false;
+                        return false;
+                    }
+
+                    if (!("set" in prev_node.properties)) {
+                        iter_pointers.push({
+                            "pointer": input.origin_pointer,
+                            "outside": iter.outside
+                        });
+                    }
+
+                }
+
             });
 
+
+        }
+        if (can_guarantee_convexity == true) {
+
+            var iter_pointers = [starting_pointer];
+            while (iter_pointers.length > 0) {
+
+                var pointer = iter_pointers[iter_pointers.length - 1];
+                var cpath = set_cpath(pointer, 0, pointer.length - 1);
+                var node = flattened_graph[cpath];
+
+                iter_pointers.pop();
+
+                if ((node.properties.concurrent == conc) && (!("set" in node.properties))) {
+                    node.properties.set = set_index;
+
+                    Object.keys(node.inputs).forEach(function(key) {
+                        var input = node.inputs[key];
+                        var prev_cpath = set_cpath(input.origin_pointer, 0, input.origin_pointer.length - 1);
+                        var prev_node = flattened_graph[prev_cpath];
+
+                        iter_pointers.push(
+                            input.origin_pointer
+                        );
+                    });
+                }
+            }
+            return true;
         }
     }
 
-
-
-    //TODO remove       console.log("Determine Subgraphs");
-    //TODO remove  
+    //TODO remove 
     console.log(JSON.stringify(flattened_graph, null, 4));
-    console.log(JSON.stringify(subgraph_order, null, 4));
 
     /////////////////////////////////////////////////////////////////
+    //determine_subgraph_order_str_points
+    var thread_starting_points;
+    ///////////////////////////////////////////
+
+    thread_starting_points = {};
+
+    starting_points.forEach(function(st_pointer) {
+
+        var trav_pointers = [st_pointer];
+        while (trav_pointers.length > 0) {
+
+            var pointer = trav_pointers[trav_pointers.length - 1];
+            var cpath = set_cpath(pointer, 0, pointer.length - 1);
+            var node = flattened_graph[cpath];
+            var set = node.properties.set;
+
+            trav_pointers.pop();
+
+            if (node.properties.passed == true) {
+                continue;
+            }
+            node.properties.passed = true;
+
+
+            //Go forward.
+            Object.keys(node.outputs).forEach(function(key) {
+                var output = node.outputs[key];
+                output.forEach(function(item) {
+                    //If the edge is passive, that means that the computation stops here.
+                    if (item.properties.passive != "true") {
+                        var prev_pointer = item.end_pointer;
+                        var prev_cpath = set_cpath(prev_pointer, 0, prev_pointer.length - 1);
+                        var prev_node = flattened_graph[prev_cpath];
+                        var prev_set = prev_node.properties.set;
+
+                        if (prev_set != set) {
+                            if (!(set in thread_starting_points)) {
+                                thread_starting_points[set] = {};
+                            }
+                            if (!(prev_set in thread_starting_points[set])) {
+                                thread_starting_points[set][prev_set] = {};
+                            }
+
+                            thread_starting_points[set][prev_set][cpath] = pointer;
+                        }
+
+                        trav_pointers.push(
+                            item.end_pointer
+                        );
+                    }
+                });
+
+            });
+        }
+    });
+
+    //TODO remove 
+    console.log(JSON.stringify(thread_starting_points, null, 4));
+
+
+    ////////////////////////////////////////////////////////////////
     //order_subgraph_nodes
     var ordered_list;
     //////////////////////
     ordered_lists = {};
     if (prog_lang == "js") {
-        //TODO Optimize this.
+        //TODO Optimize this to minimize memory consumption for the javascript case.
 
         //A deep first algorithm with opportunistic avoidance of outputs with multiple end nodes.
-        Object.keys(flattened_graph).forEach(function() {
+
+        Object.keys(flattened_graph).forEach(function(key) {
+
 
         });
 

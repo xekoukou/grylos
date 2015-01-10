@@ -7,7 +7,7 @@
     <inputs>
         <input name="prog_lang"/>
         <input generated="true" name="flattened_graph"/>
-        <input generated="true" name="null"/>
+        <input generated="true" name="thread_starting_points"/>
     </inputs>
     <outputs/>
 </root>

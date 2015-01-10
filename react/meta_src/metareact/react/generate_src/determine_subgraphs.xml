@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<root>
+    <info>
+        <name> determine_subgraphs </name>
+        <description> It finds the subgraphs that are to be computed by threads.  </description>
+    </info>
+    <inputs>
+        <input name="starting_points"/>
+        <input generated="true" name="flattened_graph"/>
+    </inputs>
+    <outputs>
+        <output generated="true" name="null"/>
+    </outputs>
+</root>
