@@ -7,7 +7,7 @@
     <inputs>
         <input name="starting_points"/>
         <input generated="true" name="flattened_graph"/>
-        <input generated="true" name="null"/>
+        <input generated="true" name="deter_subg"/>
     </inputs>
     <outputs>
         <output generated="true" name="thread_starting_points"/>

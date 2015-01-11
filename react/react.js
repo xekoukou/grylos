@@ -1791,8 +1791,7 @@ $("outputs output").each(function() {
         }
     }
 
-    //TODO remove 
-    console.log(JSON.stringify(flattened_graph, null, 4));
+    //TODO remove  console.log(JSON.stringify(flattened_graph, null, 4));
 
     /////////////////////////////////////////////////////////////////
     //determine_subgraph_order_str_points
@@ -1850,6 +1849,127 @@ $("outputs output").each(function() {
             });
         }
     });
+
+
+    //TODO remove 
+    console.log(JSON.stringify(thread_starting_points, null, 4));
+    /////////////////////////////////////////////////////////////////
+    //merge_serial_subgraphs
+    //////////////////////////////
+
+
+    //Find the mergable set.
+    var merge_set;
+
+    //Done till we can't find any new merge.
+
+    while (true) {
+        merge_set = [];
+
+        Object.keys(thread_starting_points).forEach(function(origin_subgraph) {
+
+            for (var end_subgraph in thread_starting_points[origin_subgraph]) {
+
+                var mergable = true;
+
+                for (var dep_subgraph in thread_starting_points) {
+                    if (end_subgraph in thread_starting_points[dep_subgraph] && (dep_subgraph != origin_subgraph)) {
+                        mergable = false;
+                        break;
+                    }
+                }
+                if (mergable) {
+                    merge_set.push({
+                        "o": origin_subgraph,
+                        "e": end_subgraph
+                    });
+                }
+            }
+        });
+
+        //Perform any transitive computations to find the ending set numbers.
+        merge_set.forEach(function(one) {
+            merge_set.forEach(function(two) {
+                if (one.o == two.e) {
+                    //Move the starting points temporarily for the next step before removing them.
+                    thread_starting_points[two.o][one.e] = thread_starting_points[one.o][one.e];
+                    one.o = two.o;
+                }
+            });
+        });
+
+        //Merge those sets.
+        merge_set.forEach(function(pair) {
+            var st_pts = thread_starting_points[pair.o][pair.e];
+            Object.keys(st_pts).forEach(function(stpath) {
+
+                var trav_pointers = [st_pts[stpath]];
+
+                while (trav_pointers.length > 0) {
+
+                    var pointer = trav_pointers[trav_pointers.length - 1];
+                    var cpath = set_cpath(pointer, 0, pointer.length - 1);
+                    var node = flattened_graph[cpath];
+
+                    trav_pointers.pop();
+
+                    if (node.properties.set == parseInt(pair.e)) {
+                        //Change the set id.
+                        node.properties.set = parseInt(pair.o);
+                        //Go forward.
+                        Object.keys(node.outputs).forEach(function(key) {
+                            var output = node.outputs[key];
+                            output.forEach(function(item) {
+                                trav_pointers.push(
+                                    item.end_pointer
+                                );
+                            });
+
+                        });
+                    }
+                }
+            });
+        });
+
+        //Delete the unecessary thread_starting_points and move the starting points to the correct set.
+
+        merge_set.forEach(function(pair) {
+            delete thread_starting_points[pair.o][pair.e];
+
+            for (key in thread_starting_points[pair.e]) {
+                if (!(key in thread_starting_points[pair.o])) {
+                    thread_starting_points[pair.o][key] = {};
+                }
+                for (key2 in thread_starting_points[pair.e][key]) {
+                    thread_starting_points[pair.o][key][key2] = thread_starting_points[pair.e][key][key2];
+                }
+            }
+            delete thread_starting_points[pair.e];
+        });
+
+        //Check if we could merge more subgraphs. This could potentially allow us to merge even more in the next iteration.
+        if (merge_set.length == 0) {
+            break;
+        }
+    }
+
+    //Add the starting points as the thread starting points of the initial thread/subgraph.
+    //We do it here because otherwise the merge process would remove them. :)
+    thread_starting_points[-1] = {};
+
+    starting_points.forEach(function(st_pointer) {
+
+        var st_cpath = set_cpath(st_pointer, 0, st_pointer.length - 1);
+        var st_node = flattened_graph[st_cpath];
+        var st_set = st_node.properties.set;
+        if (!(st_set in thread_starting_points[-1])) {
+            thread_starting_points[-1][st_set] = {};
+        }
+
+        thread_starting_points[-1][st_set][st_cpath] = st_pointer;
+    });
+
+
 
     //TODO remove 
     console.log(JSON.stringify(thread_starting_points, null, 4));

@@ -47,22 +47,30 @@
         <node fn_name="flatten_graph">
             <output name="flattened_graph">
                 <end_point fn_name="determine_subgraphs" mutable="true"/>
-                <end_point fn_name="determine_subgraph_order_str_points"/>
+                <end_point fn_name="determine_subgraph_order_str_points" mutable="true"/>
                 <end_point fn_name="order_subgraph_nodes"/>
+                <end_point fn_name="merge_serial_subgraphs" mutable="true"/>
             </output>
             <output name="starting_points">
                 <end_point fn_name="determine_subgraphs"/>
                 <end_point fn_name="determine_subgraph_order_str_points"/>
+                <end_point fn_name="merge_serial_subgraphs"/>
             </output>
         </node>
         <node fn_name="determine_subgraphs" concurrent="true">
-            <output name="null">
-                <end_point fn_name="determine_subgraph_order_str_points"/>
+            <output name="deter_subg">
+                <end_point fn_name="determine_subgraph_order_str_points" dependency="true"/>
             </output>
         </node>
         <node fn_name="determine_subgraph_order_str_points">
             <output name="thread_starting_points">
+                <end_point fn_name="merge_serial_subgraphs" mutable="true"/>
                 <end_point fn_name="order_subgraph_nodes"/>
+            </output>
+        </node>
+        <node fn_name="merge_serial_subgraphs">
+            <output name="merge_ser_subg">
+                <end_point fn_name="order_subgraph_nodes" dependency="true"/>
             </output>
         </node>
         <node fn_name="order_subgraph_nodes"/>

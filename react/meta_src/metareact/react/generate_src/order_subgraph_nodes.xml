@@ -8,6 +8,7 @@
         <input name="prog_lang"/>
         <input generated="true" name="flattened_graph"/>
         <input generated="true" name="thread_starting_points"/>
+        <input generated="true" name="merge_ser_subg"/>
     </inputs>
     <outputs/>
 </root>

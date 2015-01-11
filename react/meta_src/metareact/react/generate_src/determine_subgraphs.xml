@@ -9,6 +9,6 @@
         <input generated="true" name="flattened_graph"/>
     </inputs>
     <outputs>
-        <output generated="true" name="null"/>
+        <output generated="true" name="deter_subg"/>
     </outputs>
 </root>

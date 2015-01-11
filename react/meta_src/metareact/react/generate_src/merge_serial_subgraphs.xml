@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<root>
+    <info>
+        <name> merge_serial_subgraphs </name>
+        <description> It merges subgraphs that are serial to one another and thus it is not necessary to be in different threads.</description>
+        <comment>After the merge, we insert the starting points at the thread_starting_points with original non-existent subgraph -1. </comment>
+    </info>
+    <inputs>
+        <input generated="true" name="flattened_graph"/>
+        <input generated="true" name="starting_points"/>
+        <input generated="true" name="thread_starting_points"/>
+    </inputs>
+    <outputs>
+        <output generated="true" name="merge_ser_subg"/>
+    </outputs>
+</root>
