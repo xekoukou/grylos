@@ -7,6 +7,9 @@
       "uglify-js":"x",
       "sweet.js":"x",
       "execSync":"x"
+   },
+   "scripts":{
+   "preinstall":"sh preinstall.sh"
    }
 }
 
