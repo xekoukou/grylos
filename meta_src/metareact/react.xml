@@ -85,7 +85,10 @@
             </output>
         </node>
         <node fn_name="parse_mr_files">
-            <output name="parse_mr_files_dep">
+            <output name="insert_graph_content_to_xml_files_dep">
+                <end_point fn_name="generate_xml_content_from_children" dependency="true"/>
+            </output>
+            <output name="insert_missing_io_tags_from_graph_dep">
                 <end_point fn_name="generate_xml_content_from_children" dependency="true"/>
             </output>
             <output name="mr_file_paths">

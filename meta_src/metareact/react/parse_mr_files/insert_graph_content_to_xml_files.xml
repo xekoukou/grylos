@@ -12,7 +12,7 @@
         </input>
         <input generated="true" name="mr_file_paths"/>
         <input generated="true" name="graphs"/>
-        <input generated="true" name="check_same_output_name_dev"/>
+        <input generated="true" name="check_same_output_name_dep"/>
         <input generated="true" name="dep_2"/>
     </inputs>
     <outputs>
@@ -22,6 +22,6 @@
         <output name="file_missing_errors" side-effect="true">
             <description>It prints an error when an xml file is not there and exits.</description>
         </output>
-        <output name="parse_mr_files_dep" dependency="true"/>
+        <output name="insert_graph_content_to_xml_files_dep" dependency="true"/>
     </outputs>
 </root>

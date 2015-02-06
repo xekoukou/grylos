@@ -14,7 +14,8 @@
         <input name="xml_files" side-effect="true">
             <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
         </input>
-        <input generated="true" name="parse_mr_files_dep"/>
+        <input generated="true" name="insert_graph_content_to_xml_files_dep"/>
+        <input generated="true" name="insert_missing_io_tags_from_graph_dep"/>
     </inputs>
     <outputs>
         <output name="updated_xml_files" side-effect="true">

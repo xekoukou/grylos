@@ -22,6 +22,6 @@
         <output name="file_missing_errors" side-effect="true">
             <description>It prints an error when an xml file is not there and exits.</description>
         </output>
-        <output name="parse_mr_files_dep" dependency="true"/>
+        <output name="insert_missing_io_tags_from_graph_dep" dependency="true"/>
     </outputs>
 </root>

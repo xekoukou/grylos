@@ -1,7 +1,7 @@
 find_mr_file_paths     split_srcode_into_lines         create_graphs                      insert_graph_content_to_xml_files
        |-(mr_files)---------|------(srcodes)---------------|-------(graphs)------------------------------|
        |                                                   |         check_same_output_name              |
-       |----------(mr_file_paths)--------------------------|-(graphs)---|-(check_same_output_name_dev)-d-|
+       |----------(mr_file_paths)--------------------------|-(graphs)---|-(check_same_output_name_dep)-d-|
        |                                                   |                                             |
        |                                                   |-          insert_missing_io_tags_from_graph |
        |                                                    \-(graphs)--------|                          |

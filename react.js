@@ -1851,8 +1851,7 @@ $("outputs output").each(function() {
     });
 
 
-    //TODO remove 
-    console.log(JSON.stringify(thread_starting_points, null, 4));
+    //TODO remove     console.log(JSON.stringify(thread_starting_points, null, 4));
     /////////////////////////////////////////////////////////////////
     //merge_serial_subgraphs
     //////////////////////////////
@@ -1945,6 +1944,10 @@ $("outputs output").each(function() {
                 }
             }
             delete thread_starting_points[pair.e];
+
+            if (Object.keys(thread_starting_points[pair.o]).length == 0) {
+                delete thread_starting_points[pair.o];
+            }
         });
 
         //Check if we could merge more subgraphs. This could potentially allow us to merge even more in the next iteration.
@@ -1971,25 +1974,124 @@ $("outputs output").each(function() {
 
 
 
-    //TODO remove 
-    console.log(JSON.stringify(thread_starting_points, null, 4));
+    //TODO remove     console.log(JSON.stringify(thread_starting_points, null, 4));
+    //TODO remove     console.log(JSON.stringify(flattened_graph, null, 4));
 
 
     ////////////////////////////////////////////////////////////////
     //order_subgraph_nodes
-    var ordered_list;
+    var ordered_lists;
     //////////////////////
     ordered_lists = {};
+
+    //Group starting points per subgraph.
+
+    var grouped_starting_points = {};
+    Object.keys(thread_starting_points).forEach(function(key) {
+        Object.keys(thread_starting_points[key]).forEach(function(subgraph_id) {
+            if (!(subgraph_id in grouped_starting_points)) {
+                grouped_starting_points[subgraph_id] = {};
+            }
+            Object.keys(thread_starting_points[key][subgraph_id]).forEach(function(path) {
+                grouped_starting_points[subgraph_id][path] = thread_starting_points[key][subgraph_id][path];
+            });
+        });
+    });
+
+    //TODO remove 
+    console.log(JSON.stringify(grouped_starting_points, null, 4));
+
     if (prog_lang == "js") {
         //TODO Optimize this to minimize memory consumption for the javascript case.
 
-        //A deep first algorithm with opportunistic avoidance of outputs with multiple end nodes.
+        Object.keys(grouped_starting_points).forEach(function(subgraph_id) {
+            ordered_lists[subgraph_id] = [];
+            var set = grouped_starting_points[subgraph_id];
 
-        Object.keys(flattened_graph).forEach(function(key) {
+            //Variables contain all variables that are currently in memory.
+            var variables = {};
+            var keys = Object.keys(set);
+            while (keys.length > 0) {
+
+                var node;
+                var cpath;
+
+                //New variables are the outgoing variables of the selected node to be added to variables.
+                var nvariables;
+                //New nodes are the internal nodes that are to be inserted in the set.
+                var nnodes;
+                var diff_nvariables = Number.MAX_VALUE;
+                keys.forEach(function(key) {
+                    var lvariables = [];
+                    var lnodes = {};
+                    var lnode = flattened_graph[key];
+
+                    //ldiff_nvariables tracks the increase of the number of variables that we will need to store if we compute a specific node. We try to minimize it every time.
+                    var ldiff_nvariables = 0;
+
+                    //Find internal descendent nodes. Only those will be added in the ldiff_nvariables.
+                    Object.keys(lnode.outputs).forEach(function(vname) {
+
+                        var at_least_one_internal = false;
+                        lnode.outputs[vname].forEach(function(item) {
+                            var cpath = set_cpath(item.end_pointer, 0, item.end_pointer.length - 1);
+                            var node = flattened_graph[cpath];
+                            if (node.properties.set == subgraph_id) {
+                                lnodes[cpath] = item.end_pointer;
+                                ldiff_nvariables++;
+                                at_least_one_internal = true;
+                            }
+                        });
+
+                        if (at_least_one_internal == true) {
+                            lvariables.push(vname);
+                        }
+                    });
+
+                    Object.keys(lnode.inputs).some(function(key) {
+                        var cpath = set_cpath(lnode.inputs[key].origin_pointer, 0, lnode.inputs[key].origin_pointer.length - 1);
+                        if ((key in variables) && (cpath in variables[key])) {
+                            //TODO This algoritm doesnt take into account the fact that the same output goes to multiple inputs.
+                            ldiff_nvariables--;
+                        } else {
+                            ldiff_nvariables = Math.MAX_VALUE;
+                            return true;
+                        }
+                    });
+
+                    if (ldiff_nvariables < diff_nvariables) {
+                        node = lnode;
+                        cpath = key;
+                        nnodes = lnodes;
+                        nvariables = lvariables;
+                        diff_nvariables = ldiff_nvariables;
+                    }
+                });
+
+                ordered_lists[subgraph_id].push(node);
+                //TODO remove
+                console.log(cpath);
+                //We delete this node from the nodes we need to traverse and we add its variables and its descendents.
+                delete set[cpath];
 
 
+                nvariables.forEach(function(vname) {
+                    if (!(vname in variables)) {
+                        variables[vname] = {};
+                    }
+                    variables[vname][cpath] = null;
+                });
+                Object.keys(nnodes).forEach(function(cpath) {
+                    set[cpath] = nnodes[cpath];
+                });
+
+
+                keys = Object.keys(set);
+            }
         });
 
+        //TODO remove
+        console.log(JSON.stringify(ordered_lists, null, 4));
 
     } else {
         if (prog_lang == "c") {}
