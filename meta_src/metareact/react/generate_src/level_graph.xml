@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<root>
+    <info>
+        <name> level_graph </name>
+        <description> It creates a leveled graph. </description>
+    </info>
+    <inputs>
+        <input generated="true" name="flattened_graph"/>
+    </inputs>
+    <outputs>
+        <output generated="true" name="level_graph_dep"/>
+        <output generated="true" name="leveled_graph"/>
+    </outputs>
+</root>

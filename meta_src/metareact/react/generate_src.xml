@@ -12,6 +12,7 @@
             <origin origin_name="source_path" origin_location="flatten_graph/create_flattened_graph" generated="true"/>
             <origin origin_name="source_path" origin_location="flatten_graph/find_node_properties" generated="true"/>
             <origin origin_name="source_path" origin_location="flatten_graph/find_starting_points" generated="true"/>
+            <origin origin_name="source_path" origin_location="generate_src" generated="true"/>
         </input>
         <input generated="true" name="check_only_side_effects_exist_dep">
             <origin origin_name="check_only_side_effects_exist_dep" origin_location="flatten_graph/find_node_properties" generated="true"/>
@@ -50,6 +51,7 @@
                 <end_point fn_name="determine_subgraph_order_str_points" mutable="true"/>
                 <end_point fn_name="generate_src"/>
                 <end_point fn_name="merge_serial_subgraphs" mutable="true"/>
+                <end_point fn_name="level_graph"/>
             </output>
             <output name="starting_points">
                 <end_point fn_name="determine_subgraphs"/>
@@ -74,5 +76,13 @@
             </output>
         </node>
         <node fn_name="generate_src"/>
+        <node fn_name="level_graph">
+            <output name="level_graph_dep">
+                <end_point fn_name="determine_subgraphs" dependency="true"/>
+            </output>
+            <output name="leveled_graph">
+                <end_point fn_name="generate_src"/>
+            </output>
+        </node>
     </graph>
 </root>

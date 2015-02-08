@@ -611,8 +611,7 @@ exec = require('execSync');
         });
 
 
-        //TODO remove 
-        console.log(JSON.stringify(graphs, null, 4));
+        //TODO remove         console.log(JSON.stringify(graphs, null, 4));
 
         //////////////////////////////////////////////////////////////////
     }
@@ -1616,6 +1615,47 @@ $("outputs output").each(function() {
     }
     //endof flatten_graph
     //////////////////////////////////////////////////////////////////
+    //level_graph
+    var leveled_graph;
+    //////////////////////
+
+    //TODO Only the inputs are inserted into the level_graph at the moment.
+
+    leveled_graph = {
+        set: {}
+    };
+
+    Object.keys(flattened_graph).forEach(function(key) {
+        node = flattened_graph[key];
+
+        var lgraph = leveled_graph;
+        for (var i = 1; i < node.pointer.length; i++) {
+            var item = node.pointer[i];
+            if (!(item in lgraph.set)) {
+                lgraph.set[item] = {
+                    pointer: node.pointer.slice(0, i + 1),
+                    inputs: {},
+                    set: {}
+                };
+            }
+
+            for (var k in node.inputs) {
+                var input_path = set_cpath(node.inputs[k].origin_pointer, 0, node.inputs[k].origin_pointer.length - 1);
+                var lgraph_path = set_cpath(lgraph.set[item].pointer, 0, lgraph.set[item].pointer.length - 1);
+
+                if (input_path.indexOf(lgraph_path) == -1) {
+                    lgraph.set[item].inputs[k] = node.inputs[k];
+                }
+            }
+
+            lgraph = lgraph.set[item];
+        };
+    });
+
+    //TODO remove     console.log(JSON.stringify(leveled_graph, null, 4));
+
+
+    /////////////////////////////////////////////////////////////////
     //determine_subgraphs
 
     //mutable input to output flattened graph
@@ -1975,19 +2015,18 @@ $("outputs output").each(function() {
 
 
 
-    //TODO remove 
-    console.log(JSON.stringify(thread_starting_points, null, 4));
-    //TODO remove   
-    console.log(JSON.stringify(flattened_graph, null, 4));
+    //TODO remove     console.log(JSON.stringify(thread_starting_points, null, 4));
+    //TODO remove       console.log(JSON.stringify(flattened_graph, null, 4));
 
 
     ////////////////////////////////////////////////////////////////
     //generate_src
     ////////////// 
 
-    fs.appendFileSync(source_path + ".js", line);
+    //fs.appendFileSync(source_path + ".js", line);
 
     if (prog_lang == "js") {
+
 
     }
     if (prog_lang == "rust") {}
