@@ -1,5 +1,6 @@
-function delete_generated_src(cpath) {
+    function delete_generated_src(cpath) {
 
+        //Check if it is a file or a directory.
         var files = fs.readdirSync(cpath);
         files.forEach(function(file_name, index, files) {
                 var stat = fs.statSync(cpath + "/" + file_name);
@@ -10,6 +11,7 @@ function delete_generated_src(cpath) {
                             encoding: "utf-8"
                         });
 
+                        //If the source file has generated at the start, it deletes it.
                         if (file.substring(2, 12) == "$GENERATED") {
                             fs.unlinkSync(cpath + "/" + file_name);
                         }
@@ -20,6 +22,7 @@ function delete_generated_src(cpath) {
                     if (stat.isDirectory()) {
 
 
+                        //Recursively operate on the subdirectories.
                         delete_generated_src(cpath + "/" + file_name);
                     }
 
@@ -34,5 +37,5 @@ function delete_generated_src(cpath) {
     }
 
 
-delete_generated_src(source_path);
+    delete_generated_src(source_path);
 

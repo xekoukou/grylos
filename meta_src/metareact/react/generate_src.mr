@@ -1,6 +1,6 @@
 flatten_graph                    determine_subgraphs:c 
       |------(flattened_graph)--m--------|   determine_subgraph_order_str_points     
-      |-----(starting_points)------------|-(deter_subg)-d---|              merge_serial_subgraphs              order_subgraph_nodes  
+      |-----(starting_points)------------|-(deter_subg)-d---|              merge_serial_subgraphs                   generate_src  
       |-------(flattened_graph)-----------m-----------------|-(thread_starting_points)-m---|---(merge_ser_subg)--d------|
       |------(starting_points)------------------------------|---(thread_starting_points)--------------------------------|
       |-------(flattened_graph)-----------------------------------------------------------------------------------------|

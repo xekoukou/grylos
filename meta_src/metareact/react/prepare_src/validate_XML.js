@@ -1,30 +1,38 @@
-function validateXML(cpath){
-var files = fs.readdirSync(cpath);
-files.forEach(function(file, index, files) {
-    var stat = fs.statSync(cpath + "/" + file);
+    function validateXML(cpath) {
 
-    if (stat.isFile()) {
-        if (path.extname(file) == ".xml") {
+        //Check if it is a file or a directory.
+        var files = fs.readdirSync(cpath);
+        files.forEach(function(file, index, files) {
+            var stat = fs.statSync(cpath + "/" + file);
 
-               var result = exec.exec("xmllint --format --noout " + cpath + "/" + file +" 1>&2");
+            if (stat.isFile()) {
+
+                //If it is an xml file, validate it. 
+                if (path.extname(file) == ".xml") {
+
+                    var result = exec.exec("xmllint --format --noout " + cpath + "/" + file + " 1>&2");
 
                     if (result.stdout !== "") {
-                            console.log("XML Error:\n"+ result.stdout);
+                        console.log("XML Error:\n" + result.stdout);
                         process.exit(-1);
                     }
 
+                }
+
+            } else {
+                if (stat.isDirectory()) {
+                    //Recursively operate on the subdirectories.
+                    validateXML(cpath + "/" + file);
+                }
+
             }
 
-    } else {
-        if (stat.isDirectory()) {
+        });
 
-            validateXML(cpath + "/" + file);
-        }
+
+
 
     }
 
-});
+    validateXML(source_path);
 
-}
-
-validate_XML(source_path);

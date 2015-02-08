@@ -1,11 +1,12 @@
 <?xml version="1.0"?>
 <root>
     <info>
-        <name> order_subgraphs </name>
-        <description> It orders the execution of the different nodes/functions inside each thread.  </description>
+        <name> generate_src </name>
+        <description> It generates the source based on the data that the flattened graph and the "thread starting points" it is provided.  </description>
     </info>
     <inputs>
         <input name="prog_lang"/>
+        <input name="source_path"/>
         <input generated="true" name="flattened_graph"/>
         <input generated="true" name="thread_starting_points"/>
         <input generated="true" name="merge_ser_subg"/>

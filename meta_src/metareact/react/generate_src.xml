@@ -6,7 +6,7 @@
     </info>
     <inputs>
         <input generated="true" name="prog_lang">
-            <origin origin_name="prog_lang" origin_location="order_subgraph_nodes" generated="true"/>
+            <origin origin_name="prog_lang" origin_location="generate_src" generated="true"/>
         </input>
         <input generated="true" name="source_path">
             <origin origin_name="source_path" origin_location="flatten_graph/create_flattened_graph" generated="true"/>
@@ -48,7 +48,7 @@
             <output name="flattened_graph">
                 <end_point fn_name="determine_subgraphs" mutable="true"/>
                 <end_point fn_name="determine_subgraph_order_str_points" mutable="true"/>
-                <end_point fn_name="order_subgraph_nodes"/>
+                <end_point fn_name="generate_src"/>
                 <end_point fn_name="merge_serial_subgraphs" mutable="true"/>
             </output>
             <output name="starting_points">
@@ -65,14 +65,14 @@
         <node fn_name="determine_subgraph_order_str_points">
             <output name="thread_starting_points">
                 <end_point fn_name="merge_serial_subgraphs" mutable="true"/>
-                <end_point fn_name="order_subgraph_nodes"/>
+                <end_point fn_name="generate_src"/>
             </output>
         </node>
         <node fn_name="merge_serial_subgraphs">
             <output name="merge_ser_subg">
-                <end_point fn_name="order_subgraph_nodes" dependency="true"/>
+                <end_point fn_name="generate_src" dependency="true"/>
             </output>
         </node>
-        <node fn_name="order_subgraph_nodes"/>
+        <node fn_name="generate_src"/>
     </graph>
 </root>
