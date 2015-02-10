@@ -1943,7 +1943,26 @@ $("outputs output").each(function() {
             var st_pts = thread_starting_points[pair.o][pair.e];
             Object.keys(st_pts).forEach(function(stpath) {
 
-                var trav_pointers = [st_pts[stpath]];
+
+                var trav_pointers = [];
+
+                //Add the initial nodes of the set from each thread_starting_point.
+
+                var pointer = st_pts[stpath];
+                var cpath = set_cpath(pointer, 0, pointer.length - 1);
+                var node = flattened_graph[cpath];
+
+                Object.keys(node.outputs).forEach(function(key) {
+                    var output = node.outputs[key];
+                    output.forEach(function(item) {
+                        trav_pointers.push(
+                            item.end_pointer
+                        );
+                    });
+
+                });
+
+
 
                 while (trav_pointers.length > 0) {
 
@@ -2016,16 +2035,169 @@ $("outputs output").each(function() {
 
 
     //TODO remove     console.log(JSON.stringify(thread_starting_points, null, 4));
-    //TODO remove       console.log(JSON.stringify(flattened_graph, null, 4));
+    //TODO remove   
+    console.log(JSON.stringify(flattened_graph, null, 4));
 
 
     ////////////////////////////////////////////////////////////////
     //generate_src
     ////////////// 
+    //TODO Put this general function in the reusable function pool.
+    //returns the position of first different value -1. 
+    function compare(pointer, sec_pointer) {
+        var min = Math.min(pointer.length, sec_pointer.length);
+        var last = -1;
+        for (var i = 0; i < min; i++) {
+            if (pointer[i] != sec_pointer[i]) {
+                break;
+            }
+            last++;
+        }
+        return last;
+    }
+
+    function contains(array, item) {
+        var contains = false;
+        array.forEach(function(each) {
+            if (each == item) {
+                contains = true;
+            }
+        });
+        return contains;
+    }
+
+    function traverse_level_graph(leveled_graph, pointer) {
+        pointer.shift();
+        var lgraph = leveled_graph;
+        pointer.forEach(function(item) {
+            lgraph = lgraph.set[item];
+        });
+        return lgraph;
+    }
 
     //fs.appendFileSync(source_path + ".js", line);
 
     if (prog_lang == "js") {
+
+        //Group starting points per subgraph.
+        var grouped_starting_points = {};
+        Object.keys(thread_starting_points).forEach(function(key) {
+            Object.keys(thread_starting_points[key]).forEach(function(subgraph_id) {
+                if (!(subgraph_id in grouped_starting_points)) {
+                    grouped_starting_points[subgraph_id] = {};
+                }
+                Object.keys(thread_starting_points[key][subgraph_id]).forEach(function(path) {
+                    grouped_starting_points[subgraph_id][path] = thread_starting_points[key][subgraph_id][path];
+                });
+            });
+        });
+
+        Object.keys(grouped_starting_points).forEach(function(set_id) {
+            var set = grouped_starting_points[set_id];
+
+            //The current subgraphs that we have already skipped because they had unmet dependencies.
+            // This is emptied after one more node is added to the source file.
+            var skippedList = [];
+
+            //The current subgraph;
+            var prefix_pointer = [""];
+
+            //added_i determines the i in which we added our last node.
+            var added_i = -1;
+            var i = 0;
+
+            var keys = Object.keys(set);
+            while (keys.length > 0) {
+                node = flattened_graph[keys[i]];
+                var diff = compare(node.pointer, prefix_pointer);
+
+                //moveOn is used to increment the index i;
+                var moveOn = false;
+
+                //node must be inside the prefix_pointer subgraph.
+                //Check if we already skipped that subgraph.
+                if ((diff == prefix_pointer.length - 1) && (!contains(skippedList, node.pointer))) {
+
+                    //Check if we reached Bottom.
+                    if (node.pointer.length == prefix_pointer.length) {
+                        //TODO Add the code in the source file.
+
+                        //TODO remove   
+                        var temp = set_cpath(node.pointer, 0, node.pointer.length - 1);
+                        console.log("Added: " + temp);
+
+
+                        //Mark it by removing the passed property.
+                        delete node.properties.passed;
+
+                        //Add the outputs from the node to the set.
+                        Object.keys(node.outputs).forEach(function(vname) {
+                            node.outputs[vname].forEach(function(item) {
+                                var cpath = set_cpath(item.end_pointer, 0, item.end_pointer.length - 1);
+                                var node = flattened_graph[cpath];
+
+                                //node must be in the same thread/subgraph.
+                                if (node.properties.set == set_id) {
+
+                                    //We add the node.
+                                    set[cpath] = item.end_pointer;
+                                }
+                            });
+                        });
+
+                        //Remove the current node
+                        delete set[keys[i]];
+
+                        //Find all the keys again.
+                        keys = Object.keys(set);
+
+                        //Update the added_i.
+                        added_i = i - 1;
+                        if (added_i < 0) {
+                            added_i = added_i + keys.length;
+                        }
+
+                        //The i might be at the end so we need to put at the front after the removal of the node.
+                        i = i % keys.length;
+                    } else {
+
+                        //Check that all the dependencies of the subgraph are met.
+                        var missing_dependencies = false;
+                        var lgraph = traverse_level_graph(leveled_graph, node.pointer.slice(0, prefix_pointer.length + 1));
+                        Object.keys(lgraph.inputs).forEach(function(nvalue) {
+                            var cpath = set_cpath(lgraph.inputs[nvalue].origin_pointer, 0, lgraph.inputs[nvalue].origin_pointer.length - 1);
+                            var input_node = flattened_graph[cpath];
+                            if ("passed" in input_node.properties) {
+                                missing_dependencies = true;
+                            }
+                        });
+                        if (!missing_dependencies) {
+                            prefix_pointer = node.pointer.slice(0, prefix_pointer.length + 1);
+                            continue;
+                        } else {
+                            skippedList.push(node.pointer.slice(0, prefix_pointer.length + 1));
+                            moveOn = true;
+                        }
+                    }
+
+                } else {
+                    moveOn = true;
+                }
+
+
+                if (i == added_i) {
+                    //There are no more nodes to add for this subgraph.
+                    //TODO Add the code
+
+                    //Move the prefix_pointer one level up.
+                    prefix_pointer = prefix_pointer.slice(0, prefix_pointer.length - 1);
+                }
+                if (moveOn) {
+                    i++;
+                    i = i % keys.length;
+                }
+            };
+        });
 
 
     }
