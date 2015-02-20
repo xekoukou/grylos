@@ -1,0 +1,490 @@
+var INDENT_SIZE = 4;
+
+var fs=require('fs');
+
+var source_path=process.argv[2];
+./!output(source_path + ".js")
+
+var leveled_graph = JSON.parse(fs.readFileSync(process.argv[3], {
+    encoding: "utf-8"
+}));
+var flattened_graph = JSON.parse(fs.readFileSync(process.argv[4], {
+    encoding: "utf-8"
+}));
+var thread_starting_points = JSON.parse(fs.readFileSync(process.argv[5], {
+    encoding: "utf-8"
+}));
+
+//Helper functions
+
+function set_cpath(pointer, start, end) {
+    var cpath = pointer[start];
+    for (var i = start + 1; i <= end; i++) {
+        cpath = cpath + "/" + pointer[i];
+    }
+    return cpath;
+}
+
+
+//It returns the index of the last string that they have the same.
+    function compare(pointer, sec_pointer) {
+        var min = Math.min(pointer.length, sec_pointer.length);
+        var last = -1;
+        for (var i = 0; i < min; i++) {
+            if (pointer[i] != sec_pointer[i]) {
+                break;
+            }
+            last++;
+        }
+        return last;
+    }
+
+//A way to check whether a string is contained inside an array.
+    function contains(array, item) {
+        var contains = false;
+        array.forEach(function(each) {
+            if (each == item) {
+                contains = true;
+            }
+        });
+        return contains;
+    }
+
+    function traverse_leveled_graph(leveled_graph, pointer) {
+        var lgraph = leveled_graph;
+        for(var i=1;i<pointer.length; i++){
+            lgraph = lgraph.set[pointer[i]];
+        }
+        return lgraph;
+    }
+
+//Returns the array of variables that are the input of the node.
+    function node_execute_definition_variables(node) {
+        var input_var = [];
+        
+
+        //Add all the input variables.
+        Object.keys(node.inputs).forEach(function(vname) {
+
+            if (!('dependency' in node.inputs[vname].properties)) {
+                input_var.push(vname);
+            }
+        });
+        return input_var;
+    }
+
+//Returns the array of variables that need to be passed to the execute function of the node.
+    function node_execute_variables(node,pointer,leveled_graph) {
+
+        var lgraph = traverse_leveled_graph(leveled_graph, pointer.slice(0, pointer.length - 1));
+        var input_var = [];
+        Object.keys(node.inputs).forEach(function(vname) {
+
+            if (!('dependency' in node.inputs[vname].properties)) {
+                if (vname in lgraph.inputs) {
+                    input_var.push(vname);
+                } else {
+                    input_var.push("this." + vname);
+                }
+            }
+        });
+       return input_var;
+    }
+
+
+    function node_return_outputs(node,space) {
+
+.&{space}return { 
+       var output_var=[]; 
+        Object.keys(node.outputs).forEach(function(vname) {
+            var dependency = false;
+
+            node.outputs[vname].forEach(function(each) {
+                if ('dependency' in each.properties) {
+                    dependency = true;
+                }
+            });
+
+            if (!dependency) {
+            output_var.push(vname);
+            } 
+        });
+./!separate(", ")
+        for(var i = 0; i<output_var.length; i++){
+./+"@{output_var[i]}":@{output_var[i]}
+        }
+./+}
+    return output_var;
+    }
+
+
+
+
+    function generate_start_js() {
+        //TODO Add the license of the project.
+
+.//$GENERATED
+.
+."use strict";
+
+        //Add the deep_freeze function
+
+.
+.function deepFreeze_734n8v374vbn98evjvnjskl (o) {
+.  Object.freeze(o);
+.
+.  var oIsFunction = typeof o === "function";
+.  var hasOwnProp = Object.prototype.hasOwnProperty;
+.
+.  Object.getOwnPropertyNames(o).forEach(function (prop) {
+.    if (hasOwnProp.call(o, prop)
+.    && (oIsFunction ? prop !== "caller" && prop !== "callee" && prop !== "arguments" : true )
+.    && o[prop] !== null
+.    && (typeof o[prop] === "object" || typeof o[prop] === "function")
+.    && !Object.isFrozen(o[prop])) {
+.      deepFreeze_734n8v374vbn98evjvnjskl(o[prop]);
+.    }
+.  });
+. 
+.  return o;
+.};
+    }
+
+    function add_node(pointer, flattened_graph, leveled_graph) {
+
+//Findind the node we are refering to.
+        var cpath = set_cpath(pointer, 0, pointer.length - 1);
+        var node = flattened_graph[cpath];
+
+    var input_def_var = node_execute_definition_variables(node);
+
+       var output_var =  node_return_outputs(node,space);
+
+var input_var = node_execute_variables(node,pointer,leveled_graph);
+
+    return {"input":input_var, "input_def_var":input_def_var, "output_var":output_var};
+    }
+
+
+
+    function generate_add_node_js(source_path,input_var, input_def_var, output_var) {
+        var nested_depth = pointer.length - 2;
+        var space= Array((nested_depth * INDENT_SIZE) + 1).join(' ');
+
+.&{space}new (function(){
+.&{space}this.execute=function(
+./+@{input_def_var.join(",")}){
+.&{space}///////////////////////////////////////////////////////////////////////
+.&{space}//Path: @{cpath}
+.&{space}//*** @{pointer[pointer.length - 1]} ***
+.
+
+//Adding the lines of the code.
+
+        var lines = fs.readFileSync(source_path + '/' + cpath + ".js", {
+            encoding: "utf-8"
+        }).split("\n");
+        lines.pop();
+
+        lines.forEach(function(line) {
+
+.&{space}@{line}
+
+        });
+
+.&{space}///////////////////////////////////////////////////////////////////////
+.&{space}return { 
+./!separate(", ")
+        for(var i = 0; i<output_var.length; i++){
+./+"@{output_var[i]}":@{output_var[i]}
+        }
+./+}
+
+//TODO Move this code in the apropriate position.
+
+        //Make all outputs immutable if necessary.
+
+        Object.keys(node.outputs).forEach(function(vname) {
+            var mutable = false;
+            var dependency = false;
+
+            //check mutability
+            node.outputs[vname].forEach(function(each) {
+                if ('mutable' in each.properties) {
+                    mutable = true;
+                }
+                if ('dependency' in each.properties) {
+                    dependency = true;
+                }
+            });
+
+            if (!mutable && !dependency) {
+.&{space}deep_freeze_734n8v374vbn98evjvnjskl(@{vname});
+            }
+        });
+
+
+.&{space}}
+.&{space}})().execute(
+./+@{input_var.join(",")});
+.
+    }
+
+
+
+    function subgraph_execute_variables(pointer,leveled_graph) {
+
+        var subgraph = traverse_leveled_graph(leveled_graph, pointer.slice(0, pointer.length));
+        var lgraph = traverse_leveled_graph(leveled_graph, pointer.slice(0, pointer.length - 1));
+
+        var input_var = [];
+        Object.keys(subgraph.inputs).forEach(function(vname) {
+
+            if (!('dependency' in subgraph.inputs[vname].properties)) {
+
+                if (vname in lgraph.inputs) {
+                    input_var.push(vname);
+                } else {
+                    input_var.push("this." + vname);
+                }
+
+            }
+        });
+
+    return input_var;
+    }
+
+
+
+
+
+    function generate_go_up_js(pointer, flattened_graph, leveled_graph) {
+        var nested_depth = Math.min(Math.abs(pointer.length - 2), 0);
+        var space= Array((nested_depth * INDENT_SIZE) + 1).join(' ');
+.&{space}//End of subgraph *** @{pointer[pointer.length - 1]} ***
+.&{space}///////////////////////////////////////////////////////////////////////
+.&{space}}
+.&{space}})().execute(
+
+        var input_var = subgraph_execute_variables(pointer,leveled_graph);
+
+./+@{input_var.join(",")}
+./+);
+.
+
+    }
+
+
+
+
+
+
+
+
+
+    function generate_go_down_js(pointer, set_id, flattened_graph, leveled_graph) {
+        var nested_depth = Math.min(Math.abs(pointer.length - 2), 0);
+        var space= Array((nested_depth * INDENT_SIZE) + 1).join(' ');
+
+.&{space}new (function(){
+.
+.&{space}///////////////////////////////////////////////////////////////////////
+
+        var cpath = set_cpath(pointer, 0, pointer.length - 1);
+.&{space}//Path: @{cpath}
+.&{space}//*** @{pointer[pointer.length - 1]} ***
+.
+.&{space}//* Internal Variables *
+.&{space}///////////////
+
+        //Add the internal variables.
+
+        var lgraph = traverse_leveled_graph(leveled_graph, pointer.slice(0, pointer.length));
+
+        Object.keys(flattened_graph).forEach(function(key) {
+            var node = flattened_graph[key];
+            if ((key.indexOf(cpath) == 0) && (node.pointer.length - pointer.length == 1) && (node.properties.set == set_id)) {
+                //Add all inputs that are not outside inputs.
+                Object.keys(node.inputs).forEach(function(vname) {
+                    if (!(vname in lgraph.inputs)) {
+.&{space}this.@{vname};
+                    }
+                });
+            }
+        });
+
+.&{space}///////////////
+.
+.&{space}this.execute=function(
+
+        //Add the input variables.
+        var subgraph = traverse_leveled_graph(leveled_graph, pointer.slice(0, pointer.length));
+        var lgraph = traverse_leveled_graph(leveled_graph, pointer.slice(0, pointer.length - 1));
+
+        var input_var = [];
+        Object.keys(subgraph.inputs).forEach(function(vname) {
+
+            if (!('dependency' in subgraph.inputs[vname].properties)) {
+
+                input_var.push(vname);
+
+            }
+        });
+./+@{input_var.join(",")}){
+
+    }
+
+    function traverse_ordered_graph(ordered_graph, pointer) {
+        var lograph = ordered_graph;
+        for(var i=1;i<pointer.length; i++){
+            lograph = lograph.set[pointer[i]];
+        }
+        return lograph;
+    }
+
+
+
+var ordered_graph = {"input_def_var":[], "input_var":[], "output_var":[], "set":{}, "type":"subgraph"};
+
+    //Group starting points per subgraph.
+    var grouped_starting_points = {};
+    Object.keys(thread_starting_points).forEach(function(key) {
+        Object.keys(thread_starting_points[key]).forEach(function(subgraph_id) {
+            if (!(subgraph_id in grouped_starting_points)) {
+                grouped_starting_points[subgraph_id] = {};
+            }
+            Object.keys(thread_starting_points[key][subgraph_id]).forEach(function(path) {
+                grouped_starting_points[subgraph_id][path] = thread_starting_points[key][subgraph_id][path];
+            });
+        });
+    });
+
+    Object.keys(grouped_starting_points).forEach(function(set_id) {
+
+        //Open the root subgraph
+        generate_go_down_js([""], set_id, flattened_graph, leveled_graph);
+
+        var set = grouped_starting_points[set_id];
+
+        //The current subgraphs that we have already skipped because they had unmet dependencies.
+        // This is emptied after one more node is added to the source file.
+        var skippedList = [];
+
+        //The current subgraph;
+        var prefix_pointer = [""];
+
+        //added_i determines the i in which we added our last node.
+        var added_i = -1;
+        var i = 0;
+
+        var keys = Object.keys(set);
+        while (keys.length > 0) {
+            node = flattened_graph[keys[i]];
+            var diff = compare(node.pointer, prefix_pointer);
+
+            //moveOn is used to increment the index i;
+            var moveOn = false;
+
+            //node must be inside the prefix_pointer subgraph.
+            //Check if we already skipped that subgraph.
+            if ((diff == prefix_pointer.length - 1) && (!contains(skippedList, node.pointer))) {
+
+                //Check if we reached Bottom.
+                if (node.pointer.length == prefix_pointer.length) {
+
+                    //Add the node code into the source file.
+                    generate_add_node_js(source_path, node.pointer, flattened_graph, leveled_graph);
+
+                    //Mark it by removing the passed property.
+                    delete node.properties.passed;
+
+                    //Add the outputs from the node to the set.
+                    Object.keys(node.outputs).forEach(function(vname) {
+                        node.outputs[vname].forEach(function(item) {
+                            var cpath = set_cpath(item.end_pointer, 0, item.end_pointer.length - 1);
+                            var node = flattened_graph[cpath];
+
+                            //node must be in the same thread/subgraph.
+                            if (node.properties.set == set_id) {
+
+                                //We add the node.
+                                set[cpath] = item.end_pointer;
+                            }
+                        });
+                    });
+
+                    //Remove the current node
+                    delete set[keys[i]];
+
+                    //Find all the keys again.
+                    keys = Object.keys(set);
+
+                    //Update the prefix_pointer.
+                    prefix_pointer = prefix_pointer.slice(0, prefix_pointer.length - 1);
+
+                    //Update the added_i.
+                    added_i = i - 1;
+                    if ((added_i < 0) && (keys.length > 1)) {
+                        added_i = added_i + keys.length;
+                    }
+
+                    //The i might be at the end so we need to put at the front after the removal of the node.
+                    i = i % keys.length;
+                } else {
+
+                    //Check that all the dependencies of the subgraph are met.
+                    var missing_dependencies = false;
+                    var lgraph = traverse_leveled_graph(leveled_graph, node.pointer.slice(0, prefix_pointer.length + 1));
+                    Object.keys(lgraph.inputs).forEach(function(nvalue) {
+                        var cpath = set_cpath(lgraph.inputs[nvalue].origin_pointer, 0, lgraph.inputs[nvalue].origin_pointer.length - 1);
+                        var input_node = flattened_graph[cpath];
+                        if ("passed" in input_node.properties) {
+                            missing_dependencies = true;
+                        }
+                    });
+                    if (!missing_dependencies) {
+                        prefix_pointer = node.pointer.slice(0, prefix_pointer.length + 1);
+                        //If a subgraph, add the necessary code.
+                        if (prefix_pointer.length != node.pointer.length) {
+                            generate_go_down_js(prefix_pointer, set_id, flattened_graph, leveled_graph);
+                        }
+                        continue;
+                    } else {
+                        skippedList.push(node.pointer.slice(0, prefix_pointer.length + 1));
+                        moveOn = true;
+                    }
+                }
+
+            } else {
+                moveOn = true;
+            }
+
+
+            if (i == added_i) {
+
+                //There are no more nodes to add for this subgraph.
+                generate_go_up_js(prefix_pointer, flattened_graph, leveled_graph);
+
+                //Move the prefix_pointer one level up.
+                prefix_pointer = prefix_pointer.slice(0, prefix_pointer.length - 1);
+            }
+            if (moveOn) {
+                i++;
+                i = i % keys.length;
+            }
+        };
+
+        //Close the remaining subgraphs
+        for (var j = 1; j < prefix_pointer.length; j++) {
+            generate_go_up_js(prefix_pointer, flattened_graph, leveled_graph);
+        }
+
+        //Close the root subgraph
+        generate_go_up_js([""], flattened_graph, leveled_graph);
+    });
+
+
+    generate_start_js();
+
+
+

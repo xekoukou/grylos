@@ -26,6 +26,7 @@
         <input generated="true" name="path">
             <origin origin_name="path" origin_location="flatten_graph/find_node_properties" generated="true"/>
             <origin origin_name="path" origin_location="flatten_graph/find_starting_points" generated="true"/>
+            <origin origin_name="path" origin_location="generate_src" generated="true"/>
         </input>
         <input generated="true" name="cheerio">
             <origin origin_name="cheerio" origin_location="flatten_graph/create_flattened_graph" generated="true"/>
