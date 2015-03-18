@@ -2,36 +2,47 @@
 //main
 var source_path;
 var prog_lang;
+var root_io;
 ///////////////
 source_path = null;
 prog_lang = null;
+root_io = false;
+gen_all = false;
 
 var error = false;
 var prev = null;
 for (var i = 2; i < process.argv.length; i++) {
     var arg = process.argv[i];
     //We update the prev
-    if (arg == "-lang") {
+    if (arg == "--lang") {
         if (!prev) {
             prev = "lang";
         } else {
             error = true;
         }
     } else {
-        //We assign the value
-        if (prev == null) {
-            if (!source_path) {
-                source_path = arg;
-            } else {
-                error = true;
-            }
+        if (arg == "--root_io") {
+            root_io = true;
         } else {
-            if (prev == "lang") {
-                if (!prog_lang) {
-                    prog_lang = arg;
-                    prev = null;
+            if (arg == "--gen_all") {
+                gen_all = true;
+            } else {
+                //We assign the value
+                if (prev == null) {
+                    if (!source_path) {
+                        source_path = arg;
+                    } else {
+                        error = true;
+                    }
                 } else {
-                    error = true;
+                    if (prev == "lang") {
+                        if (!prog_lang) {
+                            prog_lang = arg;
+                            prev = null;
+                        } else {
+                            error = true;
+                        }
+                    }
                 }
             }
         }
@@ -57,6 +68,50 @@ fs = require("fs");
 path = require("path");
 cheerio = require('cheerio');
 exec = require('execSync');
+
+///////////////////////////////////////////////////////////
+//generate_reusable_src
+////////////////
+
+function generate_reusable_rec(cpath) {
+    try {
+        var files = fs.readdirSync(cpath + "/reusable");
+        files.forEach(function(file, index, files) {
+            var stat = fs.statSync(cpath + "/reusable/" + file);
+
+            if (stat.isFile()) {
+
+                //If it is an xml file, generate its code. 
+                if (path.extname(file) == ".xml") {
+
+                    var result = exec.exec("node react.js --root_io --gen_all" + cpath + "/reusable/" + file + " --lang " + prog_lang);
+
+                }
+
+            }
+        });
+    } catch (e) {
+        return;
+    }
+
+
+    var files = fs.readdirSync(cpath);
+    files.forEach(function(file, index, files) {
+        var stat = fs.statSync(cpath + "/" + file);
+        if (stat.isDirectory()) {
+            //Recursively operate on the subdirectories.
+            generate_reusable_rec(cpath + "/" + file);
+        }
+    });
+
+
+
+
+}
+
+if (gen_all) {
+    generate_reusable_rec(source_path);
+}
 
 ///////////////////////////////////////////////////////////
 //prepare_src
@@ -1311,31 +1366,33 @@ mr_file_paths.forEach(function(item) {
 //check_only_side_effects_exist
 
 //////////////////////////////
-var xml_file = fs.readFileSync(source_path + ".xml", {
-    encoding: "utf-8"
-});
+if (!root_io) {
+    var xml_file = fs.readFileSync(source_path + ".xml", {
+        encoding: "utf-8"
+    });
 
-var $ = cheerio.load(xml_file, {
-    xmlMode: true
-});
+    var $ = cheerio.load(xml_file, {
+        xmlMode: true
+    });
 
-$("inputs input").each(function() {
-    if ($(this).attr("side-effect") != "true") {
-        console.log("Error: There is an input which is not a side_effect in the root xml_file.");
-        console.log("Name: " + $(this).attr("name"));
-        format_XML(source_path);
-        process.exit(0);
-    }
-});
+    $("inputs input").each(function() {
+        if ($(this).attr("side-effect") != "true") {
+            console.log("Error: There is an input which is not a side_effect in the root xml_file.");
+            console.log("Name: " + $(this).attr("name"));
+            format_XML(source_path);
+            process.exit(0);
+        }
+    });
 
-$("outputs output").each(function() {
-    if ($(this).attr("side-effect") != "true") {
-        console.log("Error: There is an output which is not a side_effect in the root xml_file.");
-        console.log("Name: " + $(this).attr("name"));
-        format_XML(source_path);
-        process.exit(0);
-    }
-});
+    $("outputs output").each(function() {
+        if ($(this).attr("side-effect") != "true") {
+            console.log("Error: There is an output which is not a side_effect in the root xml_file.");
+            console.log("Name: " + $(this).attr("name"));
+            format_XML(source_path);
+            process.exit(0);
+        }
+    });
+}
 ////////////////////////////////////////////////////////////////////
 //generate_src
 /////////////////
@@ -1637,7 +1694,7 @@ $("outputs output").each(function() {
         });
 
         //TODO remove  
-	  console.log(JSON.stringify(flattened_graph, null, 4));
+        console.log(JSON.stringify(flattened_graph, null, 4));
 
         /////////////////////////////////////////////////////////////////
     }
