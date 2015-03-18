@@ -536,24 +536,29 @@ exec = require('execSync');
                                             if (each == "p") {
                                                 path.passive = true;
                                             } else {
-                                                if (each == "h") {
-                                                    path.historical = true;
+                                                //'e' is for endpoint
+                                                if (each == "e") {
+                                                    path.dynamic = true;
                                                 } else {
-                                                    if (each == "m") {
-                                                        path.mutable = true;
-
+                                                    if (each == "h") {
+                                                        path.historical = true;
                                                     } else {
-                                                        if (each == "d") {
-                                                            path.dependency = true;
-                                                        } else {
-                                                            if (each == "l") {
-                                                                path.lossless = true;
+                                                        if (each == "m") {
+                                                            path.mutable = true;
 
+                                                        } else {
+                                                            if (each == "d") {
+                                                                path.dependency = true;
                                                             } else {
-                                                                console.log("\nError: mr_file:" + mr_file_paths[index] + ".mr(line: " + path.y + "," + "position: " + path.x + ")");
-                                                                console.log("Wrong option type.");
-                                                                format_XML(source_path);
-                                                                process.exit(0);
+                                                                if (each == "l") {
+                                                                    path.lossless = true;
+
+                                                                } else {
+                                                                    console.log("\nError: mr_file:" + mr_file_paths[index] + ".mr(line: " + path.y + "," + "position: " + path.x + ")");
+                                                                    console.log("Wrong option type.");
+                                                                    format_XML(source_path);
+                                                                    process.exit(0);
+                                                                }
                                                             }
                                                         }
                                                     }
@@ -836,7 +841,7 @@ exec = require('execSync');
 
                 }
                 //Adds multiple end_points per vname with their properties.
-                $("graph node[fn_name='" + fn_name + "'] output[name='" + path.vname + "']").append("<end_point fn_name='" + path.end_fn_name + "' " + ((path.mutable) ? "mutable='" + path.mutable + "' " : "") + ((path.dependency) ? "dependency='" + path.dependency + "' " : "") + ((path.lossless) ? "lossless='" + path.lossless + "' " : "") + ((path.historical) ? "historical='" + path.historical + "' " : "") + ((path.passive) ? "passive='" + path.passive + "' " : "") + "></end_point>");
+                $("graph node[fn_name='" + fn_name + "'] output[name='" + path.vname + "']").append("<end_point fn_name='" + path.end_fn_name + "' " + ((path.mutable) ? "mutable='" + path.mutable + "' " : "") + ((path.dependency) ? "dependency='" + path.dependency + "' " : "") + ((path.lossless) ? "lossless='" + path.lossless + "' " : "") + ((path.historical) ? "historical='" + path.historical + "' " : "") + ((path.dynamic) ? "dynamic='" + path.dynamic + "' " : "") + ((path.passive) ? "passive='" + path.passive + "' " : "") + "></end_point>");
 
 
             });
@@ -1450,7 +1455,7 @@ $("outputs output").each(function() {
         }
         var parent = [""];
         find_node_properties_rec(source_path, parent);
-	//TODO remove        console.log("Node_properties: \n" + JSON.stringify(node_properties, null, 4));
+        //TODO remove        console.log("Node_properties: \n" + JSON.stringify(node_properties, null, 4));
 
         //////////////////////////////////////////////////////////////////
         //create_flattened_graph
@@ -1545,6 +1550,9 @@ $("outputs output").each(function() {
                                 if (parent(this).attr("historical") == "true") {
                                     nn_edge.properties.historical = "true";
                                 }
+                                if (parent(this).attr("dynamic") == "true") {
+                                    nn_edge.properties.dynamic = "true";
+                                }
                                 if (parent(this).attr("lossless") == "true") {
                                     nn_edge.properties.lossless = "true";
                                 }
@@ -1628,7 +1636,8 @@ $("outputs output").each(function() {
 
         });
 
-        //TODO remove    console.log(JSON.stringify(flattened_graph, null, 4));
+        //TODO remove  
+	  console.log(JSON.stringify(flattened_graph, null, 4));
 
         /////////////////////////////////////////////////////////////////
     }
@@ -1643,6 +1652,7 @@ $("outputs output").each(function() {
     leveled_graph = {
         set: {},
         inputs: {},
+        outputs: {},
         pointer: [""]
     };
 
@@ -1656,18 +1666,32 @@ $("outputs output").each(function() {
                 lgraph.set[item] = {
                     pointer: node.pointer.slice(0, i + 1),
                     inputs: {},
+                    outputs: {},
                     set: {}
                 };
             }
+            var lgraph_path = set_cpath(lgraph.set[item].pointer, 0, lgraph.set[item].pointer.length - 1);
 
             for (var k in node.inputs) {
                 var input_path = set_cpath(node.inputs[k].origin_pointer, 0, node.inputs[k].origin_pointer.length - 1);
-                var lgraph_path = set_cpath(lgraph.set[item].pointer, 0, lgraph.set[item].pointer.length - 1);
 
                 if (input_path.indexOf(lgraph_path) == -1) {
                     lgraph.set[item].inputs[k] = node.inputs[k];
                 }
             }
+            for (var k in node.outputs) {
+                node.outputs[k].forEach(function(l) {
+                    var output_path = set_cpath(l.end_pointer, 0, l.end_pointer.length - 1);
+
+                    if (output_path.indexOf(lgraph_path) == -1) {
+                        if (!(k in lgraph.set[item].outputs)) {
+                            lgraph.set[item].outputs[k] = [];
+                        }
+                        lgraph.set[item].outputs[k].push(l);
+                    }
+                });
+            }
+
 
             lgraph = lgraph.set[item];
         };
@@ -1929,6 +1953,10 @@ $("outputs output").each(function() {
 
         Object.keys(thread_starting_points).forEach(function(origin_subgraph) {
 
+            if (Object.keys(thread_starting_points[origin_subgraph]).length > 1) {
+                return;
+            }
+
             for (var end_subgraph in thread_starting_points[origin_subgraph]) {
 
                 var mergable = true;
@@ -2063,17 +2091,402 @@ $("outputs output").each(function() {
     //generate_src
     ////////////// 
 
-    fs.writeFileSync("/tmp/leveled_graph.json", JSON.stringify(leveled_graph,null,4));
-    fs.writeFileSync("/tmp/flattened_graph.json", JSON.stringify(flattened_graph,null,4));
-    fs.writeFileSync("/tmp/thread_starting_points.json", JSON.stringify(thread_starting_points,null,4));
 
-
-    if (prog_lang == "js-browser") {
-exec.run("ribosome.js generate_js-browser_src.js.dna "+source_path+" /tmp/leveled_graph.json /tmp/flattened_graph.json /tmp/thread_starting_points.json");
-
+    //It returns the index of the last string that they have the same.
+    function compare(pointer, sec_pointer) {
+        var min = Math.min(pointer.length, sec_pointer.length);
+        var last = -1;
+        for (var i = 0; i < min; i++) {
+            if (pointer[i] != sec_pointer[i]) {
+                break;
+            }
+            last++;
+        }
+        return last;
     }
-    if (prog_lang == "rust") {}
 
+    //A way to check whether a string is contained inside an array.
+    function contains(array, item) {
+        var contains = false;
+        array.forEach(function(each) {
+            if (each == item) {
+                contains = true;
+            }
+        });
+        return contains;
+    }
+
+    function traverse_leveled_graph(leveled_graph, pointer) {
+        var lgraph = leveled_graph;
+        for (var i = 1; i < pointer.length; i++) {
+            lgraph = lgraph.set[pointer[i]];
+        }
+        return lgraph;
+    }
+
+    function traverse_ordered_graph(ordered_graph, pointer) {
+        var lograph = ordered_graph;
+        for (var i = 1; i < pointer.length; i++) {
+            for (var j = 0; j < lograph.set.length; j++) {
+                if (lograph.set[j].name == pointer[i]) {
+                    lograph = lograph.set[j];
+                }
+            }
+        }
+        return lograph;
+    }
+
+
+    function generate_src_add_node(pointer, set_id, flattened_graph, leveled_graph) {
+
+        //Findind the node we are refering to.
+        var cpath = set_cpath(pointer, 0, pointer.length - 1);
+        var node = flattened_graph[cpath];
+
+        var lgraph = traverse_leveled_graph(leveled_graph, pointer.slice(0, pointer.length - 1));
+        var input_local_var = {};
+        var input_not_local_var = {};
+        var input_external_var = {};
+        var input_not_external_var = {};
+
+        var historical = false;
+        Object.keys(node.inputs).forEach(function(vname) {
+
+            var external = false;
+            var local = true;
+
+            if (!('dependency' in node.inputs[vname].properties)) {
+                if (flattened_graph[set_cpath(node.inputs[vname].origin_pointer, 0, node.inputs[vname].origin_pointer.length - 1)].properties.set != set_id) {
+                    external = true;
+                }
+                if (vname in lgraph.inputs) {
+                    local = false;
+                }
+
+
+                if (external) {
+                    input_external_var[vname] = [node.pointer];
+                } else {
+                    input_not_external_var[vname] = true;
+                }
+                if (local) {
+                    input_local_var[vname] = true;
+                } else {
+                    input_not_local_var[vname] = true;
+                }
+            }
+            if ('historical' in node.inputs[vname].properties) {
+                historical = true;
+            }
+        });
+
+        var output_external_var = {};
+        var output_not_external_var = {};
+        var output_historical_var = {};
+        var output_dynamic_var = {};
+
+        Object.keys(node.outputs).forEach(function(vname) {
+            var dependency = false;
+            var external = false;
+            var dynamic = false;
+
+            node.outputs[vname].forEach(function(each) {
+                if ('dependency' in each.properties) {
+                    dependency = true;
+                }
+                if ('dynamic' in each.properties) {
+                    dynamic = true;
+                }
+                if (flattened_graph[set_cpath(each.end_pointer, 0, each.end_pointer.length - 1)].properties.set != set_id) {
+                    external = true;
+                }
+            });
+
+            if (!dependency) {
+                if (external) {
+                    output_external_var[vname] = [node.pointer];
+                } else {
+                    output_not_external_var[vname] = true;
+                }
+                if (historical) {
+                    output_historical_var[vname] = [node.pointer];
+                }
+                if (dynamic) {
+                    output_dynamic_var[vname] = [node.pointer];
+                }
+            }
+        });
+
+
+        return {
+            name: pointer[pointer.length - 1],
+            "input_local_var": input_local_var,
+            "input_not_local_var": input_not_local_var,
+            "input_external_var": input_external_var,
+            "input_not_external_var": input_not_external_var,
+            "output_external_var": output_external_var,
+            "output_not_external_var": output_not_external_var,
+            "output_historical_var": output_historical_var,
+            "output_dynamic_var": output_dynamic_var,
+            "set": [],
+            "type": "node"
+        };
+    }
+
+
+
+    var ordered_graph = {
+        "name": "",
+        "input_local_var": {},
+        "input_not_local_var": {},
+        "input_external_var": {},
+        "input_not_external_var": {},
+        "output_external_var": {},
+        "output_historical_var": {},
+        "output_dynamic_var": {},
+        "output_not_external_var": {},
+        "set": [],
+        "type": "subgraph"
+    };
+
+    //Group starting points per subgraph.
+    var grouped_starting_points = {};
+    Object.keys(thread_starting_points).forEach(function(key) {
+        Object.keys(thread_starting_points[key]).forEach(function(subgraph_id) {
+            if (!(subgraph_id in grouped_starting_points)) {
+                grouped_starting_points[subgraph_id] = {};
+            }
+            Object.keys(thread_starting_points[key][subgraph_id]).forEach(function(path) {
+                grouped_starting_points[subgraph_id][path] = thread_starting_points[key][subgraph_id][path];
+            });
+        });
+    });
+
+    Object.keys(grouped_starting_points).forEach(function(set_id) {
+
+        var set = grouped_starting_points[set_id];
+
+        //The current subgraphs that we have already skipped because they had unmet dependencies.
+        // This is emptied after one more node is added to the source file.
+        var skippedList = [];
+
+        //The current subgraph;
+        var prefix_pointer = [""];
+
+        //added_i determines the i in which we added our last node.
+        var added_i = -1;
+        var i = 0;
+
+        var keys = Object.keys(set);
+        while (keys.length > 0) {
+            node = flattened_graph[keys[i]];
+            var diff = compare(node.pointer, prefix_pointer);
+
+            //moveOn is used to increment the index i;
+            var moveOn = false;
+
+            //node must be inside the prefix_pointer subgraph.
+            //Check if we already skipped that subgraph.
+            if ((diff == prefix_pointer.length - 1) && (!contains(skippedList, node.pointer))) {
+
+                //Check if we reached Bottom.
+                if (node.pointer.length == prefix_pointer.length) {
+
+                    //Add the node code into the source file.
+                    var lograph = traverse_ordered_graph(ordered_graph, node.pointer.slice(0, node.pointer.length - 1));
+                    lograph.set.push(generate_src_add_node(node.pointer, set_id, flattened_graph, leveled_graph));
+
+                    //Mark it by removing the passed property.
+                    delete node.properties.passed;
+
+                    //Add the outputs from the node to the set.
+                    Object.keys(node.outputs).forEach(function(vname) {
+                        node.outputs[vname].forEach(function(item) {
+                            var cpath = set_cpath(item.end_pointer, 0, item.end_pointer.length - 1);
+                            var node = flattened_graph[cpath];
+
+                            //node must be in the same thread/subgraph.
+                            if (node.properties.set == set_id) {
+
+                                //We add the node.
+                                set[cpath] = item.end_pointer;
+                            }
+                        });
+                    });
+
+                    //Remove the current node
+                    delete set[keys[i]];
+
+                    //Find all the keys again.
+                    keys = Object.keys(set);
+
+                    //Update the prefix_pointer.
+                    prefix_pointer = prefix_pointer.slice(0, prefix_pointer.length - 1);
+
+                    //Update the added_i.
+                    added_i = i - 1;
+
+                    if ((added_i < 0) && (keys.length > 1)) {
+                        added_i = added_i + keys.length;
+                    }
+
+                    //The i might be at the end so we need to put at the front after the removal of the node.
+                    i = i % keys.length;
+                } else {
+
+                    //Check that all the dependencies of the subgraph are met.
+                    var missing_dependencies = false;
+                    var lgraph = traverse_leveled_graph(leveled_graph, node.pointer.slice(0, prefix_pointer.length + 1));
+                    Object.keys(lgraph.inputs).forEach(function(nvalue) {
+                        var cpath = set_cpath(lgraph.inputs[nvalue].origin_pointer, 0, lgraph.inputs[nvalue].origin_pointer.length - 1);
+                        var input_node = flattened_graph[cpath];
+                        if ("passed" in input_node.properties) {
+                            missing_dependencies = true;
+                        }
+                    });
+                    if (!missing_dependencies) {
+                        prefix_pointer = node.pointer.slice(0, prefix_pointer.length + 1);
+                        //If a subgraph, add the necessary code.
+                        if (prefix_pointer.length != node.pointer.length) {
+                            var lograph = traverse_ordered_graph(ordered_graph, prefix_pointer.slice(0, prefix_pointer.length - 1));
+                            lograph.set.push({
+                                "name": prefix_pointer[prefix_pointer.length - 1],
+                                "input_local_var": {},
+                                "input_not_local_var": {},
+                                "input_external_var": {},
+                                "input_not_external_var": {},
+                                "output_external_var": {},
+                                "output_not_external_var": {},
+                                "output_historical_var": {},
+                                "output_dynamic_var": {},
+                                "set": [],
+                                "type": "subgraph"
+                            });
+                        }
+                        continue;
+                    } else {
+                        skippedList.push(node.pointer.slice(0, prefix_pointer.length + 1));
+                        moveOn = true;
+                    }
+                }
+
+            } else {
+                moveOn = true;
+            }
+
+
+            if (i == added_i) {
+
+                //Move the prefix_pointer one level up.
+                prefix_pointer = prefix_pointer.slice(0, prefix_pointer.length - 1);
+            }
+            if (moveOn) {
+                i++;
+                i = i % keys.length;
+            }
+        };
+
+    });
+
+    //TODO remove  console.log(JSON.stringify(ordered_graph, null, 4));
+
+    function ordered_graph_complete(pointer, ordered_graph, leveled_graph, flattened_graph) {
+        var subgraph = traverse_ordered_graph(ordered_graph, pointer);
+
+        if (subgraph.type == "node") {
+            return;
+        } else {
+            //Fill the lower levels.
+            subgraph.set.forEach(function(item) {
+                var new_pointer = pointer.slice(0, pointer.length);
+                new_pointer.push(item.name);
+                ordered_graph_complete(new_pointer, ordered_graph, leveled_graph, flattened_graph);
+            });
+
+            subgraph.set.forEach(function(item) {
+
+                var lgraph = traverse_leveled_graph(leveled_graph, pointer.slice(0, pointer.length - 1));
+                var lsubgraph = traverse_leveled_graph(leveled_graph, pointer.slice(0, pointer.length));
+                Object.keys(item.input_not_local_var).forEach(function(vname) {
+
+                    if (vname in lgraph.inputs) {
+                        subgraph.input_not_local_var[vname] = true;
+                    } else {
+                        subgraph.input_local_var[vname] = true;
+                    }
+
+                });
+
+                Object.keys(item.input_external_var).forEach(function(vname) {
+                    if (vname in subgraph.input_external_var) {
+                        subgraph.input_external_var[vname] = subgraph.input_external_var[vname].concat(item.input_external_var[vname]);
+                    } else {
+                        subgraph.input_external_var[vname] = item.input_external_var[vname];
+
+                    }
+                });
+                Object.keys(item.input_not_external_var).forEach(function(vname) {
+                    if (vname in item.input_not_local_var) {
+                        if (vname in subgraph.input_not_external_var) {
+                            subgraph.input_external_var[vname] = subgraph.input_external_var[vname].concat(item.input_not_external_var[vname]);
+                        } else {
+                            subgraph.input_not_external_var[vname] = item.input_not_external_var[vname];
+
+                        }
+                    }
+                });
+
+
+                Object.keys(item.output_not_external_var).forEach(function(vname) {
+                    if (vname in lsubgraph.outputs) {
+                        subgraph.output_not_external_var[vname] = true;
+                    }
+                });
+
+                Object.keys(item.output_external_var).forEach(function(vname) {
+                    if (vname in subgraph.output_external_var) {
+                        subgraph.output_external_var[vname] = subgraph.output_external_var[vname].concat(item.output_external_var[vname]);
+                    } else {
+                        subgraph.output_external_var[vname] = item.output_external_var[vname];
+                    }
+                });
+
+                Object.keys(item.output_historical_var).forEach(function(vname) {
+                    if (vname in subgraph.output_historical_var) {
+                        subgraph.output_hostorical_var[vname] = subgraph.output_historical_var[vname].concat(item.output_historical_var[vname]);
+                    } else {
+                        subgraph.output_historical_var[vname] = item.output_historical_var[vname];
+                    }
+                });
+                Object.keys(item.output_dynamic_var).forEach(function(vname) {
+                    if (vname in subgraph.output_dynamic_var) {
+                        subgraph.output_dynamic_var[vname] = subgraph.output_dynamic_var[vname].concat(item.output_dynamic_var[vname]);
+                    } else {
+                        subgraph.output_dynamic_var[vname] = item.output_dynamic_var[vname];
+                    }
+                });
+            });
+
+        }
+    }
+
+    ordered_graph_complete([""], ordered_graph, leveled_graph, flattened_graph);
+    //TODO remove 
+    console.log(JSON.stringify(ordered_graph, null, 4));
+
+    /*
+
+        fs.writeFileSync("/tmp/leveled_graph.json", JSON.stringify(leveled_graph,null,4));
+        fs.writeFileSync("/tmp/flattened_graph.json", JSON.stringify(flattened_graph,null,4));
+        fs.writeFileSync("/tmp/thread_starting_points.json", JSON.stringify(thread_starting_points,null,4));
+
+
+        if (prog_lang == "js-browser") {
+    var result = exec.exec("ribosome.js generate_js-browser_src.js.dna "+source_path+" /tmp/leveled_graph.json /tmp/flattened_graph.json /tmp/thread_starting_points.json");
+    console.log(result.stdout);
+        }
+        if (prog_lang == "rust") {}
+    */
     ////////////////////////////////////////////////////////////////
 }
 //endof generate_src
