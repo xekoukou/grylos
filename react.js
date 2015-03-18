@@ -84,7 +84,7 @@ function generate_reusable_rec(cpath) {
                 //If it is an xml file, generate its code. 
                 if (path.extname(file) == ".xml") {
 
-                    var result = exec.exec("node react.js --root_io --gen_all" + cpath + "/reusable/" + file + " --lang " + prog_lang);
+                    var result = exec.exec("node react.js --gen_all" + cpath + "/reusable/" + file + " --lang " + prog_lang);
 
                 }
 
@@ -1376,7 +1376,7 @@ if (!root_io) {
     });
 
     $("inputs input").each(function() {
-        if ($(this).attr("side-effect") != "true") {
+        if (($(this).attr("side-effect") != "true") || ($(this).attr("external_input") != "true")) {
             console.log("Error: There is an input which is not a side_effect in the root xml_file.");
             console.log("Name: " + $(this).attr("name"));
             format_XML(source_path);
@@ -1385,7 +1385,7 @@ if (!root_io) {
     });
 
     $("outputs output").each(function() {
-        if ($(this).attr("side-effect") != "true") {
+        if (($(this).attr("side-effect") != "true") || ($(this).attr("external_output") != "true")) {
             console.log("Error: There is an output which is not a side_effect in the root xml_file.");
             console.log("Name: " + $(this).attr("name"));
             format_XML(source_path);
