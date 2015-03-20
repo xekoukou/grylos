@@ -1759,9 +1759,10 @@ if (!root_io) {
 
     /////////////////////////////////////////////////////////////////
     //determine_subgraphs
-
-    //mutable input to output flattened graph
+    var flattened_graph_v2;
     /////////////////////////////////////
+
+    flattened_graph_v2 = JSON.parse(JSON.stringify(flattened_graph));
 
     //We need to determine if subgraphs
     //that have the same concurrent value have a path from outside which connects 2 of its nodes.
@@ -1777,7 +1778,7 @@ if (!root_io) {
 
     starting_points.forEach(function(pointer) {
         var cpath = set_cpath(pointer, 0, pointer.length - 1);
-        var node = flattened_graph[cpath];
+        var node = flattened_graph_v2[cpath];
         var conc = node.properties.concurrent;
 
         if (!(conc in iter_pointers)) {
@@ -1808,7 +1809,7 @@ if (!root_io) {
 
                     var pointer = trav_pointers[trav_pointers.length - 1];
                     var cpath = set_cpath(pointer, 0, pointer.length - 1);
-                    var node = flattened_graph[cpath];
+                    var node = flattened_graph_v2[cpath];
 
                     trav_pointers.pop();
 
@@ -1869,14 +1870,14 @@ if (!root_io) {
             var iter = iter_pointers[iter_pointers.length - 1];
             var pointer = iter.pointer;
             var cpath = set_cpath(pointer, 0, pointer.length - 1);
-            var node = flattened_graph[cpath];
+            var node = flattened_graph_v2[cpath];
 
             iter_pointers.pop();
 
             Object.keys(node.inputs).forEach(function(key) {
                 var input = node.inputs[key];
                 var prev_cpath = set_cpath(input.origin_pointer, 0, input.origin_pointer.length - 1);
-                var prev_node = flattened_graph[prev_cpath];
+                var prev_node = flattened_graph_v2[prev_cpath];
 
                 if (prev_node.properties.concurrent != conc) {
                     iter.outside = true;
@@ -1912,7 +1913,7 @@ if (!root_io) {
 
                 var pointer = iter_pointers[iter_pointers.length - 1];
                 var cpath = set_cpath(pointer, 0, pointer.length - 1);
-                var node = flattened_graph[cpath];
+                var node = flattened_graph_v2[cpath];
 
                 iter_pointers.pop();
 
@@ -1922,7 +1923,7 @@ if (!root_io) {
                     Object.keys(node.inputs).forEach(function(key) {
                         var input = node.inputs[key];
                         var prev_cpath = set_cpath(input.origin_pointer, 0, input.origin_pointer.length - 1);
-                        var prev_node = flattened_graph[prev_cpath];
+                        var prev_node = flattened_graph_v2[prev_cpath];
 
                         iter_pointers.push(
                             input.origin_pointer
@@ -1934,13 +1935,15 @@ if (!root_io) {
         }
     }
 
-    //TODO remove  console.log(JSON.stringify(flattened_graph, null, 4));
+    //TODO remove  console.log(JSON.stringify(flattened_graph_v2, null, 4));
 
     /////////////////////////////////////////////////////////////////
     //determine_subgraph_order_str_points
     var thread_starting_points;
+    var flattened_graph_v3;
     ///////////////////////////////////////////
 
+    flattened_graph_v3 = JSON.parse(JSON.stringify(flattened_graph_v2));
     thread_starting_points = {};
 
     starting_points.forEach(function(st_pointer) {
@@ -1950,7 +1953,7 @@ if (!root_io) {
 
             var pointer = trav_pointers[trav_pointers.length - 1];
             var cpath = set_cpath(pointer, 0, pointer.length - 1);
-            var node = flattened_graph[cpath];
+            var node = flattened_graph_v3[cpath];
             var set = node.properties.set;
 
             trav_pointers.pop();
@@ -1969,7 +1972,7 @@ if (!root_io) {
                     if (item.properties.passive != "true") {
                         var prev_pointer = item.end_pointer;
                         var prev_cpath = set_cpath(prev_pointer, 0, prev_pointer.length - 1);
-                        var prev_node = flattened_graph[prev_cpath];
+                        var prev_node = flattened_graph_v3[prev_cpath];
                         var prev_set = prev_node.properties.set;
 
                         if (prev_set != set) {
@@ -1997,7 +2000,9 @@ if (!root_io) {
     //TODO remove     console.log(JSON.stringify(thread_starting_points, null, 4));
     /////////////////////////////////////////////////////////////////
     //merge_serial_subgraphs
+    var flattened_graph_v4;
     //////////////////////////////
+    flattened_graph_v4 = JSON.parse(JSON.stringify(flattened_graph_v3));
 
 
     //Find the mergable set.
@@ -2056,7 +2061,7 @@ if (!root_io) {
 
                 var pointer = st_pts[stpath];
                 var cpath = set_cpath(pointer, 0, pointer.length - 1);
-                var node = flattened_graph[cpath];
+                var node = flattened_graph_v4[cpath];
 
                 Object.keys(node.outputs).forEach(function(key) {
                     var output = node.outputs[key];
@@ -2074,7 +2079,7 @@ if (!root_io) {
 
                     var pointer = trav_pointers[trav_pointers.length - 1];
                     var cpath = set_cpath(pointer, 0, pointer.length - 1);
-                    var node = flattened_graph[cpath];
+                    var node = flattened_graph_v4[cpath];
 
                     trav_pointers.pop();
 
@@ -2129,7 +2134,7 @@ if (!root_io) {
     starting_points.forEach(function(st_pointer) {
 
         var st_cpath = set_cpath(st_pointer, 0, st_pointer.length - 1);
-        var st_node = flattened_graph[st_cpath];
+        var st_node = flattened_graph_v4[st_cpath];
         var st_set = st_node.properties.set;
         if (!(st_set in thread_starting_points[-1])) {
             thread_starting_points[-1][st_set] = {};
@@ -2141,7 +2146,7 @@ if (!root_io) {
 
 
     //TODO remove     console.log(JSON.stringify(thread_starting_points, null, 4));
-    //TODO remove       console.log(JSON.stringify(flattened_graph, null, 4));
+    //TODO remove       console.log(JSON.stringify(flattened_graph_v4, null, 4));
 
 
     ////////////////////////////////////////////////////////////////
@@ -2336,7 +2341,7 @@ if (!root_io) {
 
         var keys = Object.keys(set);
         while (keys.length > 0) {
-            node = flattened_graph[keys[i]];
+            node = flattened_graph_v4[keys[i]];
             var diff = compare(node.pointer, prefix_pointer);
 
             //moveOn is used to increment the index i;
@@ -2351,7 +2356,7 @@ if (!root_io) {
 
                     //Add the node code into the source file.
                     var lograph = traverse_ordered_graph(ordered_graph, node.pointer.slice(0, node.pointer.length - 1));
-                    lograph.set.push(generate_src_add_node(node.pointer, set_id, flattened_graph, leveled_graph));
+                    lograph.set.push(generate_src_add_node(node.pointer, set_id, flattened_graph_v4, leveled_graph));
 
                     //Mark it by removing the passed property.
                     delete node.properties.passed;
@@ -2360,7 +2365,7 @@ if (!root_io) {
                     Object.keys(node.outputs).forEach(function(vname) {
                         node.outputs[vname].forEach(function(item) {
                             var cpath = set_cpath(item.end_pointer, 0, item.end_pointer.length - 1);
-                            var node = flattened_graph[cpath];
+                            var node = flattened_graph_v4[cpath];
 
                             //node must be in the same thread/subgraph.
                             if (node.properties.set == set_id) {
@@ -2396,7 +2401,7 @@ if (!root_io) {
                     var lgraph = traverse_leveled_graph(leveled_graph, node.pointer.slice(0, prefix_pointer.length + 1));
                     Object.keys(lgraph.inputs).forEach(function(nvalue) {
                         var cpath = set_cpath(lgraph.inputs[nvalue].origin_pointer, 0, lgraph.inputs[nvalue].origin_pointer.length - 1);
-                        var input_node = flattened_graph[cpath];
+                        var input_node = flattened_graph_v4[cpath];
                         if ("passed" in input_node.properties) {
                             missing_dependencies = true;
                         }
@@ -2527,7 +2532,7 @@ if (!root_io) {
         }
     }
 
-    ordered_graph_complete([""], ordered_graph, leveled_graph, flattened_graph);
+    ordered_graph_complete([""], ordered_graph, leveled_graph, flattened_graph_v4);
     //TODO remove 
     console.log(JSON.stringify(ordered_graph, null, 4));
 
