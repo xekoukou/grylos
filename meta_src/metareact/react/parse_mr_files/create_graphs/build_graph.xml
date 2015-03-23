@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <root>
     <info>
-        <name> build_graphs </name>
+        <name> build_graph </name>
         <description> It creates an object representation of the graph that is in the mr files. </description>
     </info>
     <outputs>
@@ -10,6 +10,7 @@
         </output>
     </outputs>
     <inputs>
+        <input name="mr_file_paths"/>
         <input generated="true" name="function_names"/>
         <input generated="true" name="gpaths"/>
     </inputs>

@@ -73,10 +73,18 @@
                 <end_point fn_name="parse_mr_files"/>
                 <end_point fn_name="prepare_src"/>
                 <end_point fn_name="check_only_side_effects_exist"/>
+                <end_point fn_name="generate_reusable_src"/>
                 <end_point fn_name="generate_src"/>
             </output>
+            <output name="root_io">
+                <end_point fn_name="check_only_side_effects_exist"/>
+            </output>
             <output name="prog_lang">
+                <end_point fn_name="generate_reusable_src"/>
                 <end_point fn_name="generate_src"/>
+            </output>
+            <output name="gen_all">
+                <end_point fn_name="generate_reusable_src"/>
             </output>
         </node>
         <node fn_name="generate_xml_content_from_children">
@@ -117,10 +125,12 @@
                 <end_point fn_name="check_ioputs_origins"/>
                 <end_point fn_name="parse_mr_files"/>
                 <end_point fn_name="generate_src"/>
+                <end_point fn_name="generate_reusable_src"/>
                 <end_point fn_name="check_only_side_effects_exist"/>
             </output>
             <output name="exec">
                 <end_point fn_name="prepare_src"/>
+                <end_point fn_name="generate_reusable_src"/>
             </output>
             <output name="path">
                 <end_point fn_name="prepare_src"/>
@@ -137,5 +147,10 @@
             </output>
         </node>
         <node fn_name="generate_src"/>
+        <node fn_name="generate_reusable_src">
+            <output name="generate_reusable_src_deb">
+                <end_point fn_name="generate_src" dependency="true"/>
+            </output>
+        </node>
     </graph>
 </root>

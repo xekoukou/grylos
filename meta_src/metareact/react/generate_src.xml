@@ -13,6 +13,7 @@
             <origin origin_name="source_path" origin_location="flatten_graph/find_node_properties" generated="true"/>
             <origin origin_name="source_path" origin_location="flatten_graph/find_starting_points" generated="true"/>
             <origin origin_name="source_path" origin_location="generate_src" generated="true"/>
+            <origin origin_name="source_path" origin_location="index_reusable_functions" generated="true"/>
         </input>
         <input generated="true" name="check_only_side_effects_exist_dep">
             <origin origin_name="check_only_side_effects_exist_dep" origin_location="flatten_graph/find_node_properties" generated="true"/>
@@ -33,6 +34,9 @@
             <origin origin_name="cheerio" origin_location="flatten_graph/find_node_properties" generated="true"/>
             <origin origin_name="cheerio" origin_location="flatten_graph/find_starting_points" generated="true"/>
         </input>
+        <input generated="true" name="generate_reusable_src_deb">
+            <origin origin_name="generate_reusable_src_deb" origin_location="index_reusable_functions" generated="true"/>
+        </input>
         <input name="xml_files" side-effect="true" generated="true">
             <origin origin_name="xml_files" origin_location="flatten_graph/create_flattened_graph" generated="true"/>
             <origin origin_name="xml_files" origin_location="flatten_graph/find_node_properties" generated="true"/>
@@ -48,32 +52,41 @@
     <graph generated="true">
         <node fn_name="flatten_graph">
             <output name="flattened_graph">
-                <end_point fn_name="determine_subgraphs" mutable="true"/>
-                <end_point fn_name="determine_subgraph_order_str_points" mutable="true"/>
-                <end_point fn_name="generate_src"/>
-                <end_point fn_name="merge_serial_subgraphs" mutable="true"/>
+                <end_point fn_name="determine_subgraphs"/>
                 <end_point fn_name="level_graph"/>
             </output>
             <output name="starting_points">
                 <end_point fn_name="determine_subgraphs"/>
                 <end_point fn_name="determine_subgraph_order_str_points"/>
                 <end_point fn_name="merge_serial_subgraphs"/>
+                <end_point fn_name="generate_src"/>
             </output>
         </node>
         <node fn_name="determine_subgraphs" concurrent="true">
             <output name="deter_subg">
                 <end_point fn_name="determine_subgraph_order_str_points" dependency="true"/>
             </output>
+            <output name="flattened_graph_v2">
+                <end_point fn_name="determine_subgraph_order_str_points"/>
+            </output>
         </node>
         <node fn_name="determine_subgraph_order_str_points">
             <output name="thread_starting_points">
-                <end_point fn_name="merge_serial_subgraphs" mutable="true"/>
-                <end_point fn_name="generate_src"/>
+                <end_point fn_name="merge_serial_subgraphs"/>
+            </output>
+            <output name="flattened_graph_v3">
+                <end_point fn_name="merge_serial_subgraphs"/>
             </output>
         </node>
         <node fn_name="merge_serial_subgraphs">
             <output name="merge_ser_subg">
                 <end_point fn_name="generate_src" dependency="true"/>
+            </output>
+            <output name="flattened_graph_v4">
+                <end_point fn_name="generate_src"/>
+            </output>
+            <output name="thread_starting_points_v2">
+                <end_point fn_name="generate_src"/>
             </output>
         </node>
         <node fn_name="generate_src"/>

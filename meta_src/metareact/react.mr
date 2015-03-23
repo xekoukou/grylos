@@ -29,8 +29,8 @@ module_dependencies             |                                 |--------(mr_f
    |-------------(cheerio)-------------|
    |
    |                           generate_reusable_src
-   |-------(exec)----------------------|
-   |--------(fs)-----------------------|
+   |-------(exec)----------------------|                                 generate_src
+   |--------(fs)-----------------------|----(generate_reusable_src_deb)--d---|
    |
    |                check_only_side_effects_exist
    |-----(fs)-------------|

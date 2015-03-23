@@ -14,6 +14,7 @@
         <input name="root_xml_file" side-effect="true">
             <description>It reads the root xml file..</description>
         </input>
+        <input generated="true" name="root_io"/>
         <input generated="true" name="check_ioputs_origins_dep"/>
     </inputs>
     <outputs>

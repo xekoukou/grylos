@@ -8,9 +8,10 @@
         <input name="prog_lang"/>
         <input name="source_path"/>
         <input name="path"/>
-        <input generated="true" name="flattened_graph"/>
-        <input generated="true" name="thread_starting_points"/>
+        <input generated="true" name="starting_points"/>
         <input generated="true" name="merge_ser_subg"/>
+        <input generated="true" name="flattened_graph_v4"/>
+        <input generated="true" name="thread_starting_points_v2"/>
         <input generated="true" name="leveled_graph"/>
     </inputs>
     <outputs/>

@@ -6,6 +6,7 @@
     </info>
     <inputs>
         <input generated="true" name="mr_file_paths">
+            <origin origin_name="mr_file_paths" origin_location="build_graph" generated="true"/>
             <origin origin_name="mr_file_paths" origin_location="find_functions" generated="true"/>
             <origin origin_name="mr_file_paths" origin_location="path_traversal" generated="true"/>
         </input>

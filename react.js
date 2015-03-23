@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////////
+/:/ ////////////////////////////////////////////////////////////
 //main
 var source_path;
 var prog_lang;
@@ -476,7 +476,7 @@ if (gen_all) {
                     var path = {
                         y: +y_key,
                         x: +x_key,
-                        origin: lend_points[y_key][x_key]
+                        origin_fn_name: lend_points[y_key][x_key]
                     };
                     while (true) {
                         //Checking which way to go next.
@@ -676,13 +676,13 @@ if (gen_all) {
 
             paths.forEach(function(each) {
                 if (!each.vname) {
-                    console.log("Error: (" + each.origin_fn_name + "," + each.end_fn_name + ") : There is a path with no value name ");
+                    console.log("Error: " + mr_file_paths[index] + "\nPath<" + each.origin_fn_name + "," + each.end_fn_name + "> : There is a path with no value name ");
                     format_XML(source_path);
                     process.exit(0);
                 }
 
-                graph[each.origin]["paths"].push(each);
-                delete(each.origin);
+                graph[each.origin_fn_name]["paths"].push(each);
+                delete(each.origin_fn_name);
 
             });
 
