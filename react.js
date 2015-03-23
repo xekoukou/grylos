@@ -70,25 +70,28 @@ cheerio = require('cheerio');
 exec = require('execSync');
 
 ///////////////////////////////////////////////////////////
-//generate_reusable_src
+//generate_function_src
 ////////////////
 
-function generate_reusable_rec(cpath) {
+function generate_function_rec(cpath) {
     try {
-        var files = fs.readdirSync(cpath + "/reusable");
-        files.forEach(function(file, index, files) {
-            var stat = fs.statSync(cpath + "/reusable/" + file);
+        var funtions = ["reusable", "dynamic", "single_use"];
+        functions.forEach(function(folder) {
+            var files = fs.readdirSync(cpath + "/" + folder);
+            files.forEach(function(file, index, files) {
+                var stat = fs.statSync(cpath + "/" + folder + "/" + file);
 
-            if (stat.isFile()) {
+                if (stat.isFile()) {
 
-                //If it is an xml file, generate its code. 
-                if (path.extname(file) == ".xml") {
+                    //If it is an xml file, generate its code. 
+                    if (path.extname(file) == ".xml") {
 
-                    var result = exec.exec("node react.js --gen_all" + cpath + "/reusable/" + file + " --lang " + prog_lang);
+                        var result = exec.exec("node react.js --gen_all" + cpath + "/" + folder + "/" + file + " --lang " + prog_lang);
+
+                    }
 
                 }
-
-            }
+            });
         });
     } catch (e) {
         return;
@@ -100,7 +103,7 @@ function generate_reusable_rec(cpath) {
         var stat = fs.statSync(cpath + "/" + file);
         if (stat.isDirectory()) {
             //Recursively operate on the subdirectories.
-            generate_reusable_rec(cpath + "/" + file);
+            generate_function_rec(cpath + "/" + file);
         }
     });
 
@@ -110,7 +113,7 @@ function generate_reusable_rec(cpath) {
 }
 
 if (gen_all) {
-    generate_reusable_rec(source_path);
+    generate_function_rec(source_path);
 }
 
 ///////////////////////////////////////////////////////////
@@ -264,10 +267,10 @@ if (gen_all) {
 
                 } else {
                     if (stat.isDirectory()) {
-
-
-                        //Recursively operate on the subdirectories.
-                        delete_generated_src(cpath + "/reusable/" + file_name);
+                        if (file_name != "reusable" && file_name != "dynamic" && file_name != "single_use") {
+                            //Recursively operate on the subdirectories.
+                            delete_generated_src(cpath + "/" + file_name);
+                        }
                     }
 
                 }
@@ -281,7 +284,7 @@ if (gen_all) {
     }
 
 
-    delete_generated_src(source_path + "/reusable");
+    delete_generated_src(source_path);
 
     //Delete main file.
     try {
@@ -923,7 +926,7 @@ function generate_xml_content_from_children(cpath, parent) {
     files.forEach(function(file_name, index, files) {
         var stat = fs.statSync(cpath + "/" + file_name);
         //A deep first algorith.
-        if (stat.isDirectory() && (file_name != 'reusable')) {
+        if (stat.isDirectory() && (file_name != 'reusable' && file_name != "dynamic" && file_name != "single_use")) {
 
             var fxml_file = fs.readFileSync(cpath + "/" + file_name + ".xml", {
                 encoding: "utf-8"

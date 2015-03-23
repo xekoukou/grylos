@@ -34,8 +34,8 @@
             <origin origin_name="cheerio" origin_location="flatten_graph/find_node_properties" generated="true"/>
             <origin origin_name="cheerio" origin_location="flatten_graph/find_starting_points" generated="true"/>
         </input>
-        <input generated="true" name="generate_reusable_src_deb">
-            <origin origin_name="generate_reusable_src_deb" origin_location="index_reusable_functions" generated="true"/>
+        <input generated="true" name="generate_function_src_deb">
+            <origin origin_name="generate_function_src_deb" origin_location="index_reusable_functions" generated="true"/>
         </input>
         <input name="xml_files" side-effect="true" generated="true">
             <origin origin_name="xml_files" origin_location="flatten_graph/create_flattened_graph" generated="true"/>
