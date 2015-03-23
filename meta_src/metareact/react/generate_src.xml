@@ -23,6 +23,7 @@
             <origin origin_name="fs" origin_location="flatten_graph/create_flattened_graph" generated="true"/>
             <origin origin_name="fs" origin_location="flatten_graph/find_node_properties" generated="true"/>
             <origin origin_name="fs" origin_location="flatten_graph/find_starting_points" generated="true"/>
+            <origin origin_name="fs" origin_location="index_reusable_functions" generated="true"/>
         </input>
         <input generated="true" name="path">
             <origin origin_name="path" origin_location="flatten_graph/find_node_properties" generated="true"/>

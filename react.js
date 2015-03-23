@@ -81,14 +81,14 @@ function generate_function_rec(cpath) {
             files.forEach(function(file, index, files) {
                 var stat = fs.statSync(cpath + "/" + folder + "/" + file);
 
-                if (stat.isFile()) {
+                if (stat.isFolder()) {
 
-                    //If it is an xml file, generate its code. 
-                    if (path.extname(file) == ".xml") {
+                    try {
+                        fs.readFileSync(cpath + "/" + folder + "/" + file + ".xml")
 
-                        var result = exec.exec("node react.js --gen_all" + cpath + "/" + folder + "/" + file + " --lang " + prog_lang);
+                        exec.exec("node react.js --gen_all" + cpath + "/" + folder + "/" + file + " --lang " + prog_lang);
 
-                    }
+                    } catch (e) {}
 
                 }
             });
@@ -1400,6 +1400,63 @@ if (!root_io) {
 //generate_src
 /////////////////
 {
+    ///////////////////////////////////////////////////////////////////
+    //index_functions
+    var reusable;
+    var single_use;
+    var dynamic;
+    //////////////////
+    reusable = {};
+    single_use = {};
+    dynamic = {};
+
+    function index_functions_rec(cpath, folder, array) {
+        try {
+            var files = fs.readdirSync(cpath + "/" + folder);
+            files.forEach(function(file, index, files) {
+                var stat = fs.statSync(cpath + "/" + folder + "/" + file);
+
+                if (stat.isFile()) {
+
+                    //If it is an xml file, generate its code. 
+                    if (path.extname(file) == ".xml") {
+
+
+                    }
+
+                }
+            });
+        } catch (e) {
+            return;
+        }
+
+
+        var files = fs.readdirSync(cpath);
+        files.forEach(function(file, index, files) {
+            var stat = fs.statSync(cpath + "/" + file);
+            if (stat.isDirectory()) {
+                //Recursively operate on the subdirectories.
+                index_functios_rec(cpath + "/" + file);
+            }
+        });
+
+
+
+
+    }
+    var funtions = [
+        ["reusable", reusable],
+        ["dynamic", dynamic],
+        ["single_use", single_use]
+    ];
+    functions.forEach(function(folder) {
+        index_functions_rec(source_path, floder[0], folder[1]);
+    });
+
+
+
+
+    ///////////////////////////////////////////////////////////////////
 
     //TODO we need to put reusable functions somewhere
     function set_cpath(pointer, start, end) {
