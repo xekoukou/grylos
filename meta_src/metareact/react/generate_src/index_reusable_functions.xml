@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<root>
+    <info>
+        <name> index_functions </name>
+        <description> It indexes all the functions(reusable, single_use, dynamic).  </description>
+    </info>
+    <inputs>
+        <input name="source_path"/>
+        <input name="fs"/>
+        <input name="generate_function_src_deb" dependency="true"/>
+    </inputs>
+</root>
