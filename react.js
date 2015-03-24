@@ -1,4 +1,4 @@
-/:/ ////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
 //main
 var source_path;
 var prog_lang;
@@ -1379,7 +1379,7 @@ if (!root_io) {
     });
 
     $("inputs input").each(function() {
-        if (($(this).attr("side-effect") != "true") || ($(this).attr("external_input") != "true")) {
+        if (($(this).attr("side-effect") != "true") && ($(this).attr("external_input") != "true")) {
             console.log("Error: There is an input which is not a side_effect in the root xml_file.");
             console.log("Name: " + $(this).attr("name"));
             format_XML(source_path);
@@ -1388,7 +1388,7 @@ if (!root_io) {
     });
 
     $("outputs output").each(function() {
-        if (($(this).attr("side-effect") != "true") || ($(this).attr("external_output") != "true")) {
+        if (($(this).attr("side-effect") != "true") && ($(this).attr("external_output") != "true")) {
             console.log("Error: There is an output which is not a side_effect in the root xml_file.");
             console.log("Name: " + $(this).attr("name"));
             format_XML(source_path);
@@ -1406,24 +1406,41 @@ if (!root_io) {
     var single_use;
     var dynamic;
     //////////////////
-    reusable = {};
-    single_use = {};
-    dynamic = {};
 
-    function index_functions_rec(cpath, folder, array) {
+    //TODO At the moment we index only the functions that are generated with the metareact framework.
+    reusable = {
+        "set": {},
+        "functions": {}
+    };
+    single_use = {
+        "set": {},
+        "functions": {}
+    };
+    dynamic = {
+        "set": {},
+        "functions": {}
+    };
+
+    function traverse_leveled_set(leveled_set, pointer) {
+        var lset = leveled_set;
+        for (var i = 1; i < pointer.length; i++) {
+            lset = lset.set[pointer[i]];
+        }
+        return lset;
+    }
+
+    function index_functions_rec(cpath, folder, leveled_set, position) {
         try {
+            var lset = traverse_leveled_set(leveled_set, position);
             var files = fs.readdirSync(cpath + "/" + folder);
             files.forEach(function(file, index, files) {
                 var stat = fs.statSync(cpath + "/" + folder + "/" + file);
 
                 if (stat.isFile()) {
 
-                    //If it is an xml file, generate its code. 
                     if (path.extname(file) == ".xml") {
-
-
+                        lset.functions[file.substring(0, file.length - 4)] = true;
                     }
-
                 }
             });
         } catch (e) {
@@ -1436,7 +1453,11 @@ if (!root_io) {
             var stat = fs.statSync(cpath + "/" + file);
             if (stat.isDirectory()) {
                 //Recursively operate on the subdirectories.
-                index_functios_rec(cpath + "/" + file);
+                lset.set[file] = {
+                    "set": {},
+                    "functions": {}
+                };
+                index_functions_rec(cpath + "/" + file, folder, position.slice().push(file));
             }
         });
 
@@ -1444,16 +1465,20 @@ if (!root_io) {
 
 
     }
-    var funtions = [
+    var functions = [
         ["reusable", reusable],
         ["dynamic", dynamic],
         ["single_use", single_use]
     ];
     functions.forEach(function(folder) {
-        index_functions_rec(source_path, floder[0], folder[1]);
+        index_functions_rec(source_path, folder[0], folder[1], [""]);
     });
 
 
+        //TODO remove      
+	  console.log("reusable: \n" + JSON.stringify(reusable, null, 4));
+	  console.log("dynamic: \n" + JSON.stringify(dynamic, null, 4));
+	  console.log("single_use: \n" + JSON.stringify(single_use, null, 4));
 
 
     ///////////////////////////////////////////////////////////////////
@@ -2549,12 +2574,7 @@ if (!root_io) {
                 });
                 Object.keys(item.input_not_external_var).forEach(function(vname) {
                     if (vname in item.input_not_local_var) {
-                        if (vname in subgraph.input_not_external_var) {
-                            subgraph.input_external_var[vname] = subgraph.input_external_var[vname].concat(item.input_not_external_var[vname]);
-                        } else {
-                            subgraph.input_not_external_var[vname] = item.input_not_external_var[vname];
-
-                        }
+                            subgraph.input_not_external_var[vname] = true;
                     }
                 });
 
