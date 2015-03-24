@@ -1451,7 +1451,7 @@ if (!root_io) {
         var files = fs.readdirSync(cpath);
         files.forEach(function(file, index, files) {
             var stat = fs.statSync(cpath + "/" + file);
-            if (stat.isDirectory()) {
+            if (stat.isDirectory() && file != "reusable" && file != "dynamic" && file != "single_use") {
                 //Recursively operate on the subdirectories.
                 lset.set[file] = {
                     "set": {},
@@ -1475,10 +1475,10 @@ if (!root_io) {
     });
 
 
-        //TODO remove      
-	  console.log("reusable: \n" + JSON.stringify(reusable, null, 4));
-	  console.log("dynamic: \n" + JSON.stringify(dynamic, null, 4));
-	  console.log("single_use: \n" + JSON.stringify(single_use, null, 4));
+    //TODO remove      
+    console.log("reusable: \n" + JSON.stringify(reusable, null, 4));
+    console.log("dynamic: \n" + JSON.stringify(dynamic, null, 4));
+    console.log("single_use: \n" + JSON.stringify(single_use, null, 4));
 
 
     ///////////////////////////////////////////////////////////////////
@@ -2574,7 +2574,7 @@ if (!root_io) {
                 });
                 Object.keys(item.input_not_external_var).forEach(function(vname) {
                     if (vname in item.input_not_local_var) {
-                            subgraph.input_not_external_var[vname] = true;
+                        subgraph.input_not_external_var[vname] = true;
                     }
                 });
 
