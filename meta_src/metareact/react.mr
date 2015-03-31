@@ -42,8 +42,9 @@ main                      |
  |------(source_path)-----------------------|
  |-----(prog_lang)--------------------------|
  |-----(gen_all)----------------------------|
- |-----(prog_lang)----------------
- |------(source_path)------------\                 generate_src
+ |---------(single_threaded)-------
+ |-----(prog_lang)----------------\                generate_src
+ |------(source_path)------------\\---------------------|
                                 \\----------------------|      
 check_only_side_effects_exist   \-----------------------|         
       |--(check_only_side_effects_exist_dep)-d----------|

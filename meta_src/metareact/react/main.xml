@@ -19,5 +19,6 @@
         </output>
         <output generated="true" name="root_io"/>
         <output generated="true" name="gen_all"/>
+        <output generated="true" name="single_threaded"/>
     </outputs>
 </root>

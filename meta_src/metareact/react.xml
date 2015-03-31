@@ -86,6 +86,9 @@
             <output name="gen_all">
                 <end_point fn_name="generate_function_src"/>
             </output>
+            <output name="single_threaded">
+                <end_point fn_name="generate_src"/>
+            </output>
         </node>
         <node fn_name="generate_xml_content_from_children">
             <output name="generate_xml_content_from_children_dep">

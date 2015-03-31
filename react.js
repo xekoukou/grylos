@@ -3,11 +3,15 @@
 var source_path;
 var prog_lang;
 var root_io;
+var gen_all;
+var single_threaded;
 ///////////////
 source_path = null;
 prog_lang = null;
 root_io = false;
 gen_all = false;
+single_threaded = false;
+
 
 var error = false;
 var prev = null;
@@ -27,20 +31,24 @@ for (var i = 2; i < process.argv.length; i++) {
             if (arg == "--gen_all") {
                 gen_all = true;
             } else {
-                //We assign the value
-                if (prev == null) {
-                    if (!source_path) {
-                        source_path = arg;
-                    } else {
-                        error = true;
-                    }
+                if (arg == "--single_threaded") {
+                    single_threaded = true;
                 } else {
-                    if (prev == "lang") {
-                        if (!prog_lang) {
-                            prog_lang = arg;
-                            prev = null;
+                    //We assign the value
+                    if (prev == null) {
+                        if (!source_path) {
+                            source_path = arg;
                         } else {
                             error = true;
+                        }
+                    } else {
+                        if (prev == "lang") {
+                            if (!prog_lang) {
+                                prog_lang = arg;
+                                prev = null;
+                            } else {
+                                error = true;
+                            }
                         }
                     }
                 }
@@ -591,32 +599,28 @@ if (gen_all) {
                                         path.x = path.x + options.length - 1;
                                         for (var i = 0; i < options.length; i++) {
                                             var each = options.charAt(i);
-                                            if (each == "p") {
-                                                path.passive = true;
+                                            //'e' is for endpoint
+                                            if (each == "e") {
+                                                path.dynamic = true;
                                             } else {
-                                                //'e' is for endpoint
-                                                if (each == "e") {
-                                                    path.dynamic = true;
+                                                if (each == "h") {
+                                                    path.historical = true;
                                                 } else {
-                                                    if (each == "h") {
-                                                        path.historical = true;
+                                                    if (each == "m") {
+                                                        path.mutable = true;
+
                                                     } else {
-                                                        if (each == "m") {
-                                                            path.mutable = true;
-
+                                                        if (each == "d") {
+                                                            path.dependency = true;
                                                         } else {
-                                                            if (each == "d") {
-                                                                path.dependency = true;
-                                                            } else {
-                                                                if (each == "l") {
-                                                                    path.lossless = true;
+                                                            if (each == "l") {
+                                                                path.lossless = true;
 
-                                                                } else {
-                                                                    console.log("\nError: mr_file:" + mr_file_paths[index] + ".mr(line: " + path.y + "," + "position: " + path.x + ")");
-                                                                    console.log("Wrong option type.");
-                                                                    format_XML(source_path);
-                                                                    process.exit(0);
-                                                                }
+                                                            } else {
+                                                                console.log("\nError: mr_file:" + mr_file_paths[index] + ".mr(line: " + path.y + "," + "position: " + path.x + ")");
+                                                                console.log("Wrong option type.");
+                                                                format_XML(source_path);
+                                                                process.exit(0);
                                                             }
                                                         }
                                                     }
@@ -899,7 +903,7 @@ if (gen_all) {
 
                 }
                 //Adds multiple end_points per vname with their properties.
-                $("graph node[fn_name='" + fn_name + "'] output[name='" + path.vname + "']").append("<end_point fn_name='" + path.end_fn_name + "' " + ((path.mutable) ? "mutable='" + path.mutable + "' " : "") + ((path.dependency) ? "dependency='" + path.dependency + "' " : "") + ((path.lossless) ? "lossless='" + path.lossless + "' " : "") + ((path.historical) ? "historical='" + path.historical + "' " : "") + ((path.dynamic) ? "dynamic='" + path.dynamic + "' " : "") + ((path.passive) ? "passive='" + path.passive + "' " : "") + "></end_point>");
+                $("graph node[fn_name='" + fn_name + "'] output[name='" + path.vname + "']").append("<end_point fn_name='" + path.end_fn_name + "' " + ((path.mutable) ? "mutable='" + path.mutable + "' " : "") + ((path.dependency) ? "dependency='" + path.dependency + "' " : "") + ((path.lossless) ? "lossless='" + path.lossless + "' " : "") + ((path.historical) ? "historical='" + path.historical + "' " : "") + ((path.dynamic) ? "dynamic='" + path.dynamic + "' " : "") + "></end_point>");
 
 
             });
@@ -1572,9 +1576,11 @@ if (!root_io) {
 
                 if (Object.keys($(this).get(0).attribs).length > 1) {
                     var node = {};
-                    if ($(this).attr("concurrent") == "true") {
-                        concurrent_index++;
-                        node.concurrent = concurrent_index;
+                    if (!single_threaded) {
+                        if ($(this).attr("concurrent") == "true") {
+                            concurrent_index++;
+                            node.concurrent = concurrent_index;
+                        }
                     }
                     if ($(this).attr("asynchronous") == "true") {
                         node.asynchronous = "true";
@@ -1701,9 +1707,6 @@ if (!root_io) {
                                 if (parent(this).attr("dependency") == "true") {
                                     nn_edge.properties.dependency = "true";
                                 }
-                                if (parent(this).attr("passive") == "true") {
-                                    nn_edge.properties.passive = "true";
-                                }
 
                                 //Find the end_point and traverse it.
                                 var fn_name = parent(this).attr("fn_name");
@@ -1778,8 +1781,7 @@ if (!root_io) {
 
         });
 
-        //TODO remove  
-        console.log(JSON.stringify(flattened_graph, null, 4));
+        //TODO remove  console.log(JSON.stringify(flattened_graph, null, 4));
 
         /////////////////////////////////////////////////////////////////
     }
@@ -1924,12 +1926,9 @@ if (!root_io) {
                     Object.keys(node.outputs).forEach(function(key) {
                         var output = node.outputs[key];
                         output.forEach(function(item) {
-                            //If the edge is passive, that means that the computation stops here.
-                            if (item.properties.passive != "true") {
-                                trav_pointers.push(
-                                    item.end_pointer
-                                );
-                            }
+                            trav_pointers.push(
+                                item.end_pointer
+                            );
                         });
 
                     });
@@ -2053,28 +2052,25 @@ if (!root_io) {
             Object.keys(node.outputs).forEach(function(key) {
                 var output = node.outputs[key];
                 output.forEach(function(item) {
-                    //If the edge is passive, that means that the computation stops here.
-                    if (item.properties.passive != "true") {
-                        var prev_pointer = item.end_pointer;
-                        var prev_cpath = set_cpath(prev_pointer, 0, prev_pointer.length - 1);
-                        var prev_node = flattened_graph_v3[prev_cpath];
-                        var prev_set = prev_node.properties.set;
+                    var prev_pointer = item.end_pointer;
+                    var prev_cpath = set_cpath(prev_pointer, 0, prev_pointer.length - 1);
+                    var prev_node = flattened_graph_v3[prev_cpath];
+                    var prev_set = prev_node.properties.set;
 
-                        if (prev_set != set) {
-                            if (!(set in thread_starting_points)) {
-                                thread_starting_points[set] = {};
-                            }
-                            if (!(prev_set in thread_starting_points[set])) {
-                                thread_starting_points[set][prev_set] = {};
-                            }
-
-                            thread_starting_points[set][prev_set][cpath] = pointer;
+                    if (prev_set != set) {
+                        if (!(set in thread_starting_points)) {
+                            thread_starting_points[set] = {};
+                        }
+                        if (!(prev_set in thread_starting_points[set])) {
+                            thread_starting_points[set][prev_set] = {};
                         }
 
-                        trav_pointers.push(
-                            item.end_pointer
-                        );
+                        thread_starting_points[set][prev_set][cpath] = pointer;
                     }
+
+                    trav_pointers.push(
+                        item.end_pointer
+                    );
                 });
 
             });
@@ -2231,7 +2227,8 @@ if (!root_io) {
 
 
     //TODO remove     console.log(JSON.stringify(thread_starting_points, null, 4));
-    //TODO remove       console.log(JSON.stringify(flattened_graph_v4, null, 4));
+    //TODO remove    
+       console.log(JSON.stringify(flattened_graph_v4, null, 4));
 
 
     ////////////////////////////////////////////////////////////////

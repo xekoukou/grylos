@@ -13,4 +13,8 @@ flatten_graph                    determine_subgraphs:c
       |                             |---(leveled_graph)----------|
       |---(starting_points)--------------------------------------|
 
+      index_functions                 find_node_historical_dep
+           |-----------(reusable)-------------|
+           |-------------(single_use)---------|
+           |----------(dynamic)---------------|
    

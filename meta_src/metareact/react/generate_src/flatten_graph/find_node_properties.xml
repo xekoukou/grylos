@@ -9,6 +9,7 @@
         <input name="fs"/>
         <input name="path"/>
         <input name="cheerio"/>
+        <input name="single_threaded"/>
         <input name="check_only_side_effects_exist_dep" dependency="true"/>
         <input name="xml_files" side-effect="true"/>
     </inputs>
