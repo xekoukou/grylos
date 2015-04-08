@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<root>
+    <info>
+        <name> index_functions_and_more </name>
+        <description> It indexes all the functions(reusable, single_use, dynamic) and it finds historical dependencies - lossless etc.  </description>
+    </info>
+    <inputs>
+        <input name="source_path"/>
+        <input name="fs"/>
+        <input name="root_io"/>
+        <input name="generate_function_src_deb" dependency="true"/>
+    </inputs>
+    <outputs>
+        
+        
+        
+    </outputs>
+</root>

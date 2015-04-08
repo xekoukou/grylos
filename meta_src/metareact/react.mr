@@ -45,6 +45,7 @@ main                      |
  |---------(single_threaded)-------
  |-----(prog_lang)----------------\                generate_src
  |------(source_path)------------\\---------------------|
-                                \\----------------------|      
-check_only_side_effects_exist   \-----------------------|         
+ |----(root_io)-----------------\\----------------------|      
+                               \\-----------------------|
+check_only_side_effects_exist  \------------------------|         
       |--(check_only_side_effects_exist_dep)-d----------|

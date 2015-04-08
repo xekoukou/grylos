@@ -93,10 +93,13 @@ function generate_function_rec(cpath) {
 
                     try {
                         fs.readFileSync(cpath + "/" + folder + "/" + file + ".xml")
+                        console.log("Compiling "+folder+"function.");
+                        console.log("Path: "+cpath + "/" + folder + "/" + file+"\n");
+                        exec.exec("node react.js --gen_all --root_io" + cpath + "/" + folder + "/" + file + " --lang " + prog_lang);
 
-                        exec.exec("node react.js --gen_all" + cpath + "/" + folder + "/" + file + " --lang " + prog_lang);
-
-                    } catch (e) {}
+                    } catch (e) {
+                    //Do nothing. TODO Find a better solution.
+                    }
 
                 }
             });
@@ -1405,25 +1408,16 @@ if (!root_io) {
 /////////////////
 {
     ///////////////////////////////////////////////////////////////////
-    //index_functions
-    var reusable;
-    var single_use;
-    var dynamic;
+    //index_functions_and_more
     //////////////////
 
     //TODO At the moment we index only the functions that are generated with the metareact framework.
-    reusable = {
+     var f_index = {
         "set": {},
-        "functions": {}
-    };
-    single_use = {
-        "set": {},
-        "functions": {}
-    };
-    dynamic = {
-        "set": {},
-        "functions": {}
-    };
+        "reusable": {},
+        "single_use":{},
+        "dynamic":{}
+     };
 
     function traverse_leveled_set(leveled_set, pointer) {
         var lset = leveled_set;
@@ -1432,6 +1426,8 @@ if (!root_io) {
         }
         return lset;
     }
+
+//Recursive function that indexes functions(reusable,single_use,dynamic)
 
     function index_functions_rec(cpath, folder, leveled_set, position) {
         try {
@@ -1443,7 +1439,23 @@ if (!root_io) {
                 if (stat.isFile()) {
 
                     if (path.extname(file) == ".xml") {
-                        lset.functions[file.substring(0, file.length - 4)] = true;
+                        //TODO find the functions of this function
+                        var f_leveled_set = {
+                                "set": {},
+                                "reusable": {},
+                                "single_use":{},
+                                "dynamic":{}
+                            };
+ 
+   var functions = [
+        "reusable",
+        "dynamic",
+        "single_use"
+    ];
+    functions.forEach(function(sec_folder) {
+        index_functions_rec(cpath+"/"+folder+"/"+file.substring(0, file.length - 4) , sec_folder, f_leveled_set, [""]);
+    });
+                        lset[folder][file.substring(0, file.length - 4)] = f_leveled_set;
                     }
                 }
             });
@@ -1459,32 +1471,35 @@ if (!root_io) {
                 //Recursively operate on the subdirectories.
                 lset.set[file] = {
                     "set": {},
-                    "functions": {}
+                    "reusable": {},
+                    "single_use":{},
+                    "dynamic":{}
                 };
                 index_functions_rec(cpath + "/" + file, folder, position.slice().push(file));
             }
         });
-
-
-
-
     }
+
+
+//TODO This needs to be moved to a single_use function. It needs to be encapsulated because it is executed conditionally.
+
+
+
+
+    if(root_io==false){
     var functions = [
-        ["reusable", reusable],
-        ["dynamic", dynamic],
-        ["single_use", single_use]
+        "reusable",
+        "dynamic",
+        "single_use"
     ];
     functions.forEach(function(folder) {
-        index_functions_rec(source_path, folder[0], folder[1], [""]);
+        index_functions_rec(source_path, folder, f_index, [""]);
     });
 
 
     //TODO remove      
-    console.log("reusable: \n" + JSON.stringify(reusable, null, 4));
-    console.log("dynamic: \n" + JSON.stringify(dynamic, null, 4));
-    console.log("single_use: \n" + JSON.stringify(single_use, null, 4));
-
-
+    console.log("f_index: \n" + JSON.stringify(f_index, null, 4));
+    }
     ///////////////////////////////////////////////////////////////////
 
     //TODO we need to put reusable functions somewhere
@@ -1539,10 +1554,11 @@ if (!root_io) {
                     }
                 }
                 if (stat.isDirectory()) {
-                    var element = parent.slice();
-                    element.push(file_name);
-                    find_starting_points_rec(cpath + "/" + file_name, element);
-
+                    if(file_name!="reusable" && file_name!="dynamic" && file_name!="single_use"){
+                        var element = parent.slice();
+                        element.push(file_name);
+                        find_starting_points_rec(cpath + "/" + file_name, element);
+                    }
                 }
 
             });

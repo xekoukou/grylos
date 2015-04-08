@@ -16,7 +16,10 @@
             <origin origin_name="source_path" origin_location="flatten_graph/find_node_properties" generated="true"/>
             <origin origin_name="source_path" origin_location="flatten_graph/find_starting_points" generated="true"/>
             <origin origin_name="source_path" origin_location="generate_src" generated="true"/>
-            <origin origin_name="source_path" origin_location="index_functions" generated="true"/>
+            <origin origin_name="source_path" origin_location="index_functions_and_more" generated="true"/>
+        </input>
+        <input generated="true" name="root_io">
+            <origin origin_name="root_io" origin_location="index_functions_and_more" generated="true"/>
         </input>
         <input generated="true" name="check_only_side_effects_exist_dep">
             <origin origin_name="check_only_side_effects_exist_dep" origin_location="flatten_graph/find_node_properties" generated="true"/>
@@ -26,7 +29,7 @@
             <origin origin_name="fs" origin_location="flatten_graph/create_flattened_graph" generated="true"/>
             <origin origin_name="fs" origin_location="flatten_graph/find_node_properties" generated="true"/>
             <origin origin_name="fs" origin_location="flatten_graph/find_starting_points" generated="true"/>
-            <origin origin_name="fs" origin_location="index_functions" generated="true"/>
+            <origin origin_name="fs" origin_location="index_functions_and_more" generated="true"/>
         </input>
         <input generated="true" name="path">
             <origin origin_name="path" origin_location="flatten_graph/find_node_properties" generated="true"/>
@@ -39,7 +42,7 @@
             <origin origin_name="cheerio" origin_location="flatten_graph/find_starting_points" generated="true"/>
         </input>
         <input generated="true" name="generate_function_src_deb">
-            <origin origin_name="generate_function_src_deb" origin_location="index_functions" generated="true"/>
+            <origin origin_name="generate_function_src_deb" origin_location="index_functions_and_more" generated="true"/>
         </input>
         <input name="xml_files" side-effect="true" generated="true">
             <origin origin_name="xml_files" origin_location="flatten_graph/create_flattened_graph" generated="true"/>
@@ -102,17 +105,5 @@
                 <end_point fn_name="generate_src"/>
             </output>
         </node>
-        <node fn_name="index_functions">
-            <output name="reusable">
-                <end_point fn_name="find_node_historical_dep"/>
-            </output>
-            <output name="single_use">
-                <end_point fn_name="find_node_historical_dep"/>
-            </output>
-            <output name="dynamic">
-                <end_point fn_name="find_node_historical_dep"/>
-            </output>
-        </node>
-        <node fn_name="find_node_historical_dep"/>
     </graph>
 </root>
