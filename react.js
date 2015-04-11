@@ -93,12 +93,12 @@ function generate_function_rec(cpath) {
 
                     try {
                         fs.readFileSync(cpath + "/" + folder + "/" + file + ".xml")
-                        console.log("Compiling "+folder+"function.");
-                        console.log("Path: "+cpath + "/" + folder + "/" + file+"\n");
+                        console.log("Compiling " + folder + "function.");
+                        console.log("Path: " + cpath + "/" + folder + "/" + file + "\n");
                         exec.exec("node react.js --gen_all --root_io" + cpath + "/" + folder + "/" + file + " --lang " + prog_lang);
 
                     } catch (e) {
-                    //Do nothing. TODO Find a better solution.
+                        //Do nothing. TODO Find a better solution.
                     }
 
                 }
@@ -1412,12 +1412,12 @@ if (!root_io) {
     //////////////////
 
     //TODO At the moment we index only the functions that are generated with the metareact framework.
-     var f_index = {
+    var f_index = {
         "set": {},
         "reusable": {},
-        "single_use":{},
-        "dynamic":{}
-     };
+        "single_use": {},
+        "dynamic": {}
+    };
 
     function traverse_leveled_set(leveled_set, pointer) {
         var lset = leveled_set;
@@ -1427,7 +1427,7 @@ if (!root_io) {
         return lset;
     }
 
-//Recursive function that indexes functions(reusable,single_use,dynamic)
+    //Recursive function that indexes functions(reusable,single_use,dynamic)
 
     function index_functions_rec(cpath, folder, leveled_set, position) {
         try {
@@ -1441,20 +1441,20 @@ if (!root_io) {
                     if (path.extname(file) == ".xml") {
                         //TODO find the functions of this function
                         var f_leveled_set = {
-                                "set": {},
-                                "reusable": {},
-                                "single_use":{},
-                                "dynamic":{}
-                            };
- 
-   var functions = [
-        "reusable",
-        "dynamic",
-        "single_use"
-    ];
-    functions.forEach(function(sec_folder) {
-        index_functions_rec(cpath+"/"+folder+"/"+file.substring(0, file.length - 4) , sec_folder, f_leveled_set, [""]);
-    });
+                            "set": {},
+                            "reusable": {},
+                            "single_use": {},
+                            "dynamic": {}
+                        };
+
+                        var functions = [
+                            "reusable",
+                            "dynamic",
+                            "single_use"
+                        ];
+                        functions.forEach(function(sec_folder) {
+                            index_functions_rec(cpath + "/" + folder + "/" + file.substring(0, file.length - 4), sec_folder, f_leveled_set, [""]);
+                        });
                         lset[folder][file.substring(0, file.length - 4)] = f_leveled_set;
                     }
                 }
@@ -1472,8 +1472,8 @@ if (!root_io) {
                 lset.set[file] = {
                     "set": {},
                     "reusable": {},
-                    "single_use":{},
-                    "dynamic":{}
+                    "single_use": {},
+                    "dynamic": {}
                 };
                 index_functions_rec(cpath + "/" + file, folder, position.slice().push(file));
             }
@@ -1481,24 +1481,24 @@ if (!root_io) {
     }
 
 
-//TODO This needs to be moved to a single_use function. It needs to be encapsulated because it is executed conditionally.
+    //TODO This needs to be moved to a single_use function. It needs to be encapsulated because it is executed conditionally.
 
 
 
 
-    if(root_io==false){
-    var functions = [
-        "reusable",
-        "dynamic",
-        "single_use"
-    ];
-    functions.forEach(function(folder) {
-        index_functions_rec(source_path, folder, f_index, [""]);
-    });
+    if (root_io == false) {
+        var functions = [
+            "reusable",
+            "dynamic",
+            "single_use"
+        ];
+        functions.forEach(function(folder) {
+            index_functions_rec(source_path, folder, f_index, [""]);
+        });
 
 
-    //TODO remove      
-    console.log("f_index: \n" + JSON.stringify(f_index, null, 4));
+        //TODO remove      
+        console.log("f_index: \n" + JSON.stringify(f_index, null, 4));
     }
     ///////////////////////////////////////////////////////////////////
 
@@ -1554,7 +1554,7 @@ if (!root_io) {
                     }
                 }
                 if (stat.isDirectory()) {
-                    if(file_name!="reusable" && file_name!="dynamic" && file_name!="single_use"){
+                    if (file_name != "reusable" && file_name != "dynamic" && file_name != "single_use") {
                         var element = parent.slice();
                         element.push(file_name);
                         find_starting_points_rec(cpath + "/" + file_name, element);
@@ -2244,7 +2244,7 @@ if (!root_io) {
 
     //TODO remove     console.log(JSON.stringify(thread_starting_points, null, 4));
     //TODO remove    
-       console.log(JSON.stringify(flattened_graph_v4, null, 4));
+    console.log(JSON.stringify(flattened_graph_v4, null, 4));
 
 
     ////////////////////////////////////////////////////////////////
@@ -2433,13 +2433,13 @@ if (!root_io) {
         //The current subgraph;
         var prefix_pointer = [""];
 
-        //added_i determines the i in which we added our last node.
-        var added_i = -1;
+        var keys = Object.keys(set);
+        //c_i checks if we did a complete circle.
+        var c_i = 0;
         var i = 0;
 
-        var keys = Object.keys(set);
-        while (keys.length > 0) {
-            node = flattened_graph_v4[keys[i]];
+        while (true) {
+            var node = flattened_graph_v4[keys[i]];
             var diff = compare(node.pointer, prefix_pointer);
 
             //moveOn is used to increment the index i;
@@ -2480,18 +2480,19 @@ if (!root_io) {
                     //Find all the keys again.
                     keys = Object.keys(set);
 
+                    //Stop when we do not have any more keys. 
+                    if (keys.length == 0) {
+                        break;
+                    }
+
                     //Update the prefix_pointer.
                     prefix_pointer = prefix_pointer.slice(0, prefix_pointer.length - 1);
-
-                    //Update the added_i.
-                    added_i = i - 1;
-
-                    if ((added_i < 0) && (keys.length > 1)) {
-                        added_i = added_i + keys.length;
-                    }
+                    skippedList = [];
 
                     //The i might be at the end so we need to put at the front after the removal of the node.
                     i = i % keys.length;
+                    c_i = 0;
+
                 } else {
 
                     //Check that all the dependencies of the subgraph are met.
@@ -2534,14 +2535,14 @@ if (!root_io) {
                 moveOn = true;
             }
 
-
-            if (i == added_i) {
+            if (c_i == keys.length) {
 
                 //Move the prefix_pointer one level up.
                 prefix_pointer = prefix_pointer.slice(0, prefix_pointer.length - 1);
             }
             if (moveOn) {
                 i++;
+                c_i++;
                 i = i % keys.length;
             }
         };
