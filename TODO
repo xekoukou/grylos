@@ -1,4 +1,3 @@
 1. index_functions and find node histotical dependencies is conditionally executed and thus needs to be encapsulated.
 2. asynchronous nodes must beable to be set at lower levels as well.
-3. Revert the passive property changes. Reintroduce the passive property.
 4. Generate_src algorithm is a mess. Find a better one.

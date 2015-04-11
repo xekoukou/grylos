@@ -603,27 +603,32 @@ if (gen_all) {
                                         for (var i = 0; i < options.length; i++) {
                                             var each = options.charAt(i);
                                             //'e' is for endpoint
-                                            if (each == "e") {
-                                                path.dynamic = true;
+                                            if (each == "p") {
+                                                path.passive = true;
                                             } else {
-                                                if (each == "h") {
-                                                    path.historical = true;
+
+                                                if (each == "e") {
+                                                    path.dynamic = true;
                                                 } else {
-                                                    if (each == "m") {
-                                                        path.mutable = true;
-
+                                                    if (each == "h") {
+                                                        path.historical = true;
                                                     } else {
-                                                        if (each == "d") {
-                                                            path.dependency = true;
-                                                        } else {
-                                                            if (each == "l") {
-                                                                path.lossless = true;
+                                                        if (each == "m") {
+                                                            path.mutable = true;
 
+                                                        } else {
+                                                            if (each == "d") {
+                                                                path.dependency = true;
                                                             } else {
-                                                                console.log("\nError: mr_file:" + mr_file_paths[index] + ".mr(line: " + path.y + "," + "position: " + path.x + ")");
-                                                                console.log("Wrong option type.");
-                                                                format_XML(source_path);
-                                                                process.exit(0);
+                                                                if (each == "l") {
+                                                                    path.lossless = true;
+
+                                                                } else {
+                                                                    console.log("\nError: mr_file:" + mr_file_paths[index] + ".mr(line: " + path.y + "," + "position: " + path.x + ")");
+                                                                    console.log("Wrong option type.");
+                                                                    format_XML(source_path);
+                                                                    process.exit(0);
+                                                                }
                                                             }
                                                         }
                                                     }
@@ -906,7 +911,7 @@ if (gen_all) {
 
                 }
                 //Adds multiple end_points per vname with their properties.
-                $("graph node[fn_name='" + fn_name + "'] output[name='" + path.vname + "']").append("<end_point fn_name='" + path.end_fn_name + "' " + ((path.mutable) ? "mutable='" + path.mutable + "' " : "") + ((path.dependency) ? "dependency='" + path.dependency + "' " : "") + ((path.lossless) ? "lossless='" + path.lossless + "' " : "") + ((path.historical) ? "historical='" + path.historical + "' " : "") + ((path.dynamic) ? "dynamic='" + path.dynamic + "' " : "") + "></end_point>");
+                $("graph node[fn_name='" + fn_name + "'] output[name='" + path.vname + "']").append("<end_point fn_name='" + path.end_fn_name + "' " + ((path.mutable) ? "mutable='" + path.mutable + "' " : "") + ((path.dependency) ? "dependency='" + path.dependency + "' " : "") + ((path.lossless) ? "lossless='" + path.lossless + "' " : "") + ((path.historical) ? "historical='" + path.historical + "' " : "") + ((path.dynamic) ? "dynamic='" + path.dynamic + "' " : "") + ((path.passive) ? "passive='" + path.passive + "' " : "") + "></end_point>");
 
 
             });
@@ -1723,6 +1728,10 @@ if (!root_io) {
                                 if (parent(this).attr("dependency") == "true") {
                                     nn_edge.properties.dependency = "true";
                                 }
+                                if (parent(this).attr("passive") == "true") {
+                                    nn_edge.properties.passive = "true";
+                                }
+
 
                                 //Find the end_point and traverse it.
                                 var fn_name = parent(this).attr("fn_name");
@@ -1942,9 +1951,12 @@ if (!root_io) {
                     Object.keys(node.outputs).forEach(function(key) {
                         var output = node.outputs[key];
                         output.forEach(function(item) {
-                            trav_pointers.push(
-                                item.end_pointer
-                            );
+                            //If the edge is passive, that means that the computation stops here.
+                            if (item.properties.passive != "true") {
+                                trav_pointers.push(
+                                    item.end_pointer
+                                );
+                            }
                         });
 
                     });
@@ -2068,25 +2080,28 @@ if (!root_io) {
             Object.keys(node.outputs).forEach(function(key) {
                 var output = node.outputs[key];
                 output.forEach(function(item) {
-                    var prev_pointer = item.end_pointer;
-                    var prev_cpath = set_cpath(prev_pointer, 0, prev_pointer.length - 1);
-                    var prev_node = flattened_graph_v3[prev_cpath];
-                    var prev_set = prev_node.properties.set;
+                    //If the edge is passive, that means that the computation stops here.
+                    if (item.properties.passive != "true") {
+                        var prev_pointer = item.end_pointer;
+                        var prev_cpath = set_cpath(prev_pointer, 0, prev_pointer.length - 1);
+                        var prev_node = flattened_graph_v3[prev_cpath];
+                        var prev_set = prev_node.properties.set;
 
-                    if (prev_set != set) {
-                        if (!(set in thread_starting_points)) {
-                            thread_starting_points[set] = {};
-                        }
-                        if (!(prev_set in thread_starting_points[set])) {
-                            thread_starting_points[set][prev_set] = {};
+                        if (prev_set != set) {
+                            if (!(set in thread_starting_points)) {
+                                thread_starting_points[set] = {};
+                            }
+                            if (!(prev_set in thread_starting_points[set])) {
+                                thread_starting_points[set][prev_set] = {};
+                            }
+
+                            thread_starting_points[set][prev_set][cpath] = pointer;
                         }
 
-                        thread_starting_points[set][prev_set][cpath] = pointer;
+                        trav_pointers.push(
+                            item.end_pointer
+                        );
                     }
-
-                    trav_pointers.push(
-                        item.end_pointer
-                    );
                 });
 
             });
