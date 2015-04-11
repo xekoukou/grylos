@@ -858,17 +858,6 @@ if (gen_all) {
 
                 }
 
-                //The asynchronous property can only be set at the top level.
-                if (mr_file_paths[index] != source_path) {
-                    console.log("Error: The asynchronous property has been set in a level that is not the top.");
-                    console.log("File:" + mr_file_paths[index] + ".mr");
-                    console.log("Fn_name:" + fn_name);
-                    format_XML(source_path);
-                    process.exit(0);
-
-                }
-
-
             }
 
 
