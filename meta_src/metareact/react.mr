@@ -1,7 +1,7 @@
         main                                                                                   generate_xml_content_from_children    
          |---------------(source_path)----------------------------------------------------------------------------|      
          |----------------------------------          parse_mr_files /-(insert_graph_content_to_xml_files_dep)-d--|                                                         
-         |                  prepare_src    \---(source_path)------|---                                            |                                          check_ioputs_origins          check_only_side_effects_exist 
+         |                  prepare_src    \---(source_path)------|---                                            |                                          check_ioputs_origins    check_only_side_effects_exist
          |---(source_path)------|------(validate_XML_dep)----d----|--(insert_missing_io_tags_from_graph_dep)-d----|---(generate_xml_content_from_children_dep)-d-------|--(check_ioputs_origins_dep)--d---|
                                 |                                 |                                                                                                    |                      
 module_dependencies             |                                 |--------(mr_file_paths)-----------------------------------------------------------------------------|             

@@ -15,10 +15,11 @@
             <origin origin_name="source_path" origin_location="flatten_graph/create_flattened_graph" generated="true"/>
             <origin origin_name="source_path" origin_location="flatten_graph/find_node_properties" generated="true"/>
             <origin origin_name="source_path" origin_location="flatten_graph/find_starting_points" generated="true"/>
-            <origin origin_name="source_path" origin_location="generate_src" generated="true"/>
             <origin origin_name="source_path" origin_location="index_functions_and_more" generated="true"/>
+            <origin origin_name="source_path" origin_location="order_nodes" generated="true"/>
         </input>
         <input generated="true" name="root_io">
+            <origin origin_name="root_io" origin_location="generate_src" generated="true"/>
             <origin origin_name="root_io" origin_location="index_functions_and_more" generated="true"/>
         </input>
         <input generated="true" name="check_only_side_effects_exist_dep">
@@ -35,6 +36,7 @@
             <origin origin_name="path" origin_location="flatten_graph/find_node_properties" generated="true"/>
             <origin origin_name="path" origin_location="flatten_graph/find_starting_points" generated="true"/>
             <origin origin_name="path" origin_location="generate_src" generated="true"/>
+            <origin origin_name="path" origin_location="order_nodes" generated="true"/>
         </input>
         <input generated="true" name="cheerio">
             <origin origin_name="cheerio" origin_location="flatten_graph/create_flattened_graph" generated="true"/>
@@ -55,6 +57,9 @@
             <description> It returns an error when we have set the asynchronous property on a "subgraph" node.</description>
             <origin origin_name="error" origin_location="flatten_graph/find_node_properties" generated="true"/>
         </output>
+        <output name="generated_files" side-effect="true" generated="true">
+            <origin origin_name="generated_files" origin_location="generate_src" generated="true"/>
+        </output>
     </outputs>
     <graph generated="true">
         <node fn_name="flatten_graph">
@@ -66,7 +71,7 @@
                 <end_point fn_name="determine_subgraphs"/>
                 <end_point fn_name="determine_subgraph_order_str_points"/>
                 <end_point fn_name="merge_serial_subgraphs"/>
-                <end_point fn_name="generate_src"/>
+                <end_point fn_name="order_nodes"/>
             </output>
         </node>
         <node fn_name="determine_subgraphs" concurrent="true">
@@ -87,13 +92,21 @@
         </node>
         <node fn_name="merge_serial_subgraphs">
             <output name="merge_ser_subg">
-                <end_point fn_name="generate_src" dependency="true"/>
+                <end_point fn_name="order_nodes" dependency="true"/>
             </output>
             <output name="flattened_graph_v4">
-                <end_point fn_name="generate_src"/>
+                <end_point fn_name="order_nodes"/>
             </output>
             <output name="thread_starting_points_v2">
+                <end_point fn_name="order_nodes"/>
                 <end_point fn_name="generate_src"/>
+                <end_point fn_name="index_functions_and_more"/>
+            </output>
+        </node>
+        <node fn_name="order_nodes">
+            <output name="ordered_set">
+                <end_point fn_name="generate_src"/>
+                <end_point fn_name="index_functions_and_more"/>
             </output>
         </node>
         <node fn_name="generate_src"/>
@@ -102,8 +115,9 @@
                 <end_point fn_name="determine_subgraphs" dependency="true"/>
             </output>
             <output name="leveled_graph">
-                <end_point fn_name="generate_src"/>
+                <end_point fn_name="order_nodes"/>
             </output>
         </node>
+        <node fn_name="index_functions_and_more"/>
     </graph>
 </root>

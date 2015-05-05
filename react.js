@@ -83,19 +83,26 @@ exec = require('execSync');
 
 function generate_function_rec(cpath) {
     try {
-        var funtions = ["reusable", "dynamic", "single_use"];
+        var functions = ["reusable", "dynamic", "single_use"];
         functions.forEach(function(folder) {
             var files = fs.readdirSync(cpath + "/" + folder);
             files.forEach(function(file, index, files) {
                 var stat = fs.statSync(cpath + "/" + folder + "/" + file);
-
-                if (stat.isFolder()) {
+                if (stat.isDirectory()) {
 
                     try {
                         fs.readFileSync(cpath + "/" + folder + "/" + file + ".xml")
-                        console.log("Compiling " + folder + "function.");
+                        console.log("Compiling '" + file + "' function.");
                         console.log("Path: " + cpath + "/" + folder + "/" + file + "\n");
-                        exec.exec("node react.js --gen_all --root_io" + cpath + "/" + folder + "/" + file + " --lang " + prog_lang);
+                        var result = exec.exec("node react.js --gen_all --root_io " + cpath + "/" + folder + "/" + file + " --lang " + prog_lang);
+
+                        console.log(result.stdout);
+                        if (result.code == 1) {
+                            console.log(cpath + "/" + folder + "/" + file + ": Exiting..");
+                            process.exit(1);
+                        }
+
+                        console.log("End of Compilation");
 
                     } catch (e) {
                         //Do nothing. TODO Find a better solution.
@@ -225,7 +232,7 @@ if (gen_all) {
 
                     if (result.stdout !== "") {
                         console.log("XML Error:\n" + result.stdout);
-                        process.exit(-1);
+                        process.exit(1);
                     }
 
                 }
@@ -336,14 +343,13 @@ if (gen_all) {
                     mr_files.push(fs.readFileSync(cpath + "/" + file_name));
                 }
             } else {
-                if (stat.isDirectory()) {
+                if (stat.isDirectory() && (file_name != 'reusable' && file_name != "dynamic" && file_name != "single_use")) {
                     find_mr_paths(cpath + "/" + file_name);
 
                 }
 
             }
         });
-
     }
     mr_file_paths = [];
     mr_files = [];
@@ -406,7 +412,7 @@ if (gen_all) {
                                             console.log("Error: There is no option '" + xar + "' for a function");
                                             console.log("File: " + mr_file_paths[index]);
                                             console.log("Function Name: " + value[0]);
-                                            process.exit(0);
+                                            process.exit(1);
                                         }
                                     }
                                 }
@@ -542,7 +548,7 @@ if (gen_all) {
                                 console.log("\nError: mr_file:" + mr_file_paths[index] + ".mr(line: " + path.y + "," + "position: " + path.x + ")");
                                 console.log("A path with no end.");
                                 format_XML(source_path);
-                                process.exit(0);
+                                process.exit(1);
                             } else {
                                 return;
                             }
@@ -552,7 +558,7 @@ if (gen_all) {
                             console.log("\nError: mr_file:" + mr_file_paths[index] + ".mr(line: " + path.y + "," + "position: " + path.x + ")");
                             console.log("Multiple paths detected.");
                             format_XML(source_path);
-                            process.exit(0);
+                            process.exit(1);
                         }
                         //Moving forward.
                         if (up) {
@@ -581,7 +587,7 @@ if (gen_all) {
                                     console.log("\nError: mr_file:" + mr_file_paths[index] + ".mr(line: " + path.y + "," + "position: " + path.x + ")");
                                     console.log("There is a missing ')'.");
                                     format_XML(source_path);
-                                    process.exit(0);
+                                    process.exit(1);
                                 } else {
                                     path.vname = array[0];
                                     path.x = path.x + array[0].length + 2;
@@ -627,7 +633,7 @@ if (gen_all) {
                                                                     console.log("\nError: mr_file:" + mr_file_paths[index] + ".mr(line: " + path.y + "," + "position: " + path.x + ")");
                                                                     console.log("Wrong option type.");
                                                                     format_XML(source_path);
-                                                                    process.exit(0);
+                                                                    process.exit(1);
                                                                 }
                                                             }
                                                         }
@@ -693,7 +699,7 @@ if (gen_all) {
                 if (!each.vname) {
                     console.log("Error: " + mr_file_paths[index] + "\nPath<" + each.origin_fn_name + "," + each.end_fn_name + "> : There is a path with no value name ");
                     format_XML(source_path);
-                    process.exit(0);
+                    process.exit(1);
                 }
 
                 graph[each.origin_fn_name]["paths"].push(each);
@@ -726,7 +732,7 @@ if (gen_all) {
             } catch (e) {
                 console.log("\nError: xml file missing:" + oxml_path);
                 format_XML(source_path);
-                process.exit(0);
+                process.exit(1);
             }
 
             var o = cheerio.load(oxml_file, {
@@ -751,7 +757,7 @@ if (gen_all) {
                 } catch (e) {
                     console.log("\nError: xml file missing:" + ixml_path);
                     format_XML(source_path);
-                    process.exit(0);
+                    process.exit(1);
                 }
 
                 var i = cheerio.load(ixml_file, {
@@ -791,7 +797,7 @@ if (gen_all) {
                     console.log("Error: " + mr_file_paths[index]);
                     console.log("function: " + fn_name + " output name: " + item);
                     console.log("Multiple outputs with the same name.");
-                    process.exit(0);
+                    process.exit(1);
                     //error
                 } else {
                     vnames[item] = true;
@@ -811,7 +817,7 @@ if (gen_all) {
                 console.log("Error: The asynchronous and concurrent property has been set in the same node");
                 console.log("File:" + mr_file_paths[index] + ".mr");
                 console.log("Fn_name:" + fn_name);
-                process.exit(0);
+                process.exit(1);
             }
 
             //An asynchronous node can not have inputs
@@ -824,7 +830,7 @@ if (gen_all) {
                             console.log("Error: The asynchronous property has been set in a node that has inputs generated from the graph.");
                             console.log("File:" + mr_file_paths[index] + ".mr");
                             console.log("Fn_name:" + fn_name);
-                            process.exit(0);
+                            process.exit(1);
 
                         }
                     });
@@ -843,7 +849,7 @@ if (gen_all) {
                     console.log("Error: The asynchronous property has been set in a node that has inputs defined in the xml file.");
                     console.log("File:" + mr_file_paths[index] + ".mr");
                     console.log("Fn_name:" + fn_name);
-                    process.exit(0);
+                    process.exit(1);
 
                 }
 
@@ -854,7 +860,7 @@ if (gen_all) {
                     console.log("File:" + mr_file_paths[index] + ".mr");
                     console.log("Fn_name:" + fn_name);
                     format_XML(source_path);
-                    process.exit(0);
+                    process.exit(1);
 
                 }
 
@@ -878,7 +884,7 @@ if (gen_all) {
         } catch (e) {
             console.log("\nError: xml file missing:" + xml_path);
             format_XML(source_path);
-            process.exit(0);
+            process.exit(1);
         }
 
         var $ = cheerio.load(xml_file, {
@@ -1020,7 +1026,7 @@ function generate_xml_content_from_children(cpath, parent) {
                                 console.log("origin name: " + origin_name);
                                 console.log("origin location: " + origin_location);
                                 format_XML(source_path);
-                                process.exit(0);
+                                process.exit(1);
                             }
                             if (isTrue == 'start') {
                                 isTrue = exists;
@@ -1031,7 +1037,7 @@ function generate_xml_content_from_children(cpath, parent) {
                                     console.log("Folder: " + cpath);
                                     console.log("Value name: " + name);
                                     format_XML(source_path);
-                                    process.exit(0);
+                                    process.exit(1);
 
                                 }
 
@@ -1050,7 +1056,7 @@ function generate_xml_content_from_children(cpath, parent) {
                                     console.log("Origin location: " + item);
                                 });
                                 format_XML(source_path);
-                                process.exit(0);
+                                process.exit(1);
 
 
                             }
@@ -1064,7 +1070,7 @@ function generate_xml_content_from_children(cpath, parent) {
                                 console.log("Folder: " + cpath);
                                 console.log("Name: " + name);
                                 format_XML(source_path);
-                                process.exit(0);
+                                process.exit(1);
                             } else {
                                 if (inputs.length == 1) {
                                     //check that the attributes of the children are the same with that of the parent.
@@ -1078,7 +1084,7 @@ function generate_xml_content_from_children(cpath, parent) {
 
                                         });
                                         format_XML(source_path);
-                                        process.exit(0);
+                                        process.exit(1);
                                     } else {
                                         //We add only the contents
                                         parent(inputs).append($("<div/>").append($("origin", this).clone()).html());
@@ -1156,7 +1162,7 @@ function generate_xml_content_from_children(cpath, parent) {
                             console.log("origin name: " + origin_name);
                             console.log("origin location: " + origin_location);
                             format_XML(source_path);
-                            process.exit(0);
+                            process.exit(1);
                         }
                         if (isTrue == 'start') {
                             isTrue = exists;
@@ -1167,7 +1173,7 @@ function generate_xml_content_from_children(cpath, parent) {
                                 console.log("Folder: " + cpath);
                                 console.log("Value name: " + name);
                                 format_XML(source_path);
-                                process.exit(0);
+                                process.exit(1);
 
                             }
 
@@ -1185,7 +1191,7 @@ function generate_xml_content_from_children(cpath, parent) {
                                 console.log("Origin location: " + item);
                             });
                             format_XML(source_path);
-                            process.exit(0);
+                            process.exit(1);
 
 
                         }
@@ -1200,7 +1206,7 @@ function generate_xml_content_from_children(cpath, parent) {
                             console.log("Folder: " + cpath);
                             console.log("Name: " + name);
                             format_XML(source_path);
-                            process.exit(0);
+                            process.exit(1);
                         } else {
                             if (outputs.length == 1) {
                                 //check that the attributes of the children are the same with that of the parent.
@@ -1213,7 +1219,7 @@ function generate_xml_content_from_children(cpath, parent) {
                                         console.log("Origin location: " + item);
                                     });
                                     format_XML(source_path);
-                                    process.exit(0);
+                                    process.exit(1);
                                 } else {
 
 
@@ -1233,7 +1239,7 @@ function generate_xml_content_from_children(cpath, parent) {
 
 
                                         format_XML(source_path);
-                                        process.exit(0);
+                                        process.exit(1);
 
                                     } else {
                                         //Here this output could also be used from inside the graph.
@@ -1287,7 +1293,7 @@ mr_file_paths.forEach(function(item) {
     } catch (e) {
         console.log("\nError: xml file missing:" + xml_path);
         format_XML(source_path);
-        process.exit(0);
+        process.exit(1);
     }
 
     var $ = cheerio.load(xml_file, {
@@ -1301,7 +1307,7 @@ mr_file_paths.forEach(function(item) {
             console.log("File: " + xml_path);
             console.log("Name: " + name);
             format_XML(source_path);
-            process.exit(0);
+            process.exit(1);
         }
 
         var origins = [];
@@ -1322,7 +1328,7 @@ mr_file_paths.forEach(function(item) {
                     console.log("name: " + item.name);
                     console.log("location: " + item.location);
                     format_XML(source_path);
-                    process.exit(0);
+                    process.exit(1);
 
                 }
             });
@@ -1336,7 +1342,7 @@ mr_file_paths.forEach(function(item) {
             console.log("File: " + xml_path);
             console.log("Name: " + name);
             format_XML(source_path);
-            process.exit(0);
+            process.exit(1);
         }
         var origins = [];
         $("origin", this).each(
@@ -1356,7 +1362,7 @@ mr_file_paths.forEach(function(item) {
                     console.log("name: " + item.name);
                     console.log("location: " + item.location);
                     format_XML(source_path);
-                    process.exit(0);
+                    process.exit(1);
 
                 }
             });
@@ -1384,7 +1390,7 @@ if (!root_io) {
             console.log("Error: There is an input which is not a side_effect in the root xml_file.");
             console.log("Name: " + $(this).attr("name"));
             format_XML(source_path);
-            process.exit(0);
+            process.exit(1);
         }
     });
 
@@ -1393,7 +1399,7 @@ if (!root_io) {
             console.log("Error: There is an output which is not a side_effect in the root xml_file.");
             console.log("Name: " + $(this).attr("name"));
             format_XML(source_path);
-            process.exit(0);
+            process.exit(1);
         }
     });
 }
@@ -1410,7 +1416,9 @@ if (!root_io) {
         "set": {},
         "reusable": {},
         "single_use": {},
-        "dynamic": {}
+        "dynamic": {},
+        "ordered_set":ordered_set,
+        "thread_starting_points":thread_starting_points_v2
     };
 
     function traverse_leveled_set(leveled_set, pointer) {
@@ -1440,6 +1448,22 @@ if (!root_io) {
                             "single_use": {},
                             "dynamic": {}
                         };
+                        try {
+                            f_leveled_set.ordered_set = JSON.parse(
+                                fs.readFileSync(cpath + "/" + folder + "/" + file.substring(0, file.length - 4) + "/ordered_set.json", {
+                                    encoding: "utf-8"
+                                }));
+                            f_leveled_set.thread_starting_points = JSON.parse(
+                                fs.readFileSync(cpath + "/" + folder + "/" + file.substring(0, file.length - 4) + "/thread_starting_points.json", {
+                                    encoding: "utf-8"
+                                }));
+                        } catch (e) {
+
+                            console.log("Error: " + cpath + "/" + folder + "/" + file.substring(0, file.length - 4));
+                            console.log("Missing ordered_set/thread_starting_points files.");
+                            process.exit(1);
+
+                        }
 
                         var functions = [
                             "reusable",
@@ -1477,6 +1501,7 @@ if (!root_io) {
 
     //TODO This needs to be moved to a single_use function. It needs to be encapsulated because it is executed conditionally.
 
+    
 
 
 
@@ -2102,8 +2127,10 @@ if (!root_io) {
     /////////////////////////////////////////////////////////////////
     //merge_serial_subgraphs
     var flattened_graph_v4;
+    var thread_starting_points_v2;
     //////////////////////////////
     flattened_graph_v4 = JSON.parse(JSON.stringify(flattened_graph_v3));
+    thread_starting_points_v2 = JSON.parse(JSON.stringify(thread_starting_points));
 
 
     //Find the mergable set.
@@ -2114,18 +2141,18 @@ if (!root_io) {
     while (true) {
         merge_set = [];
 
-        Object.keys(thread_starting_points).forEach(function(origin_subgraph) {
+        Object.keys(thread_starting_points_v2).forEach(function(origin_subgraph) {
 
-            if (Object.keys(thread_starting_points[origin_subgraph]).length > 1) {
+            if (Object.keys(thread_starting_points_v2[origin_subgraph]).length > 1) {
                 return;
             }
 
-            for (var end_subgraph in thread_starting_points[origin_subgraph]) {
+            for (var end_subgraph in thread_starting_points_v2[origin_subgraph]) {
 
                 var mergable = true;
 
-                for (var dep_subgraph in thread_starting_points) {
-                    if (end_subgraph in thread_starting_points[dep_subgraph] && (dep_subgraph != origin_subgraph)) {
+                for (var dep_subgraph in thread_starting_points_v2) {
+                    if (end_subgraph in thread_starting_points_v2[dep_subgraph] && (dep_subgraph != origin_subgraph)) {
                         mergable = false;
                         break;
                     }
@@ -2144,7 +2171,7 @@ if (!root_io) {
             merge_set.forEach(function(two) {
                 if (one.o == two.e) {
                     //Move the starting points temporarily for the next step before removing them.
-                    thread_starting_points[two.o][one.e] = thread_starting_points[one.o][one.e];
+                    thread_starting_points_v2[two.o][one.e] = thread_starting_points_v2[one.o][one.e];
                     one.o = two.o;
                 }
             });
@@ -2152,7 +2179,7 @@ if (!root_io) {
 
         //Merge those sets.
         merge_set.forEach(function(pair) {
-            var st_pts = thread_starting_points[pair.o][pair.e];
+            var st_pts = thread_starting_points_v2[pair.o][pair.e];
             Object.keys(st_pts).forEach(function(stpath) {
 
 
@@ -2205,20 +2232,20 @@ if (!root_io) {
         //Delete the unecessary thread_starting_points and move the starting points to the correct set.
 
         merge_set.forEach(function(pair) {
-            delete thread_starting_points[pair.o][pair.e];
+            delete thread_starting_points_v2[pair.o][pair.e];
 
-            for (key in thread_starting_points[pair.e]) {
-                if (!(key in thread_starting_points[pair.o])) {
-                    thread_starting_points[pair.o][key] = {};
+            for (key in thread_starting_points_v2[pair.e]) {
+                if (!(key in thread_starting_points_v2[pair.o])) {
+                    thread_starting_points_v2[pair.o][key] = {};
                 }
-                for (key2 in thread_starting_points[pair.e][key]) {
-                    thread_starting_points[pair.o][key][key2] = thread_starting_points[pair.e][key][key2];
+                for (key2 in thread_starting_points_v2[pair.e][key]) {
+                    thread_starting_points_v2[pair.o][key][key2] = thread_starting_points_v2[pair.e][key][key2];
                 }
             }
-            delete thread_starting_points[pair.e];
+            delete thread_starting_points_v2[pair.e];
 
-            if (Object.keys(thread_starting_points[pair.o]).length == 0) {
-                delete thread_starting_points[pair.o];
+            if (Object.keys(thread_starting_points_v2[pair.o]).length == 0) {
+                delete thread_starting_points_v2[pair.o];
             }
         });
 
@@ -2230,29 +2257,37 @@ if (!root_io) {
 
     //Add the starting points as the thread starting points of the initial thread/subgraph.
     //We do it here because otherwise the merge process would remove them. :)
-    thread_starting_points[-1] = {};
+    thread_starting_points_v2[-1] = {};
 
     starting_points.forEach(function(st_pointer) {
 
         var st_cpath = set_cpath(st_pointer, 0, st_pointer.length - 1);
         var st_node = flattened_graph_v4[st_cpath];
         var st_set = st_node.properties.set;
-        if (!(st_set in thread_starting_points[-1])) {
-            thread_starting_points[-1][st_set] = {};
+        if (!(st_set in thread_starting_points_v2[-1])) {
+            thread_starting_points_v2[-1][st_set] = {};
         }
 
-        thread_starting_points[-1][st_set][st_cpath] = st_pointer;
+        thread_starting_points_v2[-1][st_set][st_cpath] = st_pointer;
     });
 
 
 
-    //TODO remove     console.log(JSON.stringify(thread_starting_points, null, 4));
+    //TODO remove     console.log(JSON.stringify(thread_starting_points_v2, null, 4));
     //TODO remove    
     console.log(JSON.stringify(flattened_graph_v4, null, 4));
 
 
     ////////////////////////////////////////////////////////////////
-    //generate_src
+    //check_deterministic_mutation
+    ////////////////////////
+
+    
+
+
+    ///////////////////////////////////////////////////////////////
+    //order_nodes
+    var ordered_set;
     ////////////// 
 
 
@@ -2398,30 +2433,17 @@ if (!root_io) {
     }
 
 
-
-    var ordered_graph = {
-        "name": "",
-        "input_local_var": {},
-        "input_not_local_var": {},
-        "input_external_var": {},
-        "input_not_external_var": {},
-        "output_external_var": {},
-        "output_historical_var": {},
-        "output_dynamic_var": {},
-        "output_not_external_var": {},
-        "set": [],
-        "type": "subgraph"
-    };
+    ordered_set = {};
 
     //Group starting points per subgraph.
     var grouped_starting_points = {};
-    Object.keys(thread_starting_points).forEach(function(key) {
-        Object.keys(thread_starting_points[key]).forEach(function(subgraph_id) {
+    Object.keys(thread_starting_points_v2).forEach(function(key) {
+        Object.keys(thread_starting_points_v2[key]).forEach(function(subgraph_id) {
             if (!(subgraph_id in grouped_starting_points)) {
                 grouped_starting_points[subgraph_id] = {};
             }
-            Object.keys(thread_starting_points[key][subgraph_id]).forEach(function(path) {
-                grouped_starting_points[subgraph_id][path] = thread_starting_points[key][subgraph_id][path];
+            Object.keys(thread_starting_points_v2[key][subgraph_id]).forEach(function(path) {
+                grouped_starting_points[subgraph_id][path] = thread_starting_points_v2[key][subgraph_id][path];
             });
         });
     });
@@ -2441,6 +2463,20 @@ if (!root_io) {
         //c_i checks if we did a complete circle.
         var c_i = 0;
         var i = 0;
+
+        var ordered_graph = {
+            "name": "",
+            "input_local_var": {},
+            "input_not_local_var": {},
+            "input_external_var": {},
+            "input_not_external_var": {},
+            "output_external_var": {},
+            "output_historical_var": {},
+            "output_dynamic_var": {},
+            "output_not_external_var": {},
+            "set": [],
+            "type": "subgraph"
+        };
 
         while (true) {
             var node = flattened_graph_v4[keys[i]];
@@ -2550,10 +2586,11 @@ if (!root_io) {
                 i = i % keys.length;
             }
         };
+        ordered_set[set_id] = ordered_graph;
 
     });
 
-    //TODO remove  console.log(JSON.stringify(ordered_graph, null, 4));
+    //TODO remove  console.log(JSON.stringify(ordered_set, null, 4));
 
     function ordered_graph_complete(pointer, ordered_graph, leveled_graph, flattened_graph) {
         var subgraph = traverse_ordered_graph(ordered_graph, pointer);
@@ -2630,10 +2667,24 @@ if (!root_io) {
         }
     }
 
-    ordered_graph_complete([""], ordered_graph, leveled_graph, flattened_graph_v4);
+    Object.keys(ordered_set).forEach(function(set_id) {
+        var ordered_graph = ordered_set[set_id];
+        ordered_graph_complete([""], ordered_graph, leveled_graph, flattened_graph_v4);
+    });
     //TODO remove 
-    console.log(JSON.stringify(ordered_graph, null, 4));
+    console.log("Ordered_set:" + JSON.stringify(ordered_set, null, 4));
 
+    ///////////////////////////////////////////////////////////////
+    //generate_src
+    //////////////////////////////////////////
+    if (root_io) {
+
+        fs.writeFileSync(source_path + "/ordered_set.json", JSON.stringify(ordered_set, null, 4));
+        fs.writeFileSync(source_path + "/thread_starting_points.json", JSON.stringify(thread_starting_points_v2, null, 4));
+
+    } else {
+        //Generate the code.
+    }
     /*
 
         fs.writeFileSync("/tmp/leveled_graph.json", JSON.stringify(leveled_graph,null,4));

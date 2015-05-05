@@ -1,0 +1,161 @@
+How do we execute reusable function code that is in a loop?
+
+                                                         /-> not possible
+function ---> function2 ---> function4---->function--->something else
+                         |if
+                         ---->function3---->function
+                                        |if
+                                        ------>exit
+
+
+(dynamic function name or main function) preuid function_name uid number ...etc
+
+How do we execute this code?
+
+The same way we execute any reusable function. Any new reusable function call creates the necessary queues for the graph.
+
+Historic data need to be stored separately from the call stack so as to be used again when needed.
+It is also required to have a correct name convention so as to get the data.
+
+So we need a unique identifier.
+
+number uid number uid
+
+dynamic functions loop?
+
+Not possible at the moment.
+
+-------------------------------------------------------
+
+
+
+1. Each function has an origin function varriable that determines the future loops how to determine the prefix.
+
+2. when a loop occurs, we add to the prefix the uid based on the origin function. If it is the same uid and original function we just increase the number of loops.
+
+Thus we need to find all loops and all possible previous loops to that position.
+
+All loops that could lead to that loop are the possible different origin functions.
+
+This is only necessary if there is a historical value inside a loop.
+
+In all other cases this construction is unnecessary.
+
+------------------------------------------------------------
+
+
+we have an ordered list of functions and an ordered list of thread functions
+
+so there is a complete ordering ... thus we need all to determine the above.
+
+---------------------------------------------------------------
+Don't forget to handle thread panics in Rust.
+
+---------------------------------------------------------------
+TODO
+----
+----
+
+periodic message sending receiving? Do we need loops of reusable functions with the asynchonpus property?
+
+---------------------------------------------------------------
+
+Can we have mutable input? Can we pass the ownership of specific data to the next function?
+
+1.Mutability prohibits us from changing the order of execution between functions that use the same input inside the same thread sub_graph.
+
+2. Immutable data (on the heap) shared between threads create the problem that when the creator function tries to mutate the data a second time, the previous version might be requiered for the next threads that have hept a reference to the data.
+
+
+Copy on Mutation ?
+
+We send the data to the rest of the threads. We check if we can access the same memory. If not we copy a new memory and send the data there.
+
+
+   function1   function2   function3
+----|-----------|------------|
+    |       function4    function5
+    |-----------|------------|
+
+One simple strategy is to copy the data, to be used in Javascript.
+
+The other:
+
+We can use a mutex on all outputs. If we can't access the data, we wait if we need to read them or create a new mutex if we were to write to them.
+
+Problem. We need to wait even though, there might be only read operations on the data.
+
+
+IMPORTANT
+
+For rust we use are RwLock for interthread communication, and we create a new RwLock when there is contention.
+
+Mutation and interthread communication
+
+case 1: a.single line---> single one-hope shares of the data.
+        b. doesnt have the other asynchronous inputs that can retriger the execution.
+        c. No dynamic functions use that input. 
+
+descendent functions can mutate the data in place with a Mutex. If a previous wants to access the memory and it is used by a descendent function, we create a new Mutex/memory.(also if we have a lossless property and the previous data hasn't been consumed)
+
+Descendent functions will need to unlock all previous data as well as the new data, thus they will have multiple locks.
+
+case 2: a. doesn't exist all others do.
+        d. all data go to the same thread.
+
+RwLock does work if we know that all reads perform before the writes, and only one write happens.
+(Multiple threads do not allow for determinsitic execution)
+
+For this to work, we need all output to be input in a single thread, so that we can arrange the order of the execution, have deterministic execution.
+
+This doesn't work for multiple shares of the data.
+
+
+case 3: a,d not
+        others yes.
+
+
+many other cases.
+
+
+
+Should we allow memory reuse across the chain?
+
+case 1: in the same thread? 
+ 
+case 11: c yes
+
+same as case 2 but we do not use a share Rwlock but the basic reference semantics of rust.
+
+case 12: c no 
+
+      A. 
+
+
+
+No Mutation but reuse of data.
+
+Requires either locks by all future functions to read the data or the original function always using a different piece of memory.
+
+
+
+Mutation and reuse in the same thread.
+
+The boundaries of the lifetime of a variable is that of the subgraph it was returned as output.
+
+case 1: 
+
+Reuse across the whole chain can happen
+
+
+
+
+--------------------------------------------------------------
+Mutability can be encapsulated inside a node thus no need to propagate mutability across the chain.
+Thus all data can be reusable inside a thread, no need for copying.
+
+For interthread share of data, copy the data.
+
+For data with the passive property, RwLock them. 
+--------------------------------------------------
+In place mutation can happen if it is encapsulated in a function or as long as there the set of functions that mutate the data are strictly ordered.

@@ -2,17 +2,18 @@
 <root>
     <info>
         <name> generate_src </name>
-        <description> It generates the source based on the data that the flattened graph and the "thread starting points" it is provided.  </description>
+        <description> It generates the source it saves thoses inputs to be used by the root source generator.  </description>
     </info>
     <inputs>
         <input name="prog_lang"/>
+        <input name="root_io"/>
         <input name="source_path"/>
         <input name="path"/>
-        <input generated="true" name="starting_points"/>
-        <input generated="true" name="merge_ser_subg"/>
-        <input generated="true" name="flattened_graph_v4"/>
         <input generated="true" name="thread_starting_points_v2"/>
-        <input generated="true" name="leveled_graph"/>
+        <input generated="true" name="ordered_set"/>
     </inputs>
-    <outputs/>
+    <outputs>
+        <output name="ordered_set_file" side-effect="true"/>
+        <output name="thread_starting_points_file" side-effect="true"/>
+    </outputs>
 </root>

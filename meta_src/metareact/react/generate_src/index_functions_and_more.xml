@@ -7,8 +7,14 @@
     <inputs>
         <input name="source_path"/>
         <input name="fs"/>
+        <input name="path"/>
         <input name="root_io"/>
+        <input name="prog_lang"/>
         <input name="generate_function_src_deb" dependency="true"/>
+        <input generated="true" name="thread_starting_points_v2"/>
+        <input generated="true" name="ordered_set"/>
+        <input name="ordered_set_files" side-effect="true"/>
+        <input name="thread_starting_points_files" side-effect="true"/>
     </inputs>
     <outputs>
         

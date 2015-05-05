@@ -21,6 +21,9 @@
             <origin origin_name="error" origin_location="parse_mr_files/check_same_output_name" generated="true"/>
             <origin origin_name="error" origin_location="parse_mr_files/create_graphs/find_functions" generated="true"/>
         </output>
+        <output name="generated_files" side-effect="true" generated="true">
+            <origin origin_name="generated_files" origin_location="generate_src/generate_src" generated="true"/>
+        </output>
         <output name="console-text" side-effect="true" generated="true">
             <description>The program prints a request to be provided with the correct arguments. </description>
             <origin origin_name="console-text" origin_location="main" generated="true"/>

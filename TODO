@@ -1,3 +1,10 @@
 1. index_functions and find node histotical dependencies is conditionally executed and thus needs to be encapsulated.
-2. asynchronous nodes must beable to be set at lower levels as well.
-4. Generate_src algorithm is a mess. Find a better one.
+2.?? asynchronous nodes must be able to be set at lower levels as well.
+4. ?? Generate_src algorithm is a mess. Find a better one.
+
+5. Provide mutatio checks that all mutable varriables execute in deterministic order.
+
+6. Change the generate src so as to provide info about the mutable varriables.
+
+
+7. Remove _v(number) from the end.
