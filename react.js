@@ -1408,118 +1408,6 @@ if (!root_io) {
 /////////////////
 {
     ///////////////////////////////////////////////////////////////////
-    //index_functions_and_more
-    //////////////////
-
-    //TODO At the moment we index only the functions that are generated with the metareact framework.
-    var f_index = {
-        "set": {},
-        "reusable": {},
-        "single_use": {},
-        "dynamic": {},
-        "ordered_set":ordered_set,
-        "thread_starting_points":thread_starting_points_v2
-    };
-
-    function traverse_leveled_set(leveled_set, pointer) {
-        var lset = leveled_set;
-        for (var i = 1; i < pointer.length; i++) {
-            lset = lset.set[pointer[i]];
-        }
-        return lset;
-    }
-
-    //Recursive function that indexes functions(reusable,single_use,dynamic)
-
-    function index_functions_rec(cpath, folder, leveled_set, position) {
-        try {
-            var lset = traverse_leveled_set(leveled_set, position);
-            var files = fs.readdirSync(cpath + "/" + folder);
-            files.forEach(function(file, index, files) {
-                var stat = fs.statSync(cpath + "/" + folder + "/" + file);
-
-                if (stat.isFile()) {
-
-                    if (path.extname(file) == ".xml") {
-                        //TODO find the functions of this function
-                        var f_leveled_set = {
-                            "set": {},
-                            "reusable": {},
-                            "single_use": {},
-                            "dynamic": {}
-                        };
-                        try {
-                            f_leveled_set.ordered_set = JSON.parse(
-                                fs.readFileSync(cpath + "/" + folder + "/" + file.substring(0, file.length - 4) + "/ordered_set.json", {
-                                    encoding: "utf-8"
-                                }));
-                            f_leveled_set.thread_starting_points = JSON.parse(
-                                fs.readFileSync(cpath + "/" + folder + "/" + file.substring(0, file.length - 4) + "/thread_starting_points.json", {
-                                    encoding: "utf-8"
-                                }));
-                        } catch (e) {
-
-                            console.log("Error: " + cpath + "/" + folder + "/" + file.substring(0, file.length - 4));
-                            console.log("Missing ordered_set/thread_starting_points files.");
-                            process.exit(1);
-
-                        }
-
-                        var functions = [
-                            "reusable",
-                            "dynamic",
-                            "single_use"
-                        ];
-                        functions.forEach(function(sec_folder) {
-                            index_functions_rec(cpath + "/" + folder + "/" + file.substring(0, file.length - 4), sec_folder, f_leveled_set, [""]);
-                        });
-                        lset[folder][file.substring(0, file.length - 4)] = f_leveled_set;
-                    }
-                }
-            });
-        } catch (e) {
-            return;
-        }
-
-
-        var files = fs.readdirSync(cpath);
-        files.forEach(function(file, index, files) {
-            var stat = fs.statSync(cpath + "/" + file);
-            if (stat.isDirectory() && file != "reusable" && file != "dynamic" && file != "single_use") {
-                //Recursively operate on the subdirectories.
-                lset.set[file] = {
-                    "set": {},
-                    "reusable": {},
-                    "single_use": {},
-                    "dynamic": {}
-                };
-                index_functions_rec(cpath + "/" + file, folder, position.slice().push(file));
-            }
-        });
-    }
-
-
-    //TODO This needs to be moved to a single_use function. It needs to be encapsulated because it is executed conditionally.
-
-    
-
-
-
-    if (root_io == false) {
-        var functions = [
-            "reusable",
-            "dynamic",
-            "single_use"
-        ];
-        functions.forEach(function(folder) {
-            index_functions_rec(source_path, folder, f_index, [""]);
-        });
-
-
-        //TODO remove      
-        console.log("f_index: \n" + JSON.stringify(f_index, null, 4));
-    }
-    ///////////////////////////////////////////////////////////////////
 
     //TODO we need to put reusable functions somewhere
     function set_cpath(pointer, start, end) {
@@ -2282,7 +2170,7 @@ if (!root_io) {
     //check_deterministic_mutation
     ////////////////////////
 
-    
+
 
 
     ///////////////////////////////////////////////////////////////
@@ -2673,6 +2561,155 @@ if (!root_io) {
     });
     //TODO remove 
     console.log("Ordered_set:" + JSON.stringify(ordered_set, null, 4));
+
+    ///////////////////////////////////////////////////////////////
+    //if_root_io
+    ////////////////
+    {
+        ///////////////////////////////////////////////////////
+        //single_use
+        ////////////////////////////////////////////////////////
+        //save_input_to_files
+        /////////////////////
+        function save_input_to_files(root_io, source_path, ordered_set, thread_starting_points_v2) {
+                fs.writeFileSync(source_path + "/ordered_set.json", JSON.stringify(ordered_set, null, 4));
+                fs.writeFileSync(source_path + "/thread_starting_points.json", JSON.stringify(thread_starting_points_v2, null, 4));
+            }
+            ///////////////////////////////////////////////////////////////////
+            //TODO To be moved into the single_use function generate_src
+            //index_functions
+        function index_functions(source_path, fs, path, root_io, prog_lang, thread_starting_points_v2, ordered_set) {
+                var f_index;
+                //////////////////
+
+                //TODO At the moment we index only the functions that are generated with the metareact framework.
+                f_index = {
+                    "set": {},
+                    "reusable": {},
+                    "single_use": {},
+                    "dynamic": {},
+                    "ordered_set": ordered_set,
+                    "thread_starting_points": thread_starting_points_v2
+                };
+
+                function traverse_leveled_set(leveled_set, pointer) {
+                    var lset = leveled_set;
+                    for (var i = 1; i < pointer.length; i++) {
+                        lset = lset.set[pointer[i]];
+                    }
+                    return lset;
+                }
+
+                //Recursive function that indexes functions(reusable,single_use,dynamic)
+
+                function index_functions_rec(cpath, folder, leveled_set, position) {
+                    try {
+                        var lset = traverse_leveled_set(leveled_set, position);
+                        var files = fs.readdirSync(cpath + "/" + folder);
+                        files.forEach(function(file, index, files) {
+                            var stat = fs.statSync(cpath + "/" + folder + "/" + file);
+
+                            if (stat.isFile()) {
+
+                                if (path.extname(file) == ".xml") {
+                                    //TODO find the functions of this function
+                                    var f_leveled_set = {
+                                        "set": {},
+                                        "reusable": {},
+                                        "single_use": {},
+                                        "dynamic": {}
+                                    };
+                                    try {
+                                        f_leveled_set.ordered_set = JSON.parse(
+                                            fs.readFileSync(cpath + "/" + folder + "/" + file.substring(0, file.length - 4) + "/ordered_set.json", {
+                                                encoding: "utf-8"
+                                            }));
+                                        f_leveled_set.thread_starting_points = JSON.parse(
+                                            fs.readFileSync(cpath + "/" + folder + "/" + file.substring(0, file.length - 4) + "/thread_starting_points.json", {
+                                                encoding: "utf-8"
+                                            }));
+                                    } catch (e) {
+
+                                        console.log("Error: " + cpath + "/" + folder + "/" + file.substring(0, file.length - 4));
+                                        console.log("Missing ordered_set/thread_starting_points files.");
+                                        process.exit(1);
+
+                                    }
+
+                                    var functions = [
+                                        "reusable",
+                                        "dynamic",
+                                        "single_use"
+                                    ];
+                                    functions.forEach(function(sec_folder) {
+                                        index_functions_rec(cpath + "/" + folder + "/" + file.substring(0, file.length - 4), sec_folder, f_leveled_set, [""]);
+                                    });
+                                    lset[folder][file.substring(0, file.length - 4)] = f_leveled_set;
+                                }
+                            }
+                        });
+                    } catch (e) {
+                        return;
+                    }
+
+
+                    var files = fs.readdirSync(cpath);
+                    files.forEach(function(file, index, files) {
+                        var stat = fs.statSync(cpath + "/" + file);
+                        if (stat.isDirectory() && file != "reusable" && file != "dynamic" && file != "single_use") {
+                            //Recursively operate on the subdirectories.
+                            lset.set[file] = {
+                                "set": {},
+                                "reusable": {},
+                                "single_use": {},
+                                "dynamic": {}
+                            };
+                            index_functions_rec(cpath + "/" + file, folder, position.slice().push(file));
+                        }
+                    });
+                }
+
+
+                var functions = [
+                    "reusable",
+                    "dynamic",
+                    "single_use"
+                ];
+                functions.forEach(function(folder) {
+                    index_functions_rec(source_path, folder, f_index, [""]);
+                });
+
+
+                //TODO remove      
+                console.log("f_index: \n" + JSON.stringify(f_index, null, 4));
+		//TODO remove
+                return f_index;
+            }
+            //end of single_use
+            //////////////////////////////////////////////////////////
+            //if_root_io
+            ///////////////
+
+        //TODO
+        //!tail!
+        switch (root_io) {
+            case true:
+                save_input_to_files(root_io, source_path, ordered_set, thread_starting_points_v2);
+                break;
+            case false:
+                //TODO remove this with the generate_src single_use function
+                var f_index=index_functions(source_path, fs, path, root_io, prog_lang, thread_starting_points_v2, ordered_set);
+
+                break;
+
+        }
+
+
+        ////////////////////////////////////////////////////////
+    }
+    //end of if_root_io
+    ///////////////////////////////////////////////////////////////
+
 
     ///////////////////////////////////////////////////////////////
     //generate_src

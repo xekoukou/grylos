@@ -159,3 +159,4 @@ For interthread share of data, copy the data.
 For data with the passive property, RwLock them. 
 --------------------------------------------------
 In place mutation can happen if it is encapsulated in a function or as long as there the set of functions that mutate the data are strictly ordered.
+non-encapsulated mutation needs to be at a different thread so that we can have read references.

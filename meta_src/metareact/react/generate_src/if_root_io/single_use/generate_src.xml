@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<root>
+    <info>
+        <name> generate_src </name>
+        <description> It executes the remaining processes for the generation of the source code.  </description>
+</info>
+</root>

@@ -8,3 +8,5 @@
 
 
 7. Remove _v(number) from the end.
+
+9. Side-effects from single_use or reusable functions do not propagate to the functions that called them. Do that.

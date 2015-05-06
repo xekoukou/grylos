@@ -1,22 +1,20 @@
 flatten_graph                    determine_subgraphs:c 
       |------(flattened_graph)-----------|   determine_subgraph_order_str_points     
-      |-----(starting_points)------------|-(deter_subg)-d-------|              merge_serial_subgraphs                        order_nodes       generate_src
-      |                                  |-(flattened_graph_v2)-|-(thread_starting_points)-----|---(merge_ser_subg)--d-----------|                 |
-      |------(starting_points)----------------------------------|-(flattened_graph_v3)---------|-(flattened_graph_v4)------------|--(ordered_set)--|
-      |                                                                                        |-----(thread_starting_points_v2)-|                 |
-      |                                                                                        |-----(thread_starting_points_v2)-------------------|
+      |-----(starting_points)------------|-(deter_subg)-d-------|              merge_serial_subgraphs                        order_nodes       
+      |                                  |-(flattened_graph_v2)-|-(thread_starting_points)-----|---(merge_ser_subg)--d-----------|            
+      |------(starting_points)----------------------------------|-(flattened_graph_v3)---------|-(flattened_graph_v4)------------|
+      |                                                                                        |-----(thread_starting_points_v2)-|        
+      |                                                                                        
       |                       merge_serial_subgraphs
       |---(starting_points)---------|-----(thread_starting_points_v2)---------------
       |                                                                            \
       |                          level_graph               determine_subgraphs     \
-      |---(flattened_graph)---------|---(level_graph_dep)--d-----|                 \   index_functions_and_more
+      |---(flattened_graph)---------|---(level_graph_dep)--d-----|                 \    if_root_io 
       |                             |                          order_nodes         \------|
       |                             |---(leveled_graph)----------|                        |
       |---(starting_points)--------------------------------------|-----(ordered_set)------|
-      |
-      |                        check_deterministic_mutation                order_nodes 
-      |---(flattened_graph)---------|-(check_deterministic_mutation_dep)--d----|
-      |---(starting_points)---------|
-      |---(c
+      |                                                                                   |
+      |---(flattened_graph)---------------------------------------------------------------|
+      |---(starting_points)---------------------------------------------------------------|
 
 

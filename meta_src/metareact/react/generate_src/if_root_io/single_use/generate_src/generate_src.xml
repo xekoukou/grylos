@@ -9,11 +9,10 @@
         <input name="root_io"/>
         <input name="source_path"/>
         <input name="path"/>
-        <input generated="true" name="thread_starting_points_v2"/>
-        <input generated="true" name="ordered_set"/>
+        <input name="thread_starting_points_v2"/>
+        <input name="ordered_set"/>
     </inputs>
     <outputs>
-        <output name="ordered_set_file" side-effect="true"/>
-        <output name="thread_starting_points_file" side-effect="true"/>
+        <output name="source_code" side-effect="true"/>
     </outputs>
 </root>
