@@ -60,7 +60,7 @@ for (var i = 2; i < process.argv.length; i++) {
 
 if ((!source_path) || (!prog_lang) || error) {
     console.log("Please provide the language and source directory of your project.");
-    console.log("Example: -lang js ./meta_src/metareact/react");
+    console.log("Example: --lang js ./meta_src/metareact/react");
     return -1;
 }
 
@@ -82,9 +82,9 @@ exec = require('execSync');
 ////////////////
 
 function generate_function_rec(cpath) {
-    try {
-        var functions = ["reusable", "dynamic", "single_use"];
-        functions.forEach(function(folder) {
+    var functions = ["reusable", "dynamic", "single_use"];
+    functions.forEach(function(folder) {
+        try {
             var files = fs.readdirSync(cpath + "/" + folder);
             files.forEach(function(file, index, files) {
                 var stat = fs.statSync(cpath + "/" + folder + "/" + file);
@@ -110,10 +110,10 @@ function generate_function_rec(cpath) {
 
                 }
             });
-        });
-    } catch (e) {
-        return;
-    }
+        } catch (e) {
+            return;
+        }
+    });
 
 
     var files = fs.readdirSync(cpath);
@@ -1374,35 +1374,45 @@ mr_file_paths.forEach(function(item) {
 
 /////////////////////////////////////////////////////////////////////
 //check_only_side_effects_exist
-
 //////////////////////////////
-if (!root_io) {
-    var xml_file = fs.readFileSync(source_path + ".xml", {
-        encoding: "utf-8"
-    });
 
-    var $ = cheerio.load(xml_file, {
-        xmlMode: true
-    });
+var xml_file = fs.readFileSync(source_path + ".xml", {
+    encoding: "utf-8"
+});
 
-    $("inputs input").each(function() {
-        if (($(this).attr("side-effect") != "true") && ($(this).attr("external_input") != "true")) {
-            console.log("Error: There is an input which is not a side_effect in the root xml_file.");
+var $ = cheerio.load(xml_file, {
+    xmlMode: true
+});
+
+$("inputs input").each(function() {
+    if ($(this).attr("side-effect") != "true") {
+        if (root_io == false || (root_io == true && ($(this).attr("generated") == "true"))) {
+            if (root_io) {
+                console.log("Error: There is a generated input in the root xml_file.");
+            } else {
+                console.log("Error: There is an input which is not a side_effect in the root xml_file.");
+            }
             console.log("Name: " + $(this).attr("name"));
             format_XML(source_path);
             process.exit(1);
         }
-    });
+    }
+});
 
-    $("outputs output").each(function() {
-        if (($(this).attr("side-effect") != "true") && ($(this).attr("external_output") != "true")) {
-            console.log("Error: There is an output which is not a side_effect in the root xml_file.");
+$("outputs output").each(function() {
+    if ($(this).attr("side-effect") != "true") {
+        if (root_io == false || (root_io == true && ($(this).attr("generated") == "true"))) {
+            if (root_io) {
+                console.log("Error: There is a generated output in the root xml_file.");
+            } else {
+                console.log("Error: There is an output which is not a side_effect in the root xml_file.");
+            }
             console.log("Name: " + $(this).attr("name"));
             format_XML(source_path);
             process.exit(1);
         }
-    });
-}
+    }
+});
 ////////////////////////////////////////////////////////////////////
 //generate_src
 /////////////////
@@ -1473,6 +1483,95 @@ if (!root_io) {
         var parent = [""];
         find_starting_points_rec(source_path, parent);
 
+        //We check specifically those nodes that have some of the external input of the library.	
+        if (root_io) {
+
+            //Find all the Candidates.
+            var candidates = {};
+            var root_input = {};
+
+            var xml_file = fs.readFileSync(source_path + ".xml", {
+                encoding: "utf-8"
+            });
+
+            var $ = cheerio.load(xml_file, {
+                xmlMode: true
+            });
+
+            $("inputs input").each(function() {
+                if ($(this).attr("side-effect") != "true") {
+                    $("origin", this).each(function() {
+                        var origin_name = $(this).attr("origin_name");
+                        var ncpath = source_path + "/" + $(this).attr("origin_location");
+                        if (!(ncpath in root_input) && !(ncpath in candidates)) {
+                            root_input[ncpath] = {};
+                        }
+                        root_input[ncpath][origin_name] = true;
+                    });
+                }
+            });
+
+            var keys = Object.keys(root_input);
+            while (keys.length > 0) {
+                keys.forEach(function(cpath) {
+                    var names = root_input[cpath];
+                    delete root_input[cpath];
+
+                    var xml_file = fs.readFileSync(cpath + ".xml", {
+                        encoding: "utf-8"
+                    });
+
+                    var $ = cheerio.load(xml_file, {
+                        xmlMode: true
+                    });
+
+                    $("inputs input").each(function() {
+                        var name = $(this).attr("name");
+                        if (name in names) {
+                            if ($("origin", this).length == 0) {
+                                if (!(cpath in candidates)) {
+                                    candidates[cpath] = {};
+                                }
+                                candidates[cpath][name] = true;
+                            } else {
+                                $("origin", this).each(function() {
+                                    var origin_name = $(this).attr("origin_name");
+                                    var ncpath = cpath + "/" + $(this).attr("origin_location");
+                                    if (!(ncpath in root_input)) {
+                                        root_input[ncpath] = {};
+                                    }
+                                    root_input[ncpath][origin_name] = true;
+                                });
+                            }
+                        }
+
+                    });
+                });
+                keys = Object.keys(root_input);
+            }
+            //TODO remove 
+            console.log("Candidates:\n" + JSON.stringify(candidates, null, 4));
+
+            Object.keys(candidates).forEach(function(cpath) {
+
+                var length = Object.keys(candidates[cpath]).length;
+
+                var xml_file = fs.readFileSync(cpath + ".xml", {
+                    encoding: "utf-8"
+                });
+                var $ = cheerio.load(xml_file, {
+                    xmlMode: true
+                });
+
+                if ($("inputs input[side-effect!='true']").length == length) {
+                    var element = cpath.split(source_path)[1].split("/");
+                    console.log(element);
+                    starting_points.push(element);
+                }
+
+
+            });
+        }
 
         //////////////////////////////////////////////////////////////////
         //find_node_properties
@@ -2163,7 +2262,7 @@ if (!root_io) {
 
     //TODO remove     console.log(JSON.stringify(thread_starting_points_v2, null, 4));
     //TODO remove    
-    console.log(JSON.stringify(flattened_graph_v4, null, 4));
+    console.log("Flattened Graph:\n" + JSON.stringify(flattened_graph_v4, null, 4));
 
 
     ////////////////////////////////////////////////////////////////
@@ -2560,7 +2659,7 @@ if (!root_io) {
         ordered_graph_complete([""], ordered_graph, leveled_graph, flattened_graph_v4);
     });
     //TODO remove 
-    console.log("Ordered_set:" + JSON.stringify(ordered_set, null, 4));
+    console.log("Ordered_set:\n" + JSON.stringify(ordered_set, null, 4));
 
     ///////////////////////////////////////////////////////////////
     //if_root_io
@@ -2682,7 +2781,7 @@ if (!root_io) {
 
                 //TODO remove      
                 console.log("f_index: \n" + JSON.stringify(f_index, null, 4));
-		//TODO remove
+                //TODO remove
                 return f_index;
             }
             //end of single_use
@@ -2698,7 +2797,7 @@ if (!root_io) {
                 break;
             case false:
                 //TODO remove this with the generate_src single_use function
-                var f_index=index_functions(source_path, fs, path, root_io, prog_lang, thread_starting_points_v2, ordered_set);
+                var f_index = index_functions(source_path, fs, path, root_io, prog_lang, thread_starting_points_v2, ordered_set);
 
                 break;
 

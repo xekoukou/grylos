@@ -5,11 +5,11 @@
         <description> It either generates the source(true) or it creates files to be passed to the main process.  </description>
 </info>
 <inputs>
-	<input name="root_io"/>
-	<input name="source_path"/>
-	<input name="fs"/>
-	<input name="path"/>
-        <input name="prog_lang"/>
-        <input name="generate_function_src_deb" dependency="true"/>
-</inputs>
-</root>
+	<input name="root_io"><origin origin_name="root_io" origin_location="if_root_io" generated="true"/></input>
+	<input name="source_path"><origin origin_name="source_path" origin_location="if_root_io" generated="true"/></input>
+	<input name="fs"><origin origin_name="fs" origin_location="if_root_io" generated="true"/></input>
+	<input name="path"><origin origin_name="path" origin_location="if_root_io" generated="true"/></input>
+        <input name="prog_lang"><origin origin_name="prog_lang" origin_location="if_root_io" generated="true"/></input>
+        <input name="generate_function_src_deb" dependency="true"><origin origin_name="generate_function_src_deb" origin_location="if_root_io" generated="true"/></input>
+<input generated="true" name="flattened_graph"><origin origin_name="flattened_graph" origin_location="if_root_io" generated="true"/></input><input generated="true" name="starting_points"><origin origin_name="starting_points" origin_location="if_root_io" generated="true"/></input><input generated="true" name="thread_starting_points_v2"><origin origin_name="thread_starting_points_v2" origin_location="if_root_io" generated="true"/></input><input generated="true" name="ordered_set"><origin origin_name="ordered_set" origin_location="if_root_io" generated="true"/></input></inputs>
+<outputs/></root>

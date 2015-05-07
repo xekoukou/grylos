@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<root>
+    <info>
+        <name> determine_historicity_losslessness </name>
+        <description> It checks whether a single_use or reusable function contains nodes with the historical property or lossless property and propagates it upwards. It also provides important checks.  </description>
+    </info>
+    <inputs>
+        <input generated="true" name="f_index"/>
+    </inputs>
+    <outputs/>
+</root>

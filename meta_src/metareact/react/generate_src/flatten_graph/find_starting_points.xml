@@ -7,12 +7,13 @@
     <inputs>
         <input name="source_path"> </input>
         <input name="fs"/>
+        <input name="root_io"/>
         <input name="path"/>
         <input name="cheerio"/>
         <input name="check_only_side_effects_exist_dep" dependenct="true"/>
         <input name="xml_files" side-effect="true"/>
     </inputs>
     <outputs>
-        <output generated="true" name="starting_points"/>
-    </outputs>
+        
+    <output generated="true" name="starting_points"/></outputs>
 </root>

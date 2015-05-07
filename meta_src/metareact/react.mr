@@ -48,4 +48,4 @@ main                      |
  |----(root_io)-----------------\\----------------------|      
                                \\-----------------------|
 check_only_side_effects_exist  \------------------------|         
-      |--(check_only_side_effects_exist_dep)-d----------|
+      |-------(check_only_side_effects_exist_dep)--d----|

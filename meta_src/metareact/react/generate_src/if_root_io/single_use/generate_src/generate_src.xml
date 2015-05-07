@@ -6,11 +6,11 @@
     </info>
     <inputs>
         <input name="prog_lang"/>
-        <input name="root_io"/>
         <input name="source_path"/>
         <input name="path"/>
         <input name="thread_starting_points_v2"/>
         <input name="ordered_set"/>
+        <input generated="true" name="check_deterministic_mutation_d"/>
     </inputs>
     <outputs>
         <output name="source_code" side-effect="true"/>

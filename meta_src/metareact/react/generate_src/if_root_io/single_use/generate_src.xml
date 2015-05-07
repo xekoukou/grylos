@@ -3,5 +3,65 @@
     <info>
         <name> generate_src </name>
         <description> It executes the remaining processes for the generation of the source code.  </description>
-</info>
+    </info>
+    <inputs>
+        <input name="flattened_graph">
+            <origin origin_name="flattened_graph" origin_location="check_deterministic_mutation" generated="true"/>
+        </input>
+        <input name="starting_points">
+            <origin origin_name="starting_points" origin_location="check_deterministic_mutation" generated="true"/>
+        </input>
+        <input name="prog_lang">
+            <origin origin_name="prog_lang" origin_location="generate_src" generated="true"/>
+            <origin origin_name="prog_lang" origin_location="index_functions" generated="true"/>
+        </input>
+        <input name="source_path">
+            <origin origin_name="source_path" origin_location="generate_src" generated="true"/>
+            <origin origin_name="source_path" origin_location="index_functions" generated="true"/>
+        </input>
+        <input name="path">
+            <origin origin_name="path" origin_location="generate_src" generated="true"/>
+            <origin origin_name="path" origin_location="index_functions" generated="true"/>
+        </input>
+        <input name="thread_starting_points_v2">
+            <origin origin_name="thread_starting_points_v2" origin_location="generate_src" generated="true"/>
+            <origin origin_name="thread_starting_points_v2" origin_location="index_functions" generated="true"/>
+        </input>
+        <input name="ordered_set">
+            <origin origin_name="ordered_set" origin_location="generate_src" generated="true"/>
+            <origin origin_name="ordered_set" origin_location="index_functions" generated="true"/>
+        </input>
+        <input name="fs">
+            <origin origin_name="fs" origin_location="index_functions" generated="true"/>
+        </input>
+        <input name="ordered_set_files" side-effect="true" generated="true">
+            <origin origin_name="ordered_set_files" origin_location="index_functions" generated="true"/>
+        </input>
+        <input name="thread_starting_points_files" side-effect="true" generated="true">
+            <origin origin_name="thread_starting_points_files" origin_location="index_functions" generated="true"/>
+        </input>
+    </inputs>
+    <outputs>
+        <output name="check_fail" side-effect="true" generated="true">
+            <origin origin_name="check_fail" origin_location="check_deterministic_mutation" generated="true"/>
+        </output>
+        <output name="source_code" side-effect="true" generated="true">
+            <origin origin_name="source_code" origin_location="generate_src" generated="true"/>
+        </output>
+    </outputs>
+    <graph generated="true">
+        <node fn_name="index_functions">
+            <output name="f_index">
+                <end_point fn_name="check_deterministic_mutation"/>
+                <end_point fn_name="determine_historicity_losslessness"/>
+            </output>
+        </node>
+        <node fn_name="check_deterministic_mutation">
+            <output name="check_deterministic_mutation_d">
+                <end_point fn_name="generate_src" dependency="true"/>
+            </output>
+        </node>
+        <node fn_name="generate_src"/>
+        <node fn_name="determine_historicity_losslessness"/>
+    </graph>
 </root>

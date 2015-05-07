@@ -14,9 +14,9 @@
         <input name="xml_files" side-effect="true">
             <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
         </input>
-        <input generated="true" name="insert_graph_content_to_xml_files_dep"/>
-        <input generated="true" name="insert_missing_io_tags_from_graph_dep"/>
-    </inputs>
+        
+        
+    <input generated="true" name="insert_graph_content_to_xml_files_dep"/><input generated="true" name="insert_missing_io_tags_from_graph_dep"/></inputs>
     <outputs>
         <output name="updated_xml_files" side-effect="true">
             <description>It saves the updated xml files.</description>
@@ -24,6 +24,6 @@
         <output name="error_msgs" side-effect="true">
             <description>It prints an error msg when there are multiple ioputs with the same name on a folder.</description>
         </output>
-        <output generated="true" name="generate_xml_content_from_children_dep"/>
-    </outputs>
+        
+    <output generated="true" name="generate_xml_content_from_children_dep"/></outputs>
 </root>

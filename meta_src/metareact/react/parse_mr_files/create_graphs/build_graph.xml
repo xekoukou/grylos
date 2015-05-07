@@ -11,7 +11,7 @@
     </outputs>
     <inputs>
         <input name="mr_file_paths"/>
-        <input generated="true" name="function_names"/>
-        <input generated="true" name="gpaths"/>
-    </inputs>
+        
+        
+    <input generated="true" name="function_names"/><input generated="true" name="gpaths"/></inputs>
 </root>

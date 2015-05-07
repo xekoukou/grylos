@@ -5,100 +5,29 @@
         <description> It parses all mr files and generates the graph tag and content of the xml files. </description>
     </info>
     <inputs>
-        <input generated="true" name="source_path">
-            <origin origin_name="source_path" origin_location="check_node_properties" generated="true"/>
-            <origin origin_name="source_path" origin_location="find_mr_file_paths" generated="true"/>
-        </input>
-        <input generated="true" name="validate_XML_dep">
-            <origin origin_name="validate_XML_dep" origin_location="find_mr_file_paths" generated="true"/>
-        </input>
-        <input generated="true" name="cheerio">
-            <origin origin_name="cheerio" origin_location="check_node_properties" generated="true"/>
-            <origin origin_name="cheerio" origin_location="insert_graph_content_to_xml_files" generated="true"/>
-            <origin origin_name="cheerio" origin_location="insert_missing_io_tags_from_graph" generated="true"/>
-        </input>
-        <input generated="true" name="fs">
-            <origin origin_name="fs" origin_location="check_node_properties" generated="true"/>
-            <origin origin_name="fs" origin_location="find_mr_file_paths" generated="true"/>
-            <origin origin_name="fs" origin_location="insert_graph_content_to_xml_files" generated="true"/>
-            <origin origin_name="fs" origin_location="insert_missing_io_tags_from_graph" generated="true"/>
-        </input>
-        <input generated="true" name="path">
-            <origin origin_name="path" origin_location="find_mr_file_paths" generated="true"/>
-        </input>
-        <input name="xml_files" side-effect="true" generated="true">
-            <origin origin_name="xml_files" origin_location="check_node_properties" generated="true"/>
-            <origin origin_name="xml_files" origin_location="insert_graph_content_to_xml_files" generated="true"/>
-            <origin origin_name="xml_files" origin_location="insert_missing_io_tags_from_graph" generated="true"/>
-        </input>
-        <input name="disk_mr_files" side-effect="true" generated="true">
+        
+        
+        
+        
+        
+        
+        
+    <input generated="true" name="source_path"><origin origin_name="source_path" origin_location="check_node_properties" generated="true"/><origin origin_name="source_path" origin_location="find_mr_file_paths" generated="true"/></input><input generated="true" name="validate_XML_dep"><origin origin_name="validate_XML_dep" origin_location="find_mr_file_paths" generated="true"/></input><input generated="true" name="cheerio"><origin origin_name="cheerio" origin_location="check_node_properties" generated="true"/><origin origin_name="cheerio" origin_location="insert_graph_content_to_xml_files" generated="true"/><origin origin_name="cheerio" origin_location="insert_missing_io_tags_from_graph" generated="true"/></input><input generated="true" name="fs"><origin origin_name="fs" origin_location="check_node_properties" generated="true"/><origin origin_name="fs" origin_location="find_mr_file_paths" generated="true"/><origin origin_name="fs" origin_location="insert_graph_content_to_xml_files" generated="true"/><origin origin_name="fs" origin_location="insert_missing_io_tags_from_graph" generated="true"/></input><input generated="true" name="path"><origin origin_name="path" origin_location="find_mr_file_paths" generated="true"/></input><input name="xml_files" side-effect="true" generated="true"><origin origin_name="xml_files" origin_location="check_node_properties" generated="true"/><origin origin_name="xml_files" origin_location="insert_graph_content_to_xml_files" generated="true"/><origin origin_name="xml_files" origin_location="insert_missing_io_tags_from_graph" generated="true"/></input><input name="disk_mr_files" side-effect="true" generated="true">
             <description>It is provided all the mr files of the source_path directory and its subdirectories.</description>
-            <origin origin_name="disk_mr_files" origin_location="find_mr_file_paths" generated="true"/>
-        </input>
-    </inputs>
+        <origin origin_name="disk_mr_files" origin_location="find_mr_file_paths" generated="true"/></input></inputs>
     <outputs>
-        <output generated="true" name="insert_graph_content_to_xml_files_dep">
-            <origin origin_name="insert_graph_content_to_xml_files_dep" origin_location="insert_graph_content_to_xml_files" generated="true"/>
-        </output>
-        <output generated="true" name="insert_missing_io_tags_from_graph_dep">
-            <origin origin_name="insert_missing_io_tags_from_graph_dep" origin_location="insert_missing_io_tags_from_graph" generated="true"/>
-        </output>
-        <output generated="true" name="mr_file_paths">
-            <origin origin_name="mr_file_paths" origin_location="find_mr_file_paths" generated="true"/>
-        </output>
-        <output name="error" side-effect="true" generated="true">
+        
+        
+        
+        
+        
+        
+    <output generated="true" name="insert_graph_content_to_xml_files_dep"><origin origin_name="insert_graph_content_to_xml_files_dep" origin_location="insert_graph_content_to_xml_files" generated="true"/></output><output generated="true" name="insert_missing_io_tags_from_graph_dep"><origin origin_name="insert_missing_io_tags_from_graph_dep" origin_location="insert_missing_io_tags_from_graph" generated="true"/></output><output generated="true" name="mr_file_paths"><origin origin_name="mr_file_paths" origin_location="find_mr_file_paths" generated="true"/></output><output name="error" side-effect="true" generated="true">
             <description>It prints an error message and exits.</description>
-            <origin origin_name="error" origin_location="check_same_output_name" generated="true"/>
-            <origin origin_name="error" origin_location="create_graphs/find_functions" generated="true"/>
-        </output>
-        <output name="filled_xml_files" side-effect="true" generated="true">
+        <origin origin_name="error" origin_location="check_same_output_name" generated="true"/><origin origin_name="error" origin_location="create_graphs/find_functions" generated="true"/></output><output name="filled_xml_files" side-effect="true" generated="true">
             <description>It saves the xml files with the additional generated content.</description>
-            <origin origin_name="filled_xml_files" origin_location="insert_graph_content_to_xml_files" generated="true"/>
-            <origin origin_name="filled_xml_files" origin_location="insert_missing_io_tags_from_graph" generated="true"/>
-        </output>
-        <output name="file_missing_errors" side-effect="true" generated="true">
+        <origin origin_name="filled_xml_files" origin_location="insert_graph_content_to_xml_files" generated="true"/><origin origin_name="filled_xml_files" origin_location="insert_missing_io_tags_from_graph" generated="true"/></output><output name="file_missing_errors" side-effect="true" generated="true">
             <description>It prints an error when an xml file is not there and exits.</description>
-            <origin origin_name="file_missing_errors" origin_location="insert_graph_content_to_xml_files" generated="true"/>
-            <origin origin_name="file_missing_errors" origin_location="insert_missing_io_tags_from_graph" generated="true"/>
-        </output>
-    </outputs>
-    <graph generated="true">
-        <node fn_name="find_mr_file_paths">
-            <output name="mr_files">
-                <end_point fn_name="split_srcode_into_lines"/>
-            </output>
-            <output name="mr_file_paths">
-                <end_point fn_name="create_graphs"/>
-                <end_point fn_name="insert_missing_io_tags_from_graph"/>
-                <end_point fn_name="insert_graph_content_to_xml_files"/>
-                <end_point fn_name="check_same_output_name"/>
-                <end_point fn_name="check_node_properties"/>
-            </output>
-        </node>
-        <node fn_name="split_srcode_into_lines">
-            <output name="srcodes">
-                <end_point fn_name="create_graphs"/>
-            </output>
-        </node>
-        <node fn_name="create_graphs">
-            <output name="graphs">
-                <end_point fn_name="insert_graph_content_to_xml_files"/>
-                <end_point fn_name="check_same_output_name"/>
-                <end_point fn_name="insert_missing_io_tags_from_graph"/>
-                <end_point fn_name="check_node_properties"/>
-            </output>
-        </node>
-        <node fn_name="insert_graph_content_to_xml_files"/>
-        <node fn_name="check_same_output_name">
-            <output name="check_same_output_name_dep">
-                <end_point fn_name="insert_graph_content_to_xml_files" dependency="true"/>
-            </output>
-        </node>
-        <node fn_name="insert_missing_io_tags_from_graph"/>
-        <node fn_name="check_node_properties">
-            <output name="dep_2">
-                <end_point fn_name="insert_graph_content_to_xml_files" dependency="true"/>
-            </output>
-        </node>
-    </graph>
-</root>
+        <origin origin_name="file_missing_errors" origin_location="insert_graph_content_to_xml_files" generated="true"/><origin origin_name="file_missing_errors" origin_location="insert_missing_io_tags_from_graph" generated="true"/></output></outputs>
+    
+<graph generated="true"> <node fn_name="find_mr_file_paths"><output name="mr_files"> <end_point fn_name="split_srcode_into_lines"/></output><output name="mr_file_paths"> <end_point fn_name="create_graphs"/><end_point fn_name="insert_missing_io_tags_from_graph"/><end_point fn_name="insert_graph_content_to_xml_files"/><end_point fn_name="check_same_output_name"/><end_point fn_name="check_node_properties"/></output></node><node fn_name="split_srcode_into_lines"><output name="srcodes"> <end_point fn_name="create_graphs"/></output></node><node fn_name="create_graphs"><output name="graphs"> <end_point fn_name="insert_graph_content_to_xml_files"/><end_point fn_name="check_same_output_name"/><end_point fn_name="insert_missing_io_tags_from_graph"/><end_point fn_name="check_node_properties"/></output></node><node fn_name="insert_graph_content_to_xml_files"/><node fn_name="check_same_output_name"><output name="check_same_output_name_dep"> <end_point fn_name="insert_graph_content_to_xml_files" dependency="true"/></output></node><node fn_name="insert_missing_io_tags_from_graph"/><node fn_name="check_node_properties"><output name="dep_2"> <end_point fn_name="insert_graph_content_to_xml_files" dependency="true"/></output></node></graph></root>

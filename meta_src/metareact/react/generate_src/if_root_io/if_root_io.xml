@@ -4,16 +4,4 @@
         <name> if_root_io </name>
         <description> It either generates the source(true) or it creates files to be passed to the main process.  </description>
 </info>
-<inputs>
-	<input name="root_io"/>
-	<input name="source_path"/>
-	<input name="ordered_set"/>
-	<input name="thread_starting_points_v2"/>
-	<input name="flattened_graph"/>
-	<input name="starting_points"/>
-	<input name="fs"/>
-	<input name="path"/>
-        <input name="prog_lang"/>
-        <input name="generate_function_src_deb" dependency="true"/>
-</inputs>
 </root>

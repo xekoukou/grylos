@@ -6,13 +6,13 @@
         <comment>After the merge, we insert the starting points at the thread_starting_points with original non-existent subgraph -1. </comment>
     </info>
     <inputs>
-        <input generated="true" name="starting_points"/>
-        <input generated="true" name="thread_starting_points"/>
-        <input generated="true" name="flattened_graph_v3"/>
-    </inputs>
+        
+        
+        
+    <input generated="true" name="starting_points"/><input generated="true" name="thread_starting_points"/><input generated="true" name="flattened_graph_v3"/></inputs>
     <outputs>
-        <output generated="true" name="merge_ser_subg"/>
-        <output generated="true" name="flattened_graph_v4"/>
-        <output generated="true" name="thread_starting_points_v2"/>
-    </outputs>
+        
+        
+        
+    <output generated="true" name="merge_ser_subg"/><output generated="true" name="flattened_graph_v4"/><output generated="true" name="thread_starting_points_v2"/></outputs>
 </root>

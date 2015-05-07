@@ -3,12 +3,14 @@
     <info>
         <name> check_deterministic_mutation </name>
         <description> It checks whether the mutation to a single variable is done deterministically. </description>
-</info>
-<inputs>
-	<input name="flattened_graph"/>
-	<input name="starting_points"/>
-</inputs>
-<outputs>
-	<output name="check_fail" side-effect="true" />
-</outputs>
+    </info>
+    <inputs>
+        <input name="flattened_graph"/>
+        <input name="starting_points"/>
+        <input generated="true" name="f_index"/>
+    </inputs>
+    <outputs>
+        <output name="check_fail" side-effect="true"/>
+        <output generated="true" name="check_deterministic_mutation_d"/>
+    </outputs>
 </root>
