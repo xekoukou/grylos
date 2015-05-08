@@ -5,7 +5,7 @@
         <description> It checks whether a single_use or reusable function contains nodes with the historical property or lossless property and propagates it upwards. It also provides important checks.  </description>
     </info>
     <inputs>
-        <input generated="true" name="f_index"/>
+        
     </inputs>
     <outputs/>
 </root>

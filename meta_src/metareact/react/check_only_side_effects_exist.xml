@@ -5,7 +5,7 @@
         <description> The root xml should only contain side effects and this function checks for this and returns an error if not. In case we compile with the root_io parameter, we also allow non-generated input, output.</description>
     </info>
     <inputs>
-	    <input name="root_io"/>
+        <input name="root_io"/>
         <input name="cheerio">
         </input>
         <input name="source_path">
@@ -15,7 +15,6 @@
         <input name="root_xml_file" side-effect="true">
             <description>It reads the root xml file..</description>
         </input>
-        
         
     <input generated="true" name="check_ioputs_origins_dep"/></inputs>
     <outputs>

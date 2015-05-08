@@ -25,7 +25,6 @@
         
         
         
-        
     <output name="console-text" side-effect="true" generated="true">
             <description>The program prints a request to be provided with the correct arguments. </description>
         <origin origin_name="console-text" origin_location="main" generated="true"/></output><output name="filled_xml_files" side-effect="true" generated="true">

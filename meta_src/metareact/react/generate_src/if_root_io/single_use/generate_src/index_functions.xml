@@ -15,6 +15,6 @@
         <input name="thread_starting_points_files" side-effect="true"/>
     </inputs>
     <outputs>
-        <output generated="true" name="f_index"/>
+        
     </outputs>
 </root>

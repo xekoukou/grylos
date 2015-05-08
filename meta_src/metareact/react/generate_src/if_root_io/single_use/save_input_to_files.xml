@@ -3,13 +3,13 @@
     <info>
         <name> if_root_io </name>
         <description> It either generates the source(true) or it creates files to be passed to the main process.  </description>
-</info>
-<inputs>
-	<input name="root_io"/>
-	<input name="source_path"/>
-	<input name="ordered_set"/>
-	<input name="thread_starting_points_v2"/>
-</inputs>
+    </info>
+    <inputs>
+        <input name="root_io"/>
+        <input name="source_path"/>
+        <input name="ordered_set"/>
+        <input name="thread_starting_points_v2"/>
+    </inputs>
     <outputs>
         <output name="ordered_set_file" side-effect="true"/>
         <output name="thread_starting_points_file" side-effect="true"/>

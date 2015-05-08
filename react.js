@@ -2265,13 +2265,6 @@ $("outputs output").each(function() {
     console.log("Flattened Graph:\n" + JSON.stringify(flattened_graph_v4, null, 4));
 
 
-    ////////////////////////////////////////////////////////////////
-    //check_deterministic_mutation
-    ////////////////////////
-
-
-
-
     ///////////////////////////////////////////////////////////////
     //order_nodes
     var ordered_set;
@@ -2813,14 +2806,7 @@ $("outputs output").each(function() {
     ///////////////////////////////////////////////////////////////
     //generate_src
     //////////////////////////////////////////
-    if (root_io) {
-
-        fs.writeFileSync(source_path + "/ordered_set.json", JSON.stringify(ordered_set, null, 4));
-        fs.writeFileSync(source_path + "/thread_starting_points.json", JSON.stringify(thread_starting_points_v2, null, 4));
-
-    } else {
         //Generate the code.
-    }
     /*
 
         fs.writeFileSync("/tmp/leveled_graph.json", JSON.stringify(leveled_graph,null,4));
