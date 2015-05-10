@@ -5,13 +5,13 @@
         <description> It generates all the reusable, dynamic, single_use functions. </description>
     </info>
     <inputs>
-        
-        
-        
-        
-        
-    <input generated="true" name="source_path"/><input generated="true" name="prog_lang"/><input generated="true" name="gen_all"/><input generated="true" name="exec"/><input generated="true" name="fs"/></inputs>
+        <input generated="true" name="source_path"/>
+        <input generated="true" name="prog_lang"/>
+        <input generated="true" name="gen_all"/>
+        <input generated="true" name="exec"/>
+        <input generated="true" name="fs"/>
+    </inputs>
     <outputs>
-        
-    <output generated="true" name="generate_function_src_deb"/></outputs>
+        <output generated="true" name="generate_function_src_deb"/>
+    </outputs>
 </root>

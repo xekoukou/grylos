@@ -7,10 +7,8 @@
     <inputs>
         <input name="flattened_graph"/>
         <input name="starting_points"/>
-        
     </inputs>
     <outputs>
         <output name="check_fail" side-effect="true"/>
-        
     </outputs>
 </root>

@@ -6,11 +6,11 @@
     </info>
     <inputs>
         <input name="starting_points"/>
-        
-        
-    <input generated="true" name="flattened_graph"/><input generated="true" name="level_graph_dep"/></inputs>
+        <input generated="true" name="flattened_graph"/>
+        <input generated="true" name="level_graph_dep"/>
+    </inputs>
     <outputs>
-        
-        
-    <output generated="true" name="deter_subg"/><output generated="true" name="flattened_graph_v2"/></outputs>
+        <output generated="true" name="deter_subg"/>
+        <output generated="true" name="flattened_graph_v2"/>
+    </outputs>
 </root>

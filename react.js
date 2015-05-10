@@ -2285,6 +2285,7 @@ $("outputs output").each(function() {
     }
 
     //A way to check whether a string is contained inside an array.
+    //TODO Unnessary To be removed
     function contains(array, item) {
         var contains = false;
         array.forEach(function(each) {
@@ -2432,16 +2433,16 @@ $("outputs output").each(function() {
 
         var set = grouped_starting_points[set_id];
 
+        //The current subgraph;
+        var prefix_pointer = [""];
+
         //The current subgraphs that we have already skipped because they had unmet dependencies.
         // This is emptied after one more node is added to the source file.
         var skippedList = [];
 
-        //The current subgraph;
-        var prefix_pointer = [""];
-
         var keys = Object.keys(set);
-        //c_i checks if we did a complete circle.
-        var c_i = 0;
+
+        var c_i = [0];
         var i = 0;
 
         var ordered_graph = {
@@ -2462,8 +2463,6 @@ $("outputs output").each(function() {
             var node = flattened_graph_v4[keys[i]];
             var diff = compare(node.pointer, prefix_pointer);
 
-            //moveOn is used to increment the index i;
-            var moveOn = false;
 
             //node must be inside the prefix_pointer subgraph.
             //Check if we already skipped that subgraph.
@@ -2489,6 +2488,9 @@ $("outputs output").each(function() {
                             if (node.properties.set == set_id) {
 
                                 //We add the node.
+                                if (!(cpath in set)) {
+                                    keys.push(cpath);
+                                }
                                 set[cpath] = item.end_pointer;
                             }
                         });
@@ -2498,7 +2500,7 @@ $("outputs output").each(function() {
                     delete set[keys[i]];
 
                     //Find all the keys again.
-                    keys = Object.keys(set);
+                    keys.splice(i, 1);
 
                     //Stop when we do not have any more keys. 
                     if (keys.length == 0) {
@@ -2507,11 +2509,18 @@ $("outputs output").each(function() {
 
                     //Update the prefix_pointer.
                     prefix_pointer = prefix_pointer.slice(0, prefix_pointer.length - 1);
-                    skippedList = [];
+                    c_i.pop();
+                    i = c_i[c_i.length - 1];
 
                     //The i might be at the end so we need to put at the front after the removal of the node.
-                    i = i % keys.length;
-                    c_i = 0;
+                    while (i >= keys.length) {
+                        prefix_pointer = prefix_pointer.slice(0, prefix_pointer.length - 1);
+                        c_i.pop();
+                        i = c_i[c_i.length - 1];
+                    }
+                    //Update the skippList.
+                    skippedList = [];
+                    continue;
 
                 } else {
 
@@ -2521,13 +2530,14 @@ $("outputs output").each(function() {
                     Object.keys(lgraph.inputs).forEach(function(nvalue) {
                         var cpath = set_cpath(lgraph.inputs[nvalue].origin_pointer, 0, lgraph.inputs[nvalue].origin_pointer.length - 1);
                         var input_node = flattened_graph_v4[cpath];
-                        if ("passed" in input_node.properties) {
+                        if (("passed" in input_node.properties) && (input_node.properties.set_id == set_id)) {
                             missing_dependencies = true;
                         }
                     });
                     if (!missing_dependencies) {
                         prefix_pointer = node.pointer.slice(0, prefix_pointer.length + 1);
-                        //If a subgraph, add the necessary code.
+                        c_i.push(i);
+                        //If a subgraph.
                         if (prefix_pointer.length != node.pointer.length) {
                             var lograph = traverse_ordered_graph(ordered_graph, prefix_pointer.slice(0, prefix_pointer.length - 1));
                             lograph.set.push({
@@ -2547,23 +2557,15 @@ $("outputs output").each(function() {
                         continue;
                     } else {
                         skippedList.push(node.pointer.slice(0, prefix_pointer.length + 1));
-                        moveOn = true;
                     }
                 }
 
-            } else {
-                moveOn = true;
             }
-
-            if (c_i == keys.length) {
-
-                //Move the prefix_pointer one level up.
+            i++;
+            while (i >= keys.length) {
                 prefix_pointer = prefix_pointer.slice(0, prefix_pointer.length - 1);
-            }
-            if (moveOn) {
-                i++;
-                c_i++;
-                i = i % keys.length;
+                c_i.pop();
+                i = c_i[c_i.length - 1];
             }
         };
         ordered_set[set_id] = ordered_graph;
@@ -2806,7 +2808,7 @@ $("outputs output").each(function() {
     ///////////////////////////////////////////////////////////////
     //generate_src
     //////////////////////////////////////////
-        //Generate the code.
+    //Generate the code.
     /*
 
         fs.writeFileSync("/tmp/leveled_graph.json", JSON.stringify(leveled_graph,null,4));

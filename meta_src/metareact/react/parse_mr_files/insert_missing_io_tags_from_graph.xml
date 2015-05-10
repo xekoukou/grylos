@@ -2,7 +2,7 @@
 <root>
     <info>
         <name> insert_missing_io_tag_info_from_graph</name>
-        <description> It creates io tags generated from the mr file if they don&apos;t already exist. </description>
+        <description> It creates io tags generated from the mr file if they don't already exist. </description>
     </info>
     <inputs>
         <input name="xml_files" side-effect="true">
@@ -12,9 +12,9 @@
         </input>
         <input name="fs">
         </input>
-        
-        
-    <input generated="true" name="mr_file_paths"/><input generated="true" name="graphs"/></inputs>
+        <input generated="true" name="mr_file_paths"/>
+        <input generated="true" name="graphs"/>
+    </inputs>
     <outputs>
         <output name="filled_xml_files" side-effect="true">
             <description>It saves the xml files with additional generated content.</description>

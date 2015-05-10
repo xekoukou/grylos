@@ -5,26 +5,62 @@
         <description> It validates the XML files and removes all previously generated files or parts of files.</description>
     </info>
     <inputs>
-        
-        
-        
-        
-        
-        
-    <input generated="true" name="source_path"><origin origin_name="source_path" origin_location="delete_generated_src" generated="true"/><origin origin_name="source_path" origin_location="remove_generated_XML" generated="true"/><origin origin_name="source_path" origin_location="validate_XML" generated="true"/></input><input generated="true" name="fs"><origin origin_name="fs" origin_location="delete_generated_src" generated="true"/><origin origin_name="fs" origin_location="remove_generated_XML" generated="true"/><origin origin_name="fs" origin_location="validate_XML" generated="true"/></input><input generated="true" name="exec"><origin origin_name="exec" origin_location="validate_XML" generated="true"/></input><input generated="true" name="path"><origin origin_name="path" origin_location="delete_generated_src" generated="true"/><origin origin_name="path" origin_location="remove_generated_XML" generated="true"/><origin origin_name="path" origin_location="validate_XML" generated="true"/></input><input generated="true" name="cheerio"><origin origin_name="cheerio" origin_location="remove_generated_XML" generated="true"/></input><input name="xml_files" side-effect="true" generated="true">
+        <input generated="true" name="source_path">
+            <origin origin_name="source_path" origin_location="delete_generated_src" generated="true"/>
+            <origin origin_name="source_path" origin_location="remove_generated_XML" generated="true"/>
+            <origin origin_name="source_path" origin_location="validate_XML" generated="true"/>
+        </input>
+        <input generated="true" name="fs">
+            <origin origin_name="fs" origin_location="delete_generated_src" generated="true"/>
+            <origin origin_name="fs" origin_location="remove_generated_XML" generated="true"/>
+            <origin origin_name="fs" origin_location="validate_XML" generated="true"/>
+        </input>
+        <input generated="true" name="exec">
+            <origin origin_name="exec" origin_location="validate_XML" generated="true"/>
+        </input>
+        <input generated="true" name="path">
+            <origin origin_name="path" origin_location="delete_generated_src" generated="true"/>
+            <origin origin_name="path" origin_location="remove_generated_XML" generated="true"/>
+            <origin origin_name="path" origin_location="validate_XML" generated="true"/>
+        </input>
+        <input generated="true" name="cheerio">
+            <origin origin_name="cheerio" origin_location="remove_generated_XML" generated="true"/>
+        </input>
+        <input name="xml_files" side-effect="true" generated="true">
             <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
-        <origin origin_name="xml_files" origin_location="delete_generated_src" generated="true"/><origin origin_name="xml_files" origin_location="remove_generated_XML" generated="true"/><origin origin_name="xml_files" origin_location="validate_XML" generated="true"/></input></inputs>
+            <origin origin_name="xml_files" origin_location="delete_generated_src" generated="true"/>
+            <origin origin_name="xml_files" origin_location="remove_generated_XML" generated="true"/>
+            <origin origin_name="xml_files" origin_location="validate_XML" generated="true"/>
+        </input>
+    </inputs>
     <outputs>
-        
-        
-        
-        
-    <output generated="true" name="validate_XML_dep"><origin origin_name="validate_XML_dep" origin_location="validate_XML" generated="true"/></output><output name="deleted_src_files" side-effect="true" generated="true">
+        <output generated="true" name="validate_XML_dep">
+            <origin origin_name="validate_XML_dep" origin_location="validate_XML" generated="true"/>
+        </output>
+        <output name="deleted_src_files" side-effect="true" generated="true">
             <description>It deletes all the generated src files.</description>
-        <origin origin_name="deleted_src_files" origin_location="delete_generated_src" generated="true"/></output><output name="cleaned_xml_files" side-effect="true" generated="true">
+            <origin origin_name="deleted_src_files" origin_location="delete_generated_src" generated="true"/>
+        </output>
+        <output name="cleaned_xml_files" side-effect="true" generated="true">
             <description>It saves the cleaned xml_files.</description>
-        <origin origin_name="cleaned_xml_files" origin_location="remove_generated_XML" generated="true"/></output><output name="xml_errors" side-effect="true" generated="true">
+            <origin origin_name="cleaned_xml_files" origin_location="remove_generated_XML" generated="true"/>
+        </output>
+        <output name="xml_errors" side-effect="true" generated="true">
             <description>It prints possible xml errors.</description>
-        <origin origin_name="xml_errors" origin_location="validate_XML" generated="true"/></output></outputs>
-    
-<graph generated="true"> <node fn_name="remove_generated_XML"><output name="remove_generated_XML_dep"> <end_point fn_name="validate_XML" dependency="true"/></output></node><node fn_name="validate_XML"/><node fn_name="delete_generated_src"><output name="delete_generated_src_dep"> <end_point fn_name="validate_XML" dependency="true"/></output></node></graph></root>
+            <origin origin_name="xml_errors" origin_location="validate_XML" generated="true"/>
+        </output>
+    </outputs>
+    <graph generated="true">
+        <node fn_name="remove_generated_XML">
+            <output name="remove_generated_XML_dep">
+                <end_point fn_name="validate_XML" dependency="true"/>
+            </output>
+        </node>
+        <node fn_name="validate_XML"/>
+        <node fn_name="delete_generated_src">
+            <output name="delete_generated_src_dep">
+                <end_point fn_name="validate_XML" dependency="true"/>
+            </output>
+        </node>
+    </graph>
+</root>

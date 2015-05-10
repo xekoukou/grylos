@@ -10,11 +10,11 @@
         <input name="xml_files" side-effect="true">
             <description>It is provided all the xml files of the source_path directory and its subdirectories.</description>
         </input>
-        
-        
-        
-        
-    <input generated="true" name="mr_file_paths"/><input generated="true" name="graphs"/><input generated="true" name="check_same_output_name_dep"/><input generated="true" name="dep_2"/></inputs>
+        <input generated="true" name="mr_file_paths"/>
+        <input generated="true" name="graphs"/>
+        <input generated="true" name="check_same_output_name_dep"/>
+        <input generated="true" name="dep_2"/>
+    </inputs>
     <outputs>
         <output name="filled_xml_files" side-effect="true">
             <description>It saves the xml files with the additional generated content.</description>
