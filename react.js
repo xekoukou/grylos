@@ -409,10 +409,14 @@ if (gen_all) {
                                         if (xar == "a") {
                                             function_name.properties.asynchronous = "true";
                                         } else {
-                                            console.log("Error: There is no option '" + xar + "' for a function");
-                                            console.log("File: " + mr_file_paths[index]);
-                                            console.log("Function Name: " + value[0]);
-                                            process.exit(1);
+                                            if (xar == "o") {
+                                                function_name.properties.ordered = "true";
+                                            } else {
+                                                console.log("Error: There is no option '" + xar + "' for a function");
+                                                console.log("File: " + mr_file_paths[index]);
+                                                console.log("Function Name: " + value[0]);
+                                                process.exit(1);
+                                            }
                                         }
                                     }
                                 }
@@ -1572,6 +1576,8 @@ $("outputs output").each(function() {
 
             });
         }
+        //TODO remove 
+        console.log("Starting_points:\n" + JSON.stringify(starting_points, null, 4));
 
         //////////////////////////////////////////////////////////////////
         //find_node_properties
@@ -1606,6 +1612,9 @@ $("outputs output").each(function() {
                     }
                     if ($(this).attr("asynchronous") == "true") {
                         node.asynchronous = "true";
+                    }
+                    if ($(this).attr("ordered") == "true") {
+                        node.ordered = "true";
                     }
 
                     node_properties[set_cpath(child, 0, child.length - 1)] = node;
@@ -2260,7 +2269,8 @@ $("outputs output").each(function() {
 
 
 
-    //TODO remove     console.log(JSON.stringify(thread_starting_points_v2, null, 4));
+    //TODO remove    
+    console.log("Thread_starting_points:\n" + JSON.stringify(thread_starting_points_v2, null, 4));
     //TODO remove    
     console.log("Flattened Graph:\n" + JSON.stringify(flattened_graph_v4, null, 4));
 
@@ -2269,6 +2279,7 @@ $("outputs output").each(function() {
     //order_nodes
     var ordered_set;
     ////////////// 
+    flattened_graph_l = JSON.parse(JSON.stringify(flattened_graph_v4));
 
 
     //It returns the index of the last string that they have the same.
@@ -2285,7 +2296,6 @@ $("outputs output").each(function() {
     }
 
     //A way to check whether a string is contained inside an array.
-    //TODO Unnessary To be removed
     function contains(array, item) {
         var contains = false;
         array.forEach(function(each) {
@@ -2460,7 +2470,7 @@ $("outputs output").each(function() {
         };
 
         while (true) {
-            var node = flattened_graph_v4[keys[i]];
+            var node = flattened_graph_l[keys[i]];
             var diff = compare(node.pointer, prefix_pointer);
 
 
@@ -2473,7 +2483,7 @@ $("outputs output").each(function() {
 
                     //Add the node code into the source file.
                     var lograph = traverse_ordered_graph(ordered_graph, node.pointer.slice(0, node.pointer.length - 1));
-                    lograph.set.push(generate_src_add_node(node.pointer, set_id, flattened_graph_v4, leveled_graph));
+                    lograph.set.push(generate_src_add_node(node.pointer, set_id, flattened_graph_l, leveled_graph));
 
                     //Mark it by removing the passed property.
                     delete node.properties.passed;
@@ -2482,7 +2492,7 @@ $("outputs output").each(function() {
                     Object.keys(node.outputs).forEach(function(vname) {
                         node.outputs[vname].forEach(function(item) {
                             var cpath = set_cpath(item.end_pointer, 0, item.end_pointer.length - 1);
-                            var node = flattened_graph_v4[cpath];
+                            var node = flattened_graph_l[cpath];
 
                             //node must be in the same thread/subgraph.
                             if (node.properties.set == set_id) {
@@ -2529,7 +2539,7 @@ $("outputs output").each(function() {
                     var lgraph = traverse_leveled_graph(leveled_graph, node.pointer.slice(0, prefix_pointer.length + 1));
                     Object.keys(lgraph.inputs).forEach(function(nvalue) {
                         var cpath = set_cpath(lgraph.inputs[nvalue].origin_pointer, 0, lgraph.inputs[nvalue].origin_pointer.length - 1);
-                        var input_node = flattened_graph_v4[cpath];
+                        var input_node = flattened_graph_l[cpath];
                         if (("passed" in input_node.properties) && (input_node.properties.set_id == set_id)) {
                             missing_dependencies = true;
                         }
@@ -2651,7 +2661,7 @@ $("outputs output").each(function() {
 
     Object.keys(ordered_set).forEach(function(set_id) {
         var ordered_graph = ordered_set[set_id];
-        ordered_graph_complete([""], ordered_graph, leveled_graph, flattened_graph_v4);
+        ordered_graph_complete([""], ordered_graph, leveled_graph, flattened_graph_l);
     });
     //TODO remove 
     console.log("Ordered_set:\n" + JSON.stringify(ordered_set, null, 4));
@@ -2665,14 +2675,141 @@ $("outputs output").each(function() {
         ////////////////////////////////////////////////////////
         //save_input_to_files
         /////////////////////
-        function save_input_to_files(root_io, source_path, ordered_set, thread_starting_points_v2) {
+        function save_input_to_files(source_path, ordered_set, thread_starting_points, flattened_graph) {
                 fs.writeFileSync(source_path + "/ordered_set.json", JSON.stringify(ordered_set, null, 4));
-                fs.writeFileSync(source_path + "/thread_starting_points.json", JSON.stringify(thread_starting_points_v2, null, 4));
+                fs.writeFileSync(source_path + "/thread_starting_points.json", JSON.stringify(thread_starting_points, null, 4));
+                fs.writeFileSync(source_path + "/flattened_graph.json", JSON.stringify(flattened_graph, null, 4));
             }
             ///////////////////////////////////////////////////////////////////
-            //TODO To be moved into the single_use function generate_src
-            //index_functions
-        function index_functions(source_path, fs, path, root_io, prog_lang, thread_starting_points_v2, ordered_set) {
+            //TODO To be moved into the single_use function
+            //generate_src
+        function generate_src(source_path, flattened_graph, fs, starting_points, path, prog_lang, thread_starting_points, ordered_set) {
+
+                ///////////////////////////////////////////////////////////////////////////////////
+                //reusable functions
+                ////////////////
+
+                //clean_function_names
+                ///////////////////////////
+                function clean_function_names(prog_lang, functions) {
+                    var cleaned_functions = [];
+                    var keywords;
+                    switch (prog_lang) {
+                        case "js_browser":
+                            keywords = {
+                                "catch": true,
+                                "for": true,
+                                "function": true,
+                                "if": true,
+                                "switch": true,
+                                "while": true,
+                                "console.log": true
+                            };
+                            break;
+                        case "rust":
+                            break;
+
+                    }
+
+                    functions.forEach(function(fn) {
+
+                        if (!(fn[0] in keywords)) {
+                            cleaned_functions.push(fn);
+                        }
+                    });
+                    return cleaned_functions;
+                }
+
+                //src_fext
+                //////////////////
+                function src_fext(prog_lang) {
+                        switch (prog_lang) {
+                            case "rust":
+                                return ".rs";
+                            case "JavaScript":
+                            case "js_browser":
+                                return ".js";
+                        }
+
+                    }
+                    ////////////////////////////////////////////////////////////////
+                    //traverse_f_index
+                    //////////////////
+                    // Pointer is of the form [[type,name,normal_pointer],[]] where the original element is always from the main flattened graph while
+                    // the others are of type single_use or reusable.
+
+                function traverse_f_index(f_index, pointer) {
+                    var sp = f_index;
+
+                    pointer.forEach(function(item) {
+                        var type = item[0];
+                        var sname = item[1];
+                        var npointer = item[2];
+                        if (type != "main") {
+                            sp = sp[type][sname];
+                        }
+                        for (var i = 1; i < npointer.length; i++) {
+                            sp = sp["set"][npointer[i]];
+                        }
+                    });
+                    return sp;
+                }
+
+
+
+                //////////////////////////////////////////////////////////////////
+                //search_f_index
+                /////////////////
+                function search_f_index(f_index, name, pointer, dynamic) {
+                    var sp_array = [];
+
+                    var sp = f_index;
+                    var lpointer = [];
+                    pointer.forEach(function(item) {
+                        var type = item[0];
+                        var sname = item[1];
+                        var npointer = item[2];
+                        if (type != "main") {
+                            sp = sp[type][sname];
+                        }
+                        sp_array.push([sp, [
+                            [type, sname, [""]]
+                        ]]);
+                        var lnpointer = [];
+                        for (var i = 1; i < npointer.length; i++) {
+                            lnpointer.push(npointer[i]);
+                            sp = sp["set"][npointer[i]];
+                            sp_array.push([sp, lpointer.slice().push([type, sname, lnpointer.slice(0)])]);
+                        };
+                        lnpointer = lpointer.slice().push([type, sname, lnpointer.slice(0)]);
+
+                    });
+
+                    //search from the bottom since closer functions shadow earlier definitions.
+                    var result = null;
+                    while (sp_array.length > 0) {
+                        spa = sp_array.pop();
+                        if (dynamic != true) {
+                            ["single_use", "reusable"].forEach(function(item) {
+                                if (name in spa[0][item]) {
+                                    result = [item, spa];
+                                }
+                            });
+                        } else {
+                            if (name in spa[0]["dynamic"]) {
+                                result = [item, spa];
+                            }
+                        }
+
+                    }
+                    return result;
+
+                }
+
+                ///////////////////////////////////////////////////////////////////
+
+                //////////////////////////////////////////////////////////////////// 
+                //index_functions
                 var f_index;
                 //////////////////
 
@@ -2683,7 +2820,8 @@ $("outputs output").each(function() {
                     "single_use": {},
                     "dynamic": {},
                     "ordered_set": ordered_set,
-                    "thread_starting_points": thread_starting_points_v2
+                    "flattened_graph": flattened_graph,
+                    "thread_starting_points": thread_starting_points
                 };
 
                 function traverse_leveled_set(leveled_set, pointer) {
@@ -2696,55 +2834,60 @@ $("outputs output").each(function() {
 
                 //Recursive function that indexes functions(reusable,single_use,dynamic)
 
-                function index_functions_rec(cpath, folder, leveled_set, position) {
-                    try {
-                        var lset = traverse_leveled_set(leveled_set, position);
-                        var files = fs.readdirSync(cpath + "/" + folder);
-                        files.forEach(function(file, index, files) {
-                            var stat = fs.statSync(cpath + "/" + folder + "/" + file);
+                function index_functions_rec(cpath, leveled_set, position) {
+                    var functions = [
+                        "reusable",
+                        "dynamic",
+                        "single_use"
+                    ];
+                    var lset = traverse_leveled_set(leveled_set, position);
+                    functions.forEach(function(folder) {
+                        try {
+                            var files = fs.readdirSync(cpath + "/" + folder);
+                            files.forEach(function(file, index, files) {
+                                var stat = fs.statSync(cpath + "/" + folder + "/" + file);
 
-                            if (stat.isFile()) {
+                                if (stat.isFile()) {
 
-                                if (path.extname(file) == ".xml") {
-                                    //TODO find the functions of this function
-                                    var f_leveled_set = {
-                                        "set": {},
-                                        "reusable": {},
-                                        "single_use": {},
-                                        "dynamic": {}
-                                    };
-                                    try {
-                                        f_leveled_set.ordered_set = JSON.parse(
-                                            fs.readFileSync(cpath + "/" + folder + "/" + file.substring(0, file.length - 4) + "/ordered_set.json", {
-                                                encoding: "utf-8"
-                                            }));
-                                        f_leveled_set.thread_starting_points = JSON.parse(
-                                            fs.readFileSync(cpath + "/" + folder + "/" + file.substring(0, file.length - 4) + "/thread_starting_points.json", {
-                                                encoding: "utf-8"
-                                            }));
-                                    } catch (e) {
+                                    if (path.extname(file) == ".xml") {
+                                        //TODO find the functions of this function
+                                        var f_leveled_set = {
+                                            "numbers": 0,
+                                            "set": {},
+                                            "reusable": {},
+                                            "single_use": {},
+                                            "dynamic": {}
+                                        };
+                                        try {
+                                            f_leveled_set.ordered_set = JSON.parse(
+                                                fs.readFileSync(cpath + "/" + folder + "/" + file.substring(0, file.length - 4) + "/ordered_set.json", {
+                                                    encoding: "utf-8"
+                                                }));
+                                            f_leveled_set.thread_starting_points = JSON.parse(
+                                                fs.readFileSync(cpath + "/" + folder + "/" + file.substring(0, file.length - 4) + "/thread_starting_points.json", {
+                                                    encoding: "utf-8"
+                                                }));
+                                            f_leveled_set.flattened_graph = JSON.parse(
+                                                fs.readFileSync(cpath + "/" + folder + "/" + file.substring(0, file.length - 4) + "/flattened_graph.json", {
+                                                    encoding: "utf-8"
+                                                }));
+                                        } catch (e) {
 
-                                        console.log("Error: " + cpath + "/" + folder + "/" + file.substring(0, file.length - 4));
-                                        console.log("Missing ordered_set/thread_starting_points files.");
-                                        process.exit(1);
+                                            console.log("Error: " + cpath + "/" + folder + "/" + file.substring(0, file.length - 4));
+                                            console.log("Missing ordered_set/thread_starting_points files.");
+                                            process.exit(1);
 
+                                        }
+
+                                        index_functions_rec(cpath + "/" + folder + "/" + file.substring(0, file.length - 4), f_leveled_set, [""]);
+                                        lset[folder][file.substring(0, file.length - 4)] = f_leveled_set;
                                     }
-
-                                    var functions = [
-                                        "reusable",
-                                        "dynamic",
-                                        "single_use"
-                                    ];
-                                    functions.forEach(function(sec_folder) {
-                                        index_functions_rec(cpath + "/" + folder + "/" + file.substring(0, file.length - 4), sec_folder, f_leveled_set, [""]);
-                                    });
-                                    lset[folder][file.substring(0, file.length - 4)] = f_leveled_set;
                                 }
-                            }
-                        });
-                    } catch (e) {
-                        return;
-                    }
+                            });
+                        } catch (e) {
+                            return;
+                        }
+                    });
 
 
                     var files = fs.readdirSync(cpath);
@@ -2758,42 +2901,187 @@ $("outputs output").each(function() {
                                 "single_use": {},
                                 "dynamic": {}
                             };
-                            index_functions_rec(cpath + "/" + file, folder, position.slice().push(file));
+                            index_functions_rec(cpath + "/" + file, leveled_set, position.slice().push(file));
                         }
                     });
                 }
 
 
-                var functions = [
-                    "reusable",
-                    "dynamic",
-                    "single_use"
-                ];
-                functions.forEach(function(folder) {
-                    index_functions_rec(source_path, folder, f_index, [""]);
-                });
+                index_functions_rec(source_path, f_index, [""]);
 
 
                 //TODO remove      
                 console.log("f_index: \n" + JSON.stringify(f_index, null, 4));
-                //TODO remove
-                return f_index;
+
+                /////////////////////////////////////////////////////////////
+                //Find_functions
+                //////////////////
+                f_index_v2 = JSON.parse(JSON.stringify(f_index));
+
+                function f_index_function_src_rec(source_path, prog_lang, f_index, s_pointer, new_graph) {
+                    var lf_index = traverse_f_index(f_index, s_pointer);
+
+                    Object.keys(lf_index.set).forEach(function(name) {
+                        var npointer = s_pointer.slice();
+                        for (var i = 0; i < npointer.length; i++) {
+                            npointer[i] = s_pointer[i].slice();
+                            npointer[i][2] = s_pointer[i][2].slice();
+                        }
+                        npointer[npointer.length - 1][2].push(name);
+                        f_index_function_src_rec(source_path, prog_lang, f_index, npointer, false);
+                    });
+                    ["single_use", "dynamic", "reusable"].forEach(function(fn) {
+                        Object.keys(lf_index[fn]).forEach(function(name) {
+                            var npointer = s_pointer.slice();
+                            for (var i = 0; i < npointer.length; i++) {
+                                npointer[i] = s_pointer[i].slice();
+                                npointer[i][2] = s_pointer[i][2].slice();
+                            }
+                            npointer.push([fn, name, [""]]);
+                            f_index_function_src_rec(source_path, prog_lang, f_index, npointer, true);
+                        });
+                    });
+                    if (new_graph) {
+                        var ppath = source_path;
+                        s_pointer.forEach(function(each) {
+                            if (each[0] != "main") {
+                                ppath += "/" + each[0] + "/" + each[1];
+                            }
+                            ppath += set_cpath(each[2], 0, each[2].length - 1);
+                        });
+
+                        var flattened_graph = lf_index.flattened_graph;
+
+                        Object.keys(flattened_graph).forEach(function(cpath) {
+                            var node = flattened_graph[cpath];
+                            s_pointer[s_pointer.length - 1][2] = node.pointer.slice(0, -1);
+                            var node_fn_name = node.pointer[node.pointer.length - 1];
+
+                            lf_index = traverse_f_index(f_index, s_pointer);
+                            if (!("nodes" in lf_index)) {
+                                lf_index.nodes = {};
+                            }
+                            lf_index.nodes[node_fn_name] = {
+                                "bt": {
+                                    "reusable": {},
+                                    "dynamic": {},
+                                    "single_use": {}
+                                },
+                                "at": {
+                                    "reusable": {},
+                                    "dynamic": {},
+                                    "single_use": {}
+                                }
+                            };
+
+                            //We search the function names in the source code and search them with our s_pointer.
+                            var source_file = fs.readFileSync(ppath + cpath + src_fext(prog_lang), {
+                                encoding: "utf-8"
+                            });
+
+                            //Split between regular single thread functions and tail functions.
+                            var s_split = source_file.split("!tail!");
+
+                            //Search all functions.
+                            var bt_source = s_split[0];
+
+                            var bt_functions = [];
+                            var regex = /(DYN\s+|\s*)(.+)\s*\((.+)\)/g;
+                            var match;
+                            while (match = regex.exec(bt_source)) {
+                                bt_functions.push([match[2], match[3].replace(/\s+/g, "").split(","), match[1].trim() == "DYN"]);
+                                console.log(match[1]);
+                                console.log(match[2]);
+                                console.log(match[3]);
+                                console.log(match[3].replace(/\s+/g, "").split(","));
+                            }
+
+                            bt_functions = clean_function_names(prog_lang, bt_functions);
+                            bt_functions.forEach(function(fn) {
+                                //TODO remove   
+                                console.log(fn);
+                                var result = search_f_index(f_index, fn[0], s_pointer, fn[2]);
+                                if (result != null) {
+                                    lf_index.nodes[node_fn_name]["bt"][result[0]][fn[0]] = [fn[1], result[1]];
+                                    var sp = traverse_f_index(f_index, result[1][1]);
+                                    sp[result[0]][fn[0]].counter++;
+                                }
+
+                                //TODO remove
+                                console.log(result);
+                            });
+                            if (s_split.length == 2) {
+                                var at_source = s_split[1];
+
+                                var at_functions = [];
+                                var match;
+                                while (match = regex.exec(at_source)) {
+                                    at_functions.push([match[2], match[3].replace(/\s+/g, "").split(","), match[1].trim() == "DYN"]);
+                                }
+                                at_functions = clean_function_names(prog_lang, at_functions);
+                                at_functions.forEach(function(fn) {
+                                    //TODO remove
+                                    console.log(fn);
+                                    var result = search_f_index(f_index, fn[0], s_pointer, fn[2]);
+
+                                    if (result != null) {
+                                        lf_index.nodes[node_fn_name]["at"][result[0]][fn[0]] = [fn[1], result[1]];
+                                        var sp = traverse_f_index(f_index, result[1][1]);
+                                        sp[result[0]][fn[0]].counter++;
+                                    }
+
+                                    //TODO remove
+                                    console.log(result);
+                                });
+                            }
+
+                            //TODO print an error if multiple tails exist.
+
+
+                        });
+                    }
+
+                }
+
+                f_index_function_src_rec(source_path, prog_lang, f_index_v2, [
+                    ["main", "", [""]]
+                ], true);
+
+
+
+                ///////////////////////////////////////////////////////////////////////////////
+                //check_deterministic_mutation_losslessness
+                //////////////
+
+
+
+
+
+
+
+
+
+                ////////////////////////////////////////////////////////////
             }
-            //end of single_use
             //////////////////////////////////////////////////////////
-            //if_root_io
-            ///////////////
+            //generate_src
+            //////////////////////
+
+
+        //end of single_use
+        //////////////////////////////////////////////////////////
+        //if_root_io
+        ///////////////
 
         //TODO
         //!tail!
         switch (root_io) {
             case true:
-                save_input_to_files(root_io, source_path, ordered_set, thread_starting_points_v2);
+                save_input_to_files(source_path, ordered_set, thread_starting_points_v2, flattened_graph_v4);
                 break;
             case false:
                 //TODO remove this with the generate_src single_use function
-                var f_index = index_functions(source_path, fs, path, root_io, prog_lang, thread_starting_points_v2, ordered_set);
-
+                generate_src(source_path, flattened_graph_v4, fs, starting_points, path, prog_lang, thread_starting_points_v2, ordered_set);
                 break;
 
         }

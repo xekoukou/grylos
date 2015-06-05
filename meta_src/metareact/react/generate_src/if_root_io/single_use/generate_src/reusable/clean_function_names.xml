@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<root>
+    <info>
+        <name> clean_function_names </name>
+        <description> It removes function names that are reserved words for the specific language.  </description>
+    </info>
+    <inputs>
+        <input name="prog_lang"/>
+        <input name="function_names"/>
+    </inputs>
+    <outputs>
+        <output name="cleaned_function_names"/>
+    </outputs>
+</root>

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<root>
+    <info>
+        <name> check_deterministic_mutation_losslessness </name>
+        <description> It checks whether the mutation to a single variable is done deterministically. It also checks whether a single_use or reusable function have lossless/historical/ordered requirements </description>
+    </info>
+    <inputs>
+        <outputs>
+            <output name="check_fail" side-effect="true"/>
+        </outputs>
+    </inputs>
+</root>

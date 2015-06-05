@@ -160,3 +160,20 @@ For data with the passive property, RwLock them.
 --------------------------------------------------
 In place mutation can happen if it is encapsulated in a function or as long as there the set of functions that mutate the data are strictly ordered.
 non-encapsulated mutation needs to be at a different thread so that we can have read references.
+
+-----------------------------------------------------------------
+IMPORTANT
+
+The historical property assumes the ordered lossless input.
+
+The lossless property assumes only the lossless input.
+
+An ordered side-effect assumes an ordered input.
+
+IMPORTANT
+
+The format for dynamic linking into multiple endpoints:
+
+DYN function_name([path,endpoint_name],..)
+
+We need to check that we have specified this path,endpoint with "e".

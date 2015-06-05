@@ -6,10 +6,12 @@
     </info>
     <inputs>
         <input name="source_path"/>
+        <input name="starting_points"/>
+        <input name="flattened_graph"/>
         <input name="fs"/>
         <input name="path"/>
         <input name="prog_lang"/>
-        <input name="thread_starting_points_v2"/>
+        <input name="thread_starting_points"/>
         <input name="ordered_set"/>
         <input name="ordered_set_files" side-effect="true"/>
         <input name="thread_starting_points_files" side-effect="true"/>

@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<root>
+    <info>
+        <name> src_fext </name>
+        <description> It returns the extension of the corresponding language.  </description>
+    </info>
+    <inputs>
+        <input name="prog_lang"/>
+    </inputs>
+    <outputs>
+        <output name="fext"/>
+    </outputs>
+</root>

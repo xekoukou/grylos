@@ -1,5 +1,2 @@
-index_functions           check_deterministic_mutation                generate_src
-      |-------(f_index)------|--(check_deterministic_mutation_d)--d-------|
-      |
-      |             determine_historicity_losslessness
-      |--(f_index)-----|
+index_functions            find_functions      check_deterministic_mutation_losslessness    generate_src
+      |-------(f_index)------|--(f_index_v2)------|---------(checks)--d---------------------|
