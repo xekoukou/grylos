@@ -174,6 +174,7 @@ IMPORTANT
 
 The format for dynamic linking into multiple endpoints:
 
-DYN function_name([path,endpoint_name],..)
+DYN function_name([name,path,endpoint_name],..)  name = main_function if attaching to main_function graph or DYN if attaching to another DYN function of this main_function.
+We can only attach to the current single_use/reusable/main graph or its dynamic functions. The reason is that single_use and reusable functions can be used in if statements. 
 
 We need to check that we have specified this path,endpoint with "e".

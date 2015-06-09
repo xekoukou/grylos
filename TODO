@@ -13,3 +13,5 @@
 11. Fix the bugs on the input_external_var on the order_nodes functions. Possibly split the generation of this information to multiple functions. (Push that after the check_deterministic mutation because then we propagate the mutation property to the correct edges.)
 
 12. No loops with historical values.
+
+13. bt functions should not have mutable variables or they should be ignored with a warning.

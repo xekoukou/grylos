@@ -2153,6 +2153,24 @@ $("outputs output").each(function() {
                         break;
                     }
                 }
+                //Check that there are no mutable inputs from the previous thread. At the moment, we only check that the input doesn't have the _v(number) at the end.
+                //TODO We need to find a better way at idenitfying the mutable dependencies. Here there might be false possitivies.
+                Object.keys(thread_starting_points_v2[origin_subgraph][end_subgraph]).forEach(function(cpath) {
+                    var node = flattened_graph_v4[cpath];
+                    Object.keys(node.inputs).forEach(function(e_input_name) {
+                        if (e_input_name.match(/_v\d+$/) != null) {
+                            var o_pointer = node.inputs[e_input_name].origin_pointer;
+                            var o_path = set_cpath(o_pointer, 0, o_pointer.length - 1);
+                            var o_node = flattened_graph[o_path];
+                            if (o_node.properties.set == origin_subgraph) {
+                                mergable == false;
+                            }
+
+                        }
+                    });
+                });
+
+
                 if (mergable) {
                     merge_set.push({
                         "o": origin_subgraph,
@@ -3051,10 +3069,171 @@ $("outputs output").each(function() {
 
                 ///////////////////////////////////////////////////////////////////////////////
                 //check_deterministic_mutation_losslessness
-                //////////////
+                ///////////////
+
+                function check_iterate(f_index) {
+                    var flattened_graph = f_index.flattened_graph;
+
+                    Object.keys(flattened_graph).forEach(function(cpath) {
+                        var node = flattened_graph[cpath];
+                        Object.keys(node.outputs).forEach(function(vname) {
+                            node.outputs[vname].forEach(function(item) {
+                                if ("mutable" in item.properties) {
+
+                                    if (vname.match(/_v1$/) == null) {
+                                        console.log("Error:Mutable output variable whose name is not in the form (name)_v1");
+                                        console.log("Path: " + pointer.cpath);
+                                        console.log("name: " + vname);
+                                        process.exit(1);
+                                    }
+
+                                    check_mutability_rec(f_index, cpath, node.propeties.set, vname.slice(0, -3), 0);
+                                }
+                            });
+                        });
+                    });
+
+                        //Continuing the search inside the source code of the node.
+                        ["reusable", "single_use", "dynamic"].forEach(function(fn_type) {
+                            Object.keys(f_index[fn_type]).forEach(function(fn) {
+				    //TODO recursively iterate here
+				    //TODO check the inputs of the function to find if they are mutable.
+                            });
+                        });
+                 
+
+                }
+
+		//TODO Remove this function.
+                function search_mutability_rec(f_index, lf_index) {
+
+                    var flattened_graph = lf_index.flattened_graph;
+                    var thread_starting_points = lf_index.flattened_graph;
+                    var pointers = [];
+                    Object.keys(thread_starting_points[-1]).forEach(function(key) {
+                        Object.keys(thread_starting_points[-1][key]).forEach(function(cpath) {
+                            pointers.push({
+                                "cpath": cpath,
+                                "set": key,
+                            });
+                        });
+                    });
+
+                    while (pointers.length > 0) {
+                        var pointer = pointers.pop();
+                        var node = flattened_graph[pointer.cpath];
+                        var fn_name = node.pointer[node.pointer.length - 1];
+
+
+                        Object.keys(node.outputs).forEach(function(vname) {
+                            var mutable = false;
+                            node.outputs[vname].forEach(function(item) {
+                                if (item.properties.mutable == true) {
+                                    mutable = true;
+                                }
+                                var ncpath = set_cpath(item.end_pointer, 0, item.end_pointer.length - 1);
+                                var nnode = flattened_graph[ncpath];
+
+                                //Continuing the search across all outputs
+                                pointers.push({
+                                    "cpath": ncpath,
+                                    "set": nnode.properties.set
+                                });
+
+                            });
+                            if (mutable) {
+                                if (vname.match(/_v1$/) == null) {
+                                    console.log("Error:Mutable output variable whose name is not in the form (name)_v1");
+                                    console.log("Path: " + pointer.cpath);
+                                    console.log("name: " + vname);
+                                    process.exit(1);
+                                }
+                                //Check mutability correctness
+                                check_mutability_rec(f_index, lf_index, pointer.cpath, pointer.set, 0);
+                            }
+                        });
+
+
+                        //Continuing the search inside the source code of the node.
+                        ["reusable", "single_use", "dynamic"].forEach(function(fn_type) {
+                            var nlf_index = lf_index.nodes[fn_name].at[fn_type];
+                            Object.keys(nlf_index).forEach(function(src_fn) {
+                                search_mutability_rec(f_index, nlf_index);
+                            });
+                        });
+
+
+                    }
+
+
+                }
+
+
+                function check_mutability_rec(f_index, cpath, set, vname, version) {
+                    var flattened_graph = f_index.flattened_graph;
+                    var node = flattened_graph[cpath];
+                    var fn_name = node.pointer[node.pointer.length - 1];
+
+                    //Check that the node belongs to a different thread subgraph.
+                    if (node.properties.set == set) {
+                        console.log("Error: Mutable variable has 2 functions/nodes in the same thread subgraph.");
+                        console.log("Path: " + cpath);
+                        console.log("name: " + vname);
+                        process.exit(1);
+                    }
+
+                    //Go inside the source_code.
+                    ["reusable", "single_use"].forEach(function(fn_type) {
+                        var temp = f_index.nodes[fn_name].at[fn_type];
+                        Object.keys(temp).forEach(function(src_fn) {
+                            temp[src_fn][0].forEach(function(fn_var) {
+                                if (fn_var == vname) {
+
+                                    //Log that this function can indeed get the mutable var from the previous level.
+                                    if (temp[src_fn].length < 2) {
+                                        temp[src_fn].push({
+                                            "mutable": {}
+                                        });
+                                    }
+                                    temp[src_fn][1]["mutable"][fn_var] = true;
+                                }
+                            });
+
+                        });
+                    });
+
+
+                    //Traverse the graph.
+                    Object.keys(node.outputs).forEach(function(name) {
+                        var regex = new RegExp("/" + vname + "_v(\d+)$/");
+                        var match = name.match(regex);
+                        if (match != null) {
+                            if (match[1] != version) {
+                                console.log("Error:Mutable output variable has incorrect version");
+                                console.log("Path: " + cpath);
+                                console.log("name: " + name);
+                                console.log("It should have been: " + vname + "_v" + version);
+                                process.exit(1);
+                            }
+                            if (node.outputs[name].length > 1) {
+                                console.log("Error: Mutable variable has multiple output end points.");
+                                console.log("Path: " + cpath);
+                                console.log("name: " + name);
+                                process.exit(1);
+
+                            }
+                            node.outputs[name].forEach(function(item) {
+                                var ncpath = set_cpath(item.end_pointer, 0, item.end_pointer.length - 1);
+                                check_mutability_rec(f_index, ncpath, node.properties.set, vname, version + 1);
+
+                            });
+                        }
+                    });
 
 
 
+
+                }
 
 
 
