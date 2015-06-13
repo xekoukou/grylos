@@ -2803,10 +2803,22 @@ fs.writeFileSync(source_path + "/root_in_out.json", JSON.stringify(root_in_out, 
 
                     }
                     ////////////////////////////////////////////////////////////////
-                    //traverse_f_index
+                    //s_pointer_dup
                     //////////////////
-                    // Pointer is of the form [[type,name,normal_pointer],[]] where the original element is always from the main flattened graph while
-                    // the others are of type single_use or reusable.
+
+                function s_pointer_dup(s_pointer) {
+                    var npointer = s_pointer.slice();
+                    for (var i = 0; i < npointer.length; i++) {
+                        npointer[i] = s_pointer[i].slice();
+                        npointer[i][2] = s_pointer[i][2].slice();
+                    }
+                    return npointer;
+                }
+
+                //traverse_f_index
+                //////////////////
+                // Pointer is of the form [[type,name,normal_pointer],[]] where the original element is always from the main flattened graph while
+                // the others are of type single_use or reusable.
 
                 function traverse_f_index(f_index, pointer) {
                     var sp = f_index;
@@ -2922,7 +2934,10 @@ fs.writeFileSync(source_path + "/root_in_out.json", JSON.stringify(root_in_out, 
                                     if (path.extname(file) == ".xml") {
                                         //TODO find the functions of this function
                                         var f_leveled_set = {
-                                            "counter": 0,
+                                            "used_by": {
+                                                "bt": [],
+                                                "at": []
+                                            },
                                             "set": {},
                                             "reusable": {},
                                             "single_use": {},
@@ -2990,27 +3005,20 @@ fs.writeFileSync(source_path + "/root_in_out.json", JSON.stringify(root_in_out, 
                 /////////////////////////////////////////////////////////////
                 //Find_functions
                 //////////////////
+
                 f_index_v2 = JSON.parse(JSON.stringify(f_index));
 
                 function f_index_function_src_rec(source_path, prog_lang, f_index, s_pointer, new_graph) {
                     var lf_index = traverse_f_index(f_index, s_pointer);
 
                     Object.keys(lf_index.set).forEach(function(name) {
-                        var npointer = s_pointer.slice();
-                        for (var i = 0; i < npointer.length; i++) {
-                            npointer[i] = s_pointer[i].slice();
-                            npointer[i][2] = s_pointer[i][2].slice();
-                        }
+                        var npointer = s_pointer_dup(s_pointer);
                         npointer[npointer.length - 1][2].push(name);
                         f_index_function_src_rec(source_path, prog_lang, f_index, npointer, false);
                     });
                     ["single_use", "dynamic", "reusable"].forEach(function(fn) {
                         Object.keys(lf_index[fn]).forEach(function(name) {
-                            var npointer = s_pointer.slice();
-                            for (var i = 0; i < npointer.length; i++) {
-                                npointer[i] = s_pointer[i].slice();
-                                npointer[i][2] = s_pointer[i][2].slice();
-                            }
+                            var npointer = s_pointer_dup(s_pointer);
                             npointer.push([fn, name, [""]]);
                             f_index_function_src_rec(source_path, prog_lang, f_index, npointer, true);
                         });
@@ -3078,7 +3086,8 @@ fs.writeFileSync(source_path + "/root_in_out.json", JSON.stringify(root_in_out, 
                                 if (result != null) {
                                     lf_index.nodes[node_fn_name]["bt"][result[0]][fn[0]] = [fn[1], result[1]];
                                     var sp = traverse_f_index(f_index, result[1]);
-                                    sp[result[0]][fn[0]].counter++;
+                                    var npointer = s_pointer_dup(s_pointer);
+                                    sp[result[0]][fn[0]].used_by.bt.push([node_fn_name, npointer]);
                                 }
 
                                 //TODO remove
@@ -3101,7 +3110,8 @@ fs.writeFileSync(source_path + "/root_in_out.json", JSON.stringify(root_in_out, 
                                     if (result != null) {
                                         lf_index.nodes[node_fn_name]["at"][result[0]][fn[0]] = [fn[1], result[1]];
                                         var sp = traverse_f_index(f_index, result[1]);
-                                        sp[result[0]][fn[0]].counter++;
+                                        var npointer = s_pointer_dup(s_pointer);
+                                        sp[result[0]][fn[0]].used_by.at.push([node_fn_function, npointer]);
                                     }
 
                                     //TODO remove
@@ -3174,8 +3184,23 @@ fs.writeFileSync(source_path + "/root_in_out.json", JSON.stringify(root_in_out, 
 
                                     check_mutability_rec(f_index, cpath, node.properties.set, vname.slice(0, -3), 0);
                                 }
+                                if ("historical" in item.properties) {
+                                    node.properties.ordered = true;
+                                    item.properties.lossless = true;
+                                    propagate_ordered(f_index, cpath);
+                                    //TODO propagate_losslessness();
+                                    //TODO propagate_indirect_historical();  ??
+
+                                }
+                                if ("lossless" in item.properties) {
+                                    //TODO propagate_losslessness();
+                                }
                             });
                         });
+
+                        if ("ordered" in node.properties) {
+                            //TODO propagate_ordered();
+                        }
                     });
 
                     ["reusable", "single_use", "dynamic"].forEach(function(fn_type) {
@@ -3252,6 +3277,15 @@ fs.writeFileSync(source_path + "/root_in_out.json", JSON.stringify(root_in_out, 
                             });
                         }
                     });
+
+
+
+
+                }
+
+
+                function propagate_ordered(f_index, cpath) {
+
 
 
 

@@ -1,8 +1,3 @@
-2.?? asynchronous nodes must be able to be set at lower levels as well.
-
-5. Provide mutatio checks that all mutable varriables execute in deterministic order.
-
-6.  Change the generate src so as to provide info about the mutable varriables.
 
 7. Remove _v(number) from the end.
 
@@ -17,3 +12,5 @@
 13. bt functions should not have mutable variables or they should be ignored with a warning.
 
 14. Provide a check that existence of DYN functions also has a side-effect about it at the xml file.
+
+15. Single_use , reusable, dynamic functions should contain input type info forrust and similar languages.
