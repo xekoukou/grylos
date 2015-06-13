@@ -1380,6 +1380,11 @@ mr_file_paths.forEach(function(item) {
 //check_only_side_effects_exist
 //////////////////////////////
 
+var root_in_out = {
+    "inputs": {},
+    "outputs": {}
+};
+
 var xml_file = fs.readFileSync(source_path + ".xml", {
     encoding: "utf-8"
 });
@@ -1399,6 +1404,29 @@ $("inputs input").each(function() {
             console.log("Name: " + $(this).attr("name"));
             format_XML(source_path);
             process.exit(1);
+        } else {
+            var prop = {};
+            //TODO Some of them would never happen. We need to throw errors on their existence.
+            //Get the edge properties
+            if ($(this).attr("mutable") == "true") {
+                prop.mutable = "true";
+            }
+            if ($(this).attr("historical") == "true") {
+                prop.historical = "true";
+            }
+            if ($(this).attr("dynamic") == "true") {
+                prop.dynamic = "true";
+            }
+            if ($(this).attr("lossless") == "true") {
+                prop.lossless = "true";
+            }
+            if ($(this).attr("dependency") == "true") {
+                prop.dependency = "true";
+            }
+            if ($(this).attr("passive") == "true") {
+                prop.passive = "true";
+            }
+            root_in_out.inputs[$(this).attr("name")] = prop;
         }
     }
 });
@@ -1414,9 +1442,34 @@ $("outputs output").each(function() {
             console.log("Name: " + $(this).attr("name"));
             format_XML(source_path);
             process.exit(1);
+        } else {
+            var prop = {};
+            //TODO Some of them would never happen. We need to throw errors on their existence.
+            //Get the edge properties
+            if ($(this).attr("mutable") == "true") {
+                prop.mutable = "true";
+            }
+            if ($(this).attr("historical") == "true") {
+                prop.historical = "true";
+            }
+            if ($(this).attr("dynamic") == "true") {
+                prop.dynamic = "true";
+            }
+            if ($(this).attr("lossless") == "true") {
+                prop.lossless = "true";
+            }
+            if ($(this).attr("dependency") == "true") {
+                prop.dependency = "true";
+            }
+            if ($(this).attr("passive") == "true") {
+                prop.passive = "true";
+            }
+            root_in_out.outputs[$(this).attr("name")] = prop;
         }
     }
 });
+
+fs.writeFileSync(source_path + "/root_in_out.json", JSON.stringify(root_in_out, null, 4));
 ////////////////////////////////////////////////////////////////////
 //generate_src
 /////////////////
@@ -1826,7 +1879,6 @@ $("outputs output").each(function() {
     var leveled_graph;
     //////////////////////
 
-    //TODO Only the inputs are inserted into the level_graph at the moment.
 
     leveled_graph = {
         set: {},
@@ -2092,20 +2144,20 @@ $("outputs output").each(function() {
                 output.forEach(function(item) {
                     //If the edge is passive, that means that the computation stops here.
                     if (item.properties.passive != "true") {
-                        var prev_pointer = item.end_pointer;
-                        var prev_cpath = set_cpath(prev_pointer, 0, prev_pointer.length - 1);
-                        var prev_node = flattened_graph_v3[prev_cpath];
-                        var prev_set = prev_node.properties.set;
+                        var next_pointer = item.end_pointer;
+                        var next_cpath = set_cpath(next_pointer, 0, next_pointer.length - 1);
+                        var next_node = flattened_graph_v3[next_cpath];
+                        var next_set = next_node.properties.set;
 
-                        if (prev_set != set) {
+                        if (next_set != set) {
                             if (!(set in thread_starting_points)) {
                                 thread_starting_points[set] = {};
                             }
-                            if (!(prev_set in thread_starting_points[set])) {
-                                thread_starting_points[set][prev_set] = {};
+                            if (!(next_set in thread_starting_points[set])) {
+                                thread_starting_points[set][next_set] = {};
                             }
 
-                            thread_starting_points[set][prev_set][cpath] = pointer;
+                            thread_starting_points[set][next_set][next_cpath] = next_pointer;
                         }
 
                         trav_pointers.push(
@@ -2161,9 +2213,9 @@ $("outputs output").each(function() {
                         if (e_input_name.match(/_v\d+$/) != null) {
                             var o_pointer = node.inputs[e_input_name].origin_pointer;
                             var o_path = set_cpath(o_pointer, 0, o_pointer.length - 1);
-                            var o_node = flattened_graph[o_path];
+                            var o_node = flattened_graph_v4[o_path];
                             if (o_node.properties.set == origin_subgraph) {
-                                mergable == false;
+                                mergable = false;
                             }
 
                         }
@@ -2810,12 +2862,12 @@ $("outputs output").each(function() {
                         if (dynamic != true) {
                             ["single_use", "reusable"].forEach(function(item) {
                                 if (name in spa[0][item]) {
-                                    result = [item, spa];
+                                    result = [item, spa[1]];
                                 }
                             });
                         } else {
                             if (name in spa[0]["dynamic"]) {
-                                result = [item, spa];
+                                result = [item, spa[1]];
                             }
                         }
 
@@ -2870,13 +2922,17 @@ $("outputs output").each(function() {
                                     if (path.extname(file) == ".xml") {
                                         //TODO find the functions of this function
                                         var f_leveled_set = {
-                                            "numbers": 0,
+                                            "counter": 0,
                                             "set": {},
                                             "reusable": {},
                                             "single_use": {},
                                             "dynamic": {}
                                         };
                                         try {
+                                            f_leveled_set.root_io = JSON.parse(
+                                                fs.readFileSync(cpath + "/" + folder + "/" + file.substring(0, file.length - 4) + "/root_in_out.json", {
+                                                    encoding: "utf-8"
+                                                }));
                                             f_leveled_set.ordered_set = JSON.parse(
                                                 fs.readFileSync(cpath + "/" + folder + "/" + file.substring(0, file.length - 4) + "/ordered_set.json", {
                                                     encoding: "utf-8"
@@ -3021,7 +3077,7 @@ $("outputs output").each(function() {
                                 var result = search_f_index(f_index, fn[0], s_pointer, fn[2]);
                                 if (result != null) {
                                     lf_index.nodes[node_fn_name]["bt"][result[0]][fn[0]] = [fn[1], result[1]];
-                                    var sp = traverse_f_index(f_index, result[1][1]);
+                                    var sp = traverse_f_index(f_index, result[1]);
                                     sp[result[0]][fn[0]].counter++;
                                 }
 
@@ -3044,7 +3100,7 @@ $("outputs output").each(function() {
 
                                     if (result != null) {
                                         lf_index.nodes[node_fn_name]["at"][result[0]][fn[0]] = [fn[1], result[1]];
-                                        var sp = traverse_f_index(f_index, result[1][1]);
+                                        var sp = traverse_f_index(f_index, result[1]);
                                         sp[result[0]][fn[0]].counter++;
                                     }
 
@@ -3070,9 +3126,38 @@ $("outputs output").each(function() {
                 ///////////////////////////////////////////////////////////////////////////////
                 //check_deterministic_mutation_losslessness
                 ///////////////
+                f_index_v3 = JSON.parse(JSON.stringify(f_index_v2));
 
                 function check_iterate(f_index) {
+
                     var flattened_graph = f_index.flattened_graph;
+
+                    //Check the inputs of the function to find if they are mutable.
+                    var mutable_input_nodes = {};
+                    Object.keys(f_index.thread_starting_points[-1]).forEach(function(key) {
+                        Object.keys(f_index.thread_starting_points[-1][key]).forEach(function(cpath) {
+                            var node = flattened_graph[cpath];
+                            Object.keys(node.inputs).forEach(function(vname) {
+                                if ("mutable" in node.inputs[vname].properties) {
+                                    if (vname in mutable_input_nodes) {
+                                        console.log("Error: Mutable input variable of a function is used by multiple nodes.");
+                                        console.log("Path: " + cpath);
+                                        console.log("name: " + vname);
+                                        process.exit(1);
+                                    } else {
+                                        mutable_input_nodes[vname] = [cpath, node];
+                                    }
+                                }
+                            });
+                        });
+                    });
+
+                    Object.keys(mutable_input_nodes).forEach(function(vname) {
+                        var cpath = mutable_input_nodes[vname][0];
+                        var node = mutable_input_nodes[vname][1];
+                        check_mutability_rec(f_index, cpath, node.propeties.set, vname, 0);
+                    });
+
 
                     Object.keys(flattened_graph).forEach(function(cpath) {
                         var node = flattened_graph[cpath];
@@ -3082,91 +3167,29 @@ $("outputs output").each(function() {
 
                                     if (vname.match(/_v1$/) == null) {
                                         console.log("Error:Mutable output variable whose name is not in the form (name)_v1");
-                                        console.log("Path: " + pointer.cpath);
+                                        console.log("Path: " + cpath);
                                         console.log("name: " + vname);
                                         process.exit(1);
                                     }
 
-                                    check_mutability_rec(f_index, cpath, node.propeties.set, vname.slice(0, -3), 0);
+                                    check_mutability_rec(f_index, cpath, node.properties.set, vname.slice(0, -3), 0);
                                 }
                             });
                         });
                     });
 
-                        //Continuing the search inside the source code of the node.
-                        ["reusable", "single_use", "dynamic"].forEach(function(fn_type) {
-                            Object.keys(f_index[fn_type]).forEach(function(fn) {
-				    //TODO recursively iterate here
-				    //TODO check the inputs of the function to find if they are mutable.
-                            });
-                        });
-                 
+                    ["reusable", "single_use", "dynamic"].forEach(function(fn_type) {
+                        Object.keys(f_index[fn_type]).forEach(function(fn) {
+                            var lf_index = f_index[fn_type][fn];
+                            //Recursively iterate here
+                            check_iterate(lf_index);
 
-                }
-
-		//TODO Remove this function.
-                function search_mutability_rec(f_index, lf_index) {
-
-                    var flattened_graph = lf_index.flattened_graph;
-                    var thread_starting_points = lf_index.flattened_graph;
-                    var pointers = [];
-                    Object.keys(thread_starting_points[-1]).forEach(function(key) {
-                        Object.keys(thread_starting_points[-1][key]).forEach(function(cpath) {
-                            pointers.push({
-                                "cpath": cpath,
-                                "set": key,
-                            });
                         });
                     });
 
-                    while (pointers.length > 0) {
-                        var pointer = pointers.pop();
-                        var node = flattened_graph[pointer.cpath];
-                        var fn_name = node.pointer[node.pointer.length - 1];
-
-
-                        Object.keys(node.outputs).forEach(function(vname) {
-                            var mutable = false;
-                            node.outputs[vname].forEach(function(item) {
-                                if (item.properties.mutable == true) {
-                                    mutable = true;
-                                }
-                                var ncpath = set_cpath(item.end_pointer, 0, item.end_pointer.length - 1);
-                                var nnode = flattened_graph[ncpath];
-
-                                //Continuing the search across all outputs
-                                pointers.push({
-                                    "cpath": ncpath,
-                                    "set": nnode.properties.set
-                                });
-
-                            });
-                            if (mutable) {
-                                if (vname.match(/_v1$/) == null) {
-                                    console.log("Error:Mutable output variable whose name is not in the form (name)_v1");
-                                    console.log("Path: " + pointer.cpath);
-                                    console.log("name: " + vname);
-                                    process.exit(1);
-                                }
-                                //Check mutability correctness
-                                check_mutability_rec(f_index, lf_index, pointer.cpath, pointer.set, 0);
-                            }
-                        });
-
-
-                        //Continuing the search inside the source code of the node.
-                        ["reusable", "single_use", "dynamic"].forEach(function(fn_type) {
-                            var nlf_index = lf_index.nodes[fn_name].at[fn_type];
-                            Object.keys(nlf_index).forEach(function(src_fn) {
-                                search_mutability_rec(f_index, nlf_index);
-                            });
-                        });
-
-
-                    }
-
 
                 }
+
 
 
                 function check_mutability_rec(f_index, cpath, set, vname, version) {
@@ -3190,12 +3213,12 @@ $("outputs output").each(function() {
                                 if (fn_var == vname) {
 
                                     //Log that this function can indeed get the mutable var from the previous level.
-                                    if (temp[src_fn].length < 2) {
+                                    if (temp[src_fn].length < 3) {
                                         temp[src_fn].push({
                                             "mutable": {}
                                         });
                                     }
-                                    temp[src_fn][1]["mutable"][fn_var] = true;
+                                    temp[src_fn][2]["mutable"][fn_var] = true;
                                 }
                             });
 
@@ -3237,7 +3260,7 @@ $("outputs output").each(function() {
 
 
 
-
+                check_iterate(f_index_v3);
 
 
                 ////////////////////////////////////////////////////////////

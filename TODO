@@ -15,3 +15,5 @@
 12. No loops with historical values.
 
 13. bt functions should not have mutable variables or they should be ignored with a warning.
+
+14. Provide a check that existence of DYN functions also has a side-effect about it at the xml file.
