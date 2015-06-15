@@ -5,43 +5,14 @@
         <description> It creates an object representation of graph present in the mr file. </description>
     </info>
     <inputs>
-        <input generated="true" name="mr_file_paths">
-            <origin origin_name="mr_file_paths" origin_location="build_graph" generated="true"/>
-            <origin origin_name="mr_file_paths" origin_location="find_functions" generated="true"/>
-            <origin origin_name="mr_file_paths" origin_location="path_traversal" generated="true"/>
-        </input>
-        <input generated="true" name="srcodes">
-            <origin origin_name="srcodes" origin_location="find_end_points" generated="true"/>
-            <origin origin_name="srcodes" origin_location="find_functions" generated="true"/>
-            <origin origin_name="srcodes" origin_location="path_traversal" generated="true"/>
-        </input>
-    </inputs>
+        
+        
+    <input generated="true" name="mr_file_paths"><origin origin_name="mr_file_paths" origin_location="build_graph" generated="true"/><origin origin_name="mr_file_paths" origin_location="find_functions" generated="true"/><origin origin_name="mr_file_paths" origin_location="path_traversal" generated="true"/></input><input generated="true" name="srcodes"><origin origin_name="srcodes" origin_location="find_end_points" generated="true"/><origin origin_name="srcodes" origin_location="find_functions" generated="true"/><origin origin_name="srcodes" origin_location="path_traversal" generated="true"/></input></inputs>
     <outputs>
-        <output generated="true" name="graphs">
-            <origin origin_name="graphs" origin_location="build_graph" generated="true"/>
-        </output>
-        <output name="error" side-effect="true" generated="true">
+        
+        
+    <output generated="true" name="graphs"><origin origin_name="graphs" origin_location="build_graph" generated="true"/></output><output name="error" side-effect="true" generated="true">
             <description> It returns an error when a type of attribute does not exist.</description>
-            <origin origin_name="error" origin_location="find_functions" generated="true"/>
-        </output>
-    </outputs>
-    <graph generated="true">
-        <node fn_name="find_functions">
-            <output name="function_names">
-                <end_point fn_name="find_end_points"/>
-                <end_point fn_name="build_graph"/>
-            </output>
-        </node>
-        <node fn_name="find_end_points">
-            <output name="end_points">
-                <end_point fn_name="path_traversal"/>
-            </output>
-        </node>
-        <node fn_name="path_traversal">
-            <output name="gpaths">
-                <end_point fn_name="build_graph"/>
-            </output>
-        </node>
-        <node fn_name="build_graph"/>
-    </graph>
-</root>
+        <origin origin_name="error" origin_location="find_functions" generated="true"/></output></outputs>
+    
+<graph generated="true"> <node fn_name="find_functions"><output name="function_names"> <end_point fn_name="find_end_points"/><end_point fn_name="build_graph"/></output></node><node fn_name="find_end_points"><output name="end_points"> <end_point fn_name="path_traversal"/></output></node><node fn_name="path_traversal"><output name="gpaths"> <end_point fn_name="build_graph"/></output></node><node fn_name="build_graph"/></graph></root>

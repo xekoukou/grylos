@@ -21,6 +21,6 @@
         <output name="cleaned_xml_files" side-effect="true">
             <description>It saves the cleaned xml_files.</description>
         </output>
-        <output generated="true" name="remove_generated_XML_dep"/>
-    </outputs>
+        
+    <output generated="true" name="remove_generated_XML_dep"/></outputs>
 </root>

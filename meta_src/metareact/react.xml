@@ -15,146 +15,37 @@
             <origin origin_name="xml_errors" origin_location="prepare_src/validate_XML"/>
             <origin origin_name="error_msgs" origin_location="generate_xml_content_from_children"/>
             <origin origin_name="file_missing_errors" origin_location="parse_mr_files"/>
-            <origin origin_name="error" origin_location="check_ioputs_origins" generated="true"/>
-            <origin origin_name="error" origin_location="check_only_side_effects_exist" generated="true"/>
-            <origin origin_name="error" origin_location="generate_src/flatten_graph/find_node_properties" generated="true"/>
-            <origin origin_name="error" origin_location="parse_mr_files/check_same_output_name" generated="true"/>
-            <origin origin_name="error" origin_location="parse_mr_files/create_graphs/find_functions" generated="true"/>
-        </output>
-        <output name="console-text" side-effect="true" generated="true">
+            
+            
+            
+            
+            
+        <origin origin_name="error" origin_location="check_ioputs_origins" generated="true"/><origin origin_name="error" origin_location="check_only_side_effects_exist" generated="true"/><origin origin_name="error" origin_location="generate_src/flatten_graph/find_node_properties" generated="true"/><origin origin_name="error" origin_location="parse_mr_files/check_same_output_name" generated="true"/><origin origin_name="error" origin_location="parse_mr_files/create_graphs/find_functions" generated="true"/></output>
+        
+        
+        
+        
+    <output name="root_in_out" side-effect="true" generated="true">
+		<description>It saves all the inputs outputs of the root node in case it is a library/function.</description>
+        <origin origin_name="root_in_out" origin_location="check_only_side_effects_exist" generated="true"/></output><output name="console-text" side-effect="true" generated="true">
             <description>The program prints a request to be provided with the correct arguments. </description>
-            <origin origin_name="console-text" origin_location="main" generated="true"/>
-        </output>
-        <output name="filled_xml_files" side-effect="true" generated="true">
+        <origin origin_name="console-text" origin_location="main" generated="true"/></output><output name="filled_xml_files" side-effect="true" generated="true">
             <description>It saves the xml files with the additional generated content.</description>
-            <origin origin_name="filled_xml_files" origin_location="parse_mr_files/insert_graph_content_to_xml_files" generated="true"/>
-            <origin origin_name="filled_xml_files" origin_location="parse_mr_files/insert_missing_io_tags_from_graph" generated="true"/>
-        </output>
-        <output name="file_missing_errors" side-effect="true" generated="true">
+        <origin origin_name="filled_xml_files" origin_location="parse_mr_files/insert_graph_content_to_xml_files" generated="true"/><origin origin_name="filled_xml_files" origin_location="parse_mr_files/insert_missing_io_tags_from_graph" generated="true"/></output><output name="file_missing_errors" side-effect="true" generated="true">
             <description>It prints an error when an xml file is not there and exits.</description>
-            <origin origin_name="file_missing_errors" origin_location="parse_mr_files/insert_graph_content_to_xml_files" generated="true"/>
-            <origin origin_name="file_missing_errors" origin_location="parse_mr_files/insert_missing_io_tags_from_graph" generated="true"/>
-        </output>
-        <output name="deleted_src_files" side-effect="true" generated="true">
+        <origin origin_name="file_missing_errors" origin_location="parse_mr_files/insert_graph_content_to_xml_files" generated="true"/><origin origin_name="file_missing_errors" origin_location="parse_mr_files/insert_missing_io_tags_from_graph" generated="true"/></output><output name="deleted_src_files" side-effect="true" generated="true">
             <description>It deletes all the generated src files.</description>
-            <origin origin_name="deleted_src_files" origin_location="prepare_src/delete_generated_src" generated="true"/>
-        </output>
-    </outputs>
+        <origin origin_name="deleted_src_files" origin_location="prepare_src/delete_generated_src" generated="true"/></output></outputs>
     <inputs>
-        <input name="xml_files" side-effect="true" generated="true">
-            <origin origin_name="xml_files" origin_location="check_ioputs_origins" generated="true"/>
-            <origin origin_name="xml_files" origin_location="generate_src/flatten_graph/create_flattened_graph" generated="true"/>
-            <origin origin_name="xml_files" origin_location="generate_src/flatten_graph/find_node_properties" generated="true"/>
-            <origin origin_name="xml_files" origin_location="generate_src/flatten_graph/find_starting_points" generated="true"/>
-            <origin origin_name="xml_files" origin_location="generate_xml_content_from_children" generated="true"/>
-            <origin origin_name="xml_files" origin_location="parse_mr_files/check_node_properties" generated="true"/>
-            <origin origin_name="xml_files" origin_location="parse_mr_files/insert_graph_content_to_xml_files" generated="true"/>
-            <origin origin_name="xml_files" origin_location="parse_mr_files/insert_missing_io_tags_from_graph" generated="true"/>
-            <origin origin_name="xml_files" origin_location="prepare_src/delete_generated_src" generated="true"/>
-            <origin origin_name="xml_files" origin_location="prepare_src/remove_generated_XML" generated="true"/>
-            <origin origin_name="xml_files" origin_location="prepare_src/validate_XML" generated="true"/>
-        </input>
-        <input name="root_xml_file" side-effect="true" generated="true">
+        
+        
+        
+        
+    <input name="xml_files" side-effect="true" generated="true">
+        <origin origin_name="xml_files" origin_location="check_ioputs_origins" generated="true"/><origin origin_name="xml_files" origin_location="generate_src/flatten_graph/create_flattened_graph" generated="true"/><origin origin_name="xml_files" origin_location="generate_src/flatten_graph/find_node_properties" generated="true"/><origin origin_name="xml_files" origin_location="generate_src/flatten_graph/find_starting_points" generated="true"/><origin origin_name="xml_files" origin_location="generate_xml_content_from_children" generated="true"/><origin origin_name="xml_files" origin_location="parse_mr_files/check_node_properties" generated="true"/><origin origin_name="xml_files" origin_location="parse_mr_files/insert_graph_content_to_xml_files" generated="true"/><origin origin_name="xml_files" origin_location="parse_mr_files/insert_missing_io_tags_from_graph" generated="true"/><origin origin_name="xml_files" origin_location="prepare_src/delete_generated_src" generated="true"/><origin origin_name="xml_files" origin_location="prepare_src/remove_generated_XML" generated="true"/><origin origin_name="xml_files" origin_location="prepare_src/validate_XML" generated="true"/></input><input name="root_xml_file" side-effect="true" generated="true">
             <description>It reads the root xml file..</description>
-            <origin origin_name="root_xml_file" origin_location="check_only_side_effects_exist" generated="true"/>
-        </input>
-        <input name="arguments" side-effect="true" generated="true">
-            <origin origin_name="arguments" origin_location="main" generated="true"/>
-        </input>
-        <input name="disk_mr_files" side-effect="true" generated="true">
+        <origin origin_name="root_xml_file" origin_location="check_only_side_effects_exist" generated="true"/></input><input name="arguments" side-effect="true" generated="true"> <origin origin_name="arguments" origin_location="main" generated="true"/></input><input name="disk_mr_files" side-effect="true" generated="true">
             <description>It is provided all the mr files of the source_path directory and its subdirectories.</description>
-            <origin origin_name="disk_mr_files" origin_location="parse_mr_files/find_mr_file_paths" generated="true"/>
-        </input>
-    </inputs>
-    <graph generated="true">
-        <node fn_name="main">
-            <output name="source_path">
-                <end_point fn_name="generate_xml_content_from_children"/>
-                <end_point fn_name="parse_mr_files"/>
-                <end_point fn_name="prepare_src"/>
-                <end_point fn_name="check_only_side_effects_exist"/>
-                <end_point fn_name="generate_function_src"/>
-                <end_point fn_name="generate_src"/>
-            </output>
-            <output name="root_io">
-                <end_point fn_name="check_only_side_effects_exist"/>
-                <end_point fn_name="generate_src"/>
-            </output>
-            <output name="prog_lang">
-                <end_point fn_name="generate_function_src"/>
-                <end_point fn_name="generate_src"/>
-            </output>
-            <output name="gen_all">
-                <end_point fn_name="generate_function_src"/>
-            </output>
-            <output name="single_threaded">
-                <end_point fn_name="generate_src"/>
-            </output>
-        </node>
-        <node fn_name="generate_xml_content_from_children">
-            <output name="generate_xml_content_from_children_dep">
-                <end_point fn_name="check_ioputs_origins" dependency="true"/>
-            </output>
-        </node>
-        <node fn_name="parse_mr_files">
-            <output name="insert_graph_content_to_xml_files_dep">
-                <end_point fn_name="generate_xml_content_from_children" dependency="true"/>
-            </output>
-            <output name="insert_missing_io_tags_from_graph_dep">
-                <end_point fn_name="generate_xml_content_from_children" dependency="true"/>
-            </output>
-            <output name="mr_file_paths">
-                <end_point fn_name="check_ioputs_origins"/>
-            </output>
-        </node>
-        <node fn_name="prepare_src">
-            <output name="validate_XML_dep">
-                <end_point fn_name="parse_mr_files" dependency="true"/>
-            </output>
-        </node>
-        <node fn_name="check_ioputs_origins">
-            <output name="check_ioputs_origins_dep">
-                <end_point fn_name="check_only_side_effects_exist" dependency="true"/>
-            </output>
-        </node>
-        <node fn_name="check_only_side_effects_exist">
-            <output name="check_only_side_effects_exist_dep">
-                <end_point fn_name="generate_src" dependency="true"/>
-            </output>
-        </node>
-        <node fn_name="module_dependencies">
-            <output name="fs">
-                <end_point fn_name="prepare_src"/>
-                <end_point fn_name="generate_xml_content_from_children"/>
-                <end_point fn_name="check_ioputs_origins"/>
-                <end_point fn_name="parse_mr_files"/>
-                <end_point fn_name="generate_src"/>
-                <end_point fn_name="generate_function_src"/>
-                <end_point fn_name="check_only_side_effects_exist"/>
-            </output>
-            <output name="exec">
-                <end_point fn_name="prepare_src"/>
-                <end_point fn_name="generate_function_src"/>
-            </output>
-            <output name="path">
-                <end_point fn_name="prepare_src"/>
-                <end_point fn_name="generate_xml_content_from_children"/>
-                <end_point fn_name="parse_mr_files"/>
-                <end_point fn_name="generate_src"/>
-            </output>
-            <output name="cheerio">
-                <end_point fn_name="prepare_src"/>
-                <end_point fn_name="check_ioputs_origins"/>
-                <end_point fn_name="parse_mr_files"/>
-                <end_point fn_name="generate_src"/>
-                <end_point fn_name="check_only_side_effects_exist"/>
-            </output>
-        </node>
-        <node fn_name="generate_src"/>
-        <node fn_name="generate_function_src">
-            <output name="generate_function_src_deb">
-                <end_point fn_name="generate_src" dependency="true"/>
-            </output>
-        </node>
-    </graph>
-</root>
+        <origin origin_name="disk_mr_files" origin_location="parse_mr_files/find_mr_file_paths" generated="true"/></input></inputs>
+    
+<graph generated="true"> <node fn_name="main"><output name="source_path"> <end_point fn_name="generate_xml_content_from_children"/><end_point fn_name="parse_mr_files"/><end_point fn_name="prepare_src"/><end_point fn_name="check_only_side_effects_exist"/><end_point fn_name="generate_function_src"/><end_point fn_name="generate_src"/></output><output name="root_io"> <end_point fn_name="check_only_side_effects_exist"/><end_point fn_name="generate_src"/></output><output name="prog_lang"> <end_point fn_name="generate_function_src"/><end_point fn_name="generate_src"/></output><output name="gen_all"> <end_point fn_name="generate_function_src"/></output><output name="single_threaded"> <end_point fn_name="generate_src"/></output></node><node fn_name="generate_xml_content_from_children"><output name="generate_xml_content_from_children_dep"> <end_point fn_name="check_ioputs_origins" dependency="true"/></output></node><node fn_name="parse_mr_files"><output name="insert_graph_content_to_xml_files_dep"> <end_point fn_name="generate_xml_content_from_children" dependency="true"/></output><output name="insert_missing_io_tags_from_graph_dep"> <end_point fn_name="generate_xml_content_from_children" dependency="true"/></output><output name="mr_file_paths"> <end_point fn_name="check_ioputs_origins"/></output></node><node fn_name="prepare_src"><output name="validate_XML_dep"> <end_point fn_name="parse_mr_files" dependency="true"/></output></node><node fn_name="check_ioputs_origins"><output name="check_ioputs_origins_dep"> <end_point fn_name="check_only_side_effects_exist" dependency="true"/></output></node><node fn_name="check_only_side_effects_exist"><output name="check_only_side_effects_exist_dep"> <end_point fn_name="generate_src" dependency="true"/></output></node><node fn_name="module_dependencies"><output name="fs"> <end_point fn_name="prepare_src"/><end_point fn_name="generate_xml_content_from_children"/><end_point fn_name="check_ioputs_origins"/><end_point fn_name="parse_mr_files"/><end_point fn_name="generate_src"/><end_point fn_name="generate_function_src"/><end_point fn_name="check_only_side_effects_exist"/></output><output name="exec"> <end_point fn_name="prepare_src"/><end_point fn_name="generate_function_src"/></output><output name="path"> <end_point fn_name="prepare_src"/><end_point fn_name="generate_xml_content_from_children"/><end_point fn_name="parse_mr_files"/><end_point fn_name="generate_src"/></output><output name="cheerio"> <end_point fn_name="prepare_src"/><end_point fn_name="check_ioputs_origins"/><end_point fn_name="parse_mr_files"/><end_point fn_name="generate_src"/><end_point fn_name="check_only_side_effects_exist"/></output></node><node fn_name="generate_src"/><node fn_name="generate_function_src"><output name="generate_function_src_deb"> <end_point fn_name="generate_src" dependency="true"/></output></node></graph></root>

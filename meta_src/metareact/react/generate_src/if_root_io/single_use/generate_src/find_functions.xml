@@ -2,7 +2,7 @@
 <root>
     <info>
         <name> find_functions </name>
-	<description> It finds all functions that are used by a single node/function. </description>
+        <description> It finds all functions that are used by a single node/function. </description>
     </info>
     <inputs>
         <input name="f_index"/>
@@ -11,4 +11,7 @@
         <input name="source_files" side-effect="true"/>
         <input name="xml_files" side-effect="true"/>
     </inputs>
+    <outputs>
+        
+    </outputs>
 </root>

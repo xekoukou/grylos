@@ -6,7 +6,6 @@
     </info>
     <inputs>
         <input name="source_path"/>
-        <input name="starting_points"/>
         <input name="flattened_graph"/>
         <input name="fs"/>
         <input name="path"/>

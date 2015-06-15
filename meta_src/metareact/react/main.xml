@@ -17,8 +17,8 @@
         <output name="console-text" side-effect="true">
             <description>The program prints a request to be provided with the correct arguments. </description>
         </output>
-        <output generated="true" name="root_io"/>
-        <output generated="true" name="gen_all"/>
-        <output generated="true" name="single_threaded"/>
-    </outputs>
+        
+        
+        
+    <output generated="true" name="root_io"/><output generated="true" name="gen_all"/><output generated="true" name="single_threaded"/></outputs>
 </root>

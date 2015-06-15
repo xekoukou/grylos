@@ -102,6 +102,15 @@ function generate_function_rec(cpath) {
                             process.exit(1);
                         }
 
+                        result = exec.exec("node react.js --gen_all --root_io --single_threaded " + cpath + "/" + folder + "/" + file + " --lang " + prog_lang);
+
+                        console.log(result.stdout);
+                        if (result.code == 1) {
+                            console.log(cpath + "/" + folder + "/" + file + ": Exiting..");
+                            process.exit(1);
+                        }
+
+
                         console.log("End of Compilation");
 
                     } catch (e) {
@@ -285,7 +294,7 @@ if (gen_all) {
 
                 } else {
                     if (stat.isDirectory()) {
-                        if (file_name != "reusable" && file_name != "dynamic" && file_name != "single_use") {
+                        if (file_name != 'single_threaded' && file_name != 'multi_threaded' && file_name != "reusable" && file_name != "dynamic" && file_name != "single_use") {
                             //Recursively operate on the subdirectories.
                             delete_generated_src(cpath + "/" + file_name);
                         }
@@ -937,7 +946,7 @@ function generate_xml_content_from_children(cpath, parent) {
     files.forEach(function(file_name, index, files) {
         var stat = fs.statSync(cpath + "/" + file_name);
         //A deep first algorith.
-        if (stat.isDirectory() && (file_name != 'reusable' && file_name != "dynamic" && file_name != "single_use")) {
+        if (stat.isDirectory() && (file_name != 'single_threaded' && file_name != 'multi_threaded' && file_name != 'reusable' && file_name != "dynamic" && file_name != "single_use")) {
 
             var fxml_file = fs.readFileSync(cpath + "/" + file_name + ".xml", {
                 encoding: "utf-8"
@@ -1426,6 +1435,15 @@ $("inputs input").each(function() {
             if ($(this).attr("passive") == "true") {
                 prop.passive = "true";
             }
+            if (prog_lang == "rust") {
+                if (typeof($(this).attr("type")) != "undefined") {
+                    prop.type = $(this).attr("type");
+                } else {
+                    console.log("Error: There is an input that doesn't have a type in the root xml file.");
+                    console.log("Name:" + $(this).attr("name"));
+
+                }
+            }
             root_in_out.inputs[$(this).attr("name")] = prop;
         }
     }
@@ -1464,12 +1482,30 @@ $("outputs output").each(function() {
             if ($(this).attr("passive") == "true") {
                 prop.passive = "true";
             }
+            if (prop_lang == "rust") {
+                if (typeof($(this).attr("type")) != "undefined") {
+                    prop.type = $(this).attr("type");
+                } else {
+                    console.log("Error: There is an output that doesn't have a type in the root xml file.");
+                    console.log("Name:" + $(this).attr("name"));
+
+                }
+            }
             root_in_out.outputs[$(this).attr("name")] = prop;
         }
     }
 });
+var folder;
+if (single_threaded) {
+    folder = "single_threaded";
+} else {
+    folder = "multi_threaded";
+}
+try {
+    fs.mkdirSync(source_path + "/" + folder);
+} catch (e) {}
 
-fs.writeFileSync(source_path + "/root_in_out.json", JSON.stringify(root_in_out, null, 4));
+fs.writeFileSync(source_path + "/" + folder + "/root_in_out.json", JSON.stringify(root_in_out, null, 4));
 ////////////////////////////////////////////////////////////////////
 //generate_src
 /////////////////
@@ -1528,7 +1564,7 @@ fs.writeFileSync(source_path + "/root_in_out.json", JSON.stringify(root_in_out, 
                     }
                 }
                 if (stat.isDirectory()) {
-                    if (file_name != "reusable" && file_name != "dynamic" && file_name != "single_use") {
+                    if (file_name != 'single_threaded' && file_name != 'multi_threaded' && file_name != "reusable" && file_name != "dynamic" && file_name != "single_use") {
                         var element = parent.slice();
                         element.push(file_name);
                         find_starting_points_rec(cpath + "/" + file_name, element);
@@ -2745,15 +2781,25 @@ fs.writeFileSync(source_path + "/root_in_out.json", JSON.stringify(root_in_out, 
         ////////////////////////////////////////////////////////
         //save_input_to_files
         /////////////////////
-        function save_input_to_files(source_path, ordered_set, thread_starting_points, flattened_graph) {
-                fs.writeFileSync(source_path + "/ordered_set.json", JSON.stringify(ordered_set, null, 4));
-                fs.writeFileSync(source_path + "/thread_starting_points.json", JSON.stringify(thread_starting_points, null, 4));
-                fs.writeFileSync(source_path + "/flattened_graph.json", JSON.stringify(flattened_graph, null, 4));
+        function save_input_to_files(fs, source_path, single_threaded, ordered_set, thread_starting_points, flattened_graph) {
+                var folder;
+                if (single_threaded) {
+                    folder = "single_threaded";
+                } else {
+                    folder = "multi_threaded";
+                }
+                try {
+                    fs.mkdirSync(source_path + "/" + folder);
+                } catch (e) {}
+
+                fs.writeFileSync(source_path + "/" + folder + "/ordered_set.json", JSON.stringify(ordered_set, null, 4));
+                fs.writeFileSync(source_path + "/" + folder + "/thread_starting_points.json", JSON.stringify(thread_starting_points, null, 4));
+                fs.writeFileSync(source_path + "/" + folder + "/flattened_graph.json", JSON.stringify(flattened_graph, null, 4));
             }
             ///////////////////////////////////////////////////////////////////
             //TODO To be moved into the single_use function
             //generate_src
-        function generate_src(source_path, flattened_graph, fs, starting_points, path, prog_lang, thread_starting_points, ordered_set) {
+        function generate_src(source_path, flattened_graph, fs, path, prog_lang, thread_starting_points, ordered_set) {
 
                 ///////////////////////////////////////////////////////////////////////////////////
                 //reusable functions
@@ -2941,29 +2987,34 @@ fs.writeFileSync(source_path + "/root_in_out.json", JSON.stringify(root_in_out, 
                                             "set": {},
                                             "reusable": {},
                                             "single_use": {},
-                                            "dynamic": {}
+                                            "dynamic": {},
+                                            "single_threaded": {},
+                                            "multi_threaded": {}
+
                                         };
                                         try {
-                                            f_leveled_set.root_io = JSON.parse(
-                                                fs.readFileSync(cpath + "/" + folder + "/" + file.substring(0, file.length - 4) + "/root_in_out.json", {
-                                                    encoding: "utf-8"
-                                                }));
-                                            f_leveled_set.ordered_set = JSON.parse(
-                                                fs.readFileSync(cpath + "/" + folder + "/" + file.substring(0, file.length - 4) + "/ordered_set.json", {
-                                                    encoding: "utf-8"
-                                                }));
-                                            f_leveled_set.thread_starting_points = JSON.parse(
-                                                fs.readFileSync(cpath + "/" + folder + "/" + file.substring(0, file.length - 4) + "/thread_starting_points.json", {
-                                                    encoding: "utf-8"
-                                                }));
-                                            f_leveled_set.flattened_graph = JSON.parse(
-                                                fs.readFileSync(cpath + "/" + folder + "/" + file.substring(0, file.length - 4) + "/flattened_graph.json", {
-                                                    encoding: "utf-8"
-                                                }));
+                                            ["single_threaded", "multi_threaded"].forEach(function(t_thread) {
+                                                f_leveled_set[t_thread].root_io = JSON.parse(
+                                                    fs.readFileSync(cpath + "/" + folder + "/" + file.substring(0, file.length - 4) + "/" + t_thread + "/root_in_out.json", {
+                                                        encoding: "utf-8"
+                                                    }));
+                                                f_leveled_set[t_thread].ordered_set = JSON.parse(
+                                                    fs.readFileSync(cpath + "/" + folder + "/" + file.substring(0, file.length - 4) + "/" + t_thread + "/ordered_set.json", {
+                                                        encoding: "utf-8"
+                                                    }));
+                                                f_leveled_set[t_thread].thread_starting_points = JSON.parse(
+                                                    fs.readFileSync(cpath + "/" + folder + "/" + file.substring(0, file.length - 4) + "/" + t_thread + "/thread_starting_points.json", {
+                                                        encoding: "utf-8"
+                                                    }));
+                                                f_leveled_set[t_thread].flattened_graph = JSON.parse(
+                                                    fs.readFileSync(cpath + "/" + folder + "/" + file.substring(0, file.length - 4) + "/" + t_thread + "/flattened_graph.json", {
+                                                        encoding: "utf-8"
+                                                    }));
+                                            });
                                         } catch (e) {
 
                                             console.log("Error: " + cpath + "/" + folder + "/" + file.substring(0, file.length - 4));
-                                            console.log("Missing ordered_set/thread_starting_points files.");
+                                            console.log("\nError message: " + e.message);
                                             process.exit(1);
 
                                         }
@@ -2982,7 +3033,7 @@ fs.writeFileSync(source_path + "/root_in_out.json", JSON.stringify(root_in_out, 
                     var files = fs.readdirSync(cpath);
                     files.forEach(function(file, index, files) {
                         var stat = fs.statSync(cpath + "/" + file);
-                        if (stat.isDirectory() && file != "reusable" && file != "dynamic" && file != "single_use") {
+                        if (stat.isDirectory() && file != 'single_threaded' && file != 'multi_threaded' && file != "reusable" && file != "dynamic" && file != "single_use") {
                             //Recursively operate on the subdirectories.
                             lset.set[file] = {
                                 "set": {},
@@ -3024,6 +3075,7 @@ fs.writeFileSync(source_path + "/root_in_out.json", JSON.stringify(root_in_out, 
                         });
                     });
                     if (new_graph) {
+                        var flattened_graph;
                         var ppath = source_path;
                         s_pointer.forEach(function(each) {
                             if (each[0] != "main") {
@@ -3032,7 +3084,16 @@ fs.writeFileSync(source_path + "/root_in_out.json", JSON.stringify(root_in_out, 
                             ppath += set_cpath(each[2], 0, each[2].length - 1);
                         });
 
-                        var flattened_graph = lf_index.flattened_graph;
+                        if (s_pointer.length > 1) {
+                            if ("single_threaded" in lf_index) {
+                                flattened_graph = lf_index.single_threaded.flattened_graph;
+                            } else {
+                                flattened_graph = lf_index.multi_threaded.flattened_graph;
+                            }
+                        } else {
+                            flattened_graph = lf_index.flattened_graph;
+                        }
+
 
                         Object.keys(flattened_graph).forEach(function(cpath) {
                             var node = flattened_graph[cpath];
@@ -3165,7 +3226,7 @@ fs.writeFileSync(source_path + "/root_in_out.json", JSON.stringify(root_in_out, 
                     Object.keys(mutable_input_nodes).forEach(function(vname) {
                         var cpath = mutable_input_nodes[vname][0];
                         var node = mutable_input_nodes[vname][1];
-                        check_mutability_rec(f_index, cpath, node.propeties.set, vname, 0);
+                        check_mutability_rec(f_index, cpath, -1, vname, 0);
                     });
 
 
@@ -3182,7 +3243,7 @@ fs.writeFileSync(source_path + "/root_in_out.json", JSON.stringify(root_in_out, 
                                         process.exit(1);
                                     }
 
-                                    check_mutability_rec(f_index, cpath, node.properties.set, vname.slice(0, -3), 0);
+                                    check_mutability_rec(f_index, cpath, -1, vname.slice(0, -3), 0);
                                 }
                                 if ("historical" in item.properties) {
                                     node.properties.ordered = true;
@@ -3313,11 +3374,11 @@ fs.writeFileSync(source_path + "/root_in_out.json", JSON.stringify(root_in_out, 
         //!tail!
         switch (root_io) {
             case true:
-                save_input_to_files(source_path, ordered_set, thread_starting_points_v2, flattened_graph_v4);
+                save_input_to_files(fs, source_path, single_threaded, ordered_set, thread_starting_points_v2, flattened_graph_v4);
                 break;
             case false:
                 //TODO remove this with the generate_src single_use function
-                generate_src(source_path, flattened_graph_v4, fs, starting_points, path, prog_lang, thread_starting_points_v2, ordered_set);
+                generate_src(source_path, flattened_graph_v4, fs, path, prog_lang, thread_starting_points_v2, ordered_set);
                 break;
 
         }

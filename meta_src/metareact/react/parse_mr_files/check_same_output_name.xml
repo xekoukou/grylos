@@ -12,6 +12,6 @@
         <output name="error" side-effect="true">
             <description>It prints an error message and exits.</description>
         </output>
-        <output generated="true" name="check_same_output_name_dep"/>
-    </outputs>
+        
+    <output generated="true" name="check_same_output_name_dep"/></outputs>
 </root>

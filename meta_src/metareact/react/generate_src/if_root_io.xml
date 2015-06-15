@@ -5,16 +5,13 @@
         <description> It either generates the source(true) or it creates files to be passed to the main process.  </description>
     </info>
     <inputs>
-        <input generated="true" name="flattened_graph"/>
-        <input generated="true" name="starting_points"/>
-        <input generated="true" name="thread_starting_points_v2"/>
-        <input generated="true" name="ordered_set"/>
-        <input name="prog_lang" generated="true">
-            <origin origin_name="prog_lang" origin_location="if_root_io" generated="true"/>
-        </input>
-        <input name="generate_function_src_deb" dependency="true" generated="true">
-            <origin origin_name="generate_function_src_deb" origin_location="if_root_io" generated="true"/>
-        </input>
-    </inputs>
+        
+	    <input name="single_threaded"/> 
+	    <input name="fs"/> 
+        
+        
+        
+        
+    <input generated="true" name="flattened_graph"/><input generated="true" name="starting_points"/><input generated="true" name="thread_starting_points_v2"/><input generated="true" name="ordered_set"/><input name="prog_lang" generated="true"><origin origin_name="prog_lang" origin_location="if_root_io" generated="true"/></input><input name="generate_function_src_deb" dependency="true" generated="true"><origin origin_name="generate_function_src_deb" origin_location="if_root_io" generated="true"/></input></inputs>
     <outputs/>
 </root>

@@ -7,9 +7,9 @@
     <inputs>
         <input name="srcodes"/>
         <input name="mr_file_paths"/>
-        <input generated="true" name="end_points"/>
-    </inputs>
+        
+    <input generated="true" name="end_points"/></inputs>
     <outputs>
-        <output generated="true" name="gpaths"/>
-    </outputs>
+        
+    <output generated="true" name="gpaths"/></outputs>
 </root>

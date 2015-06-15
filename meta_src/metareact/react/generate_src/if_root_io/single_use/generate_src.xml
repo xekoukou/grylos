@@ -8,15 +8,13 @@
         <input name="flattened_graph">
             
         </input>
-        <input name="starting_points">
-            
-        </input>
         <input name="prog_lang">
             
             
             
         </input>
         <input name="source_path">
+            
             
             
         </input>
@@ -35,9 +33,14 @@
         <input name="fs">
             
         </input>
+        
+        
+        
+        
     </inputs>
     <outputs>
         
         
     </outputs>
+    
 </root>

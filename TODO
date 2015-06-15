@@ -12,5 +12,3 @@
 13. bt functions should not have mutable variables or they should be ignored with a warning.
 
 14. Provide a check that existence of DYN functions also has a side-effect about it at the xml file.
-
-15. Single_use , reusable, dynamic functions should contain input type info forrust and similar languages.

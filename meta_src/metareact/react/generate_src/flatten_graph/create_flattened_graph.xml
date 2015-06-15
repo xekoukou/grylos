@@ -9,9 +9,9 @@
         <input name="xml_files" side-effect="true"/>
         <input name="fs"/>
         <input name="cheerio"/>
-        <input generated="true" name="starting_points"/>
-        <input generated="true" name="node_properties"/>
-    </inputs>
+        
+        
+    <input generated="true" name="starting_points"/><input generated="true" name="node_properties"/></inputs>
     <outputs>
         <output name="flattened_graph"/>
     </outputs>
