@@ -6,9 +6,9 @@
     </info>
     <inputs>
         
-    <input generated="true" name="flattened_graph"/></inputs>
+    <input name="flattened_graph"/></inputs>
     <outputs>
         
         
-    <output generated="true" name="level_graph_dep"/><output generated="true" name="leveled_graph"/></outputs>
+    <output generated="true" name="leveled_graph"/></outputs>
 </root>

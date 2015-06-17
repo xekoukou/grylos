@@ -12,3 +12,11 @@
 13. bt functions should not have mutable variables or they should be ignored with a warning.
 
 14. Provide a check that existence of DYN functions also has a side-effect about it at the xml file.
+
+15. Relax the mutability check to allow multiple outputs of a mutable varriable as long as one of them is mutable and all others are deterministically ordered before the next mutation.
+
+16. Introduce a "parallel" edge property so that the next node/functions is computed n times (vector)  and the results are also saved in a vector.
+At the moment, it might be easier to implement a new syntax:
+
+PARALLEL:ITER:Vector1,Vector2 function(var1,var2, var3, Vector(v(i)))
+

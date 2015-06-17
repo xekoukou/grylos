@@ -1,0 +1,6 @@
+determine_subgraphs:c 
+        |   determine_subgraph_order_str_points     
+        |                      |              merge_serial_subgraphs                        order_nodes       
+        |-(flattened_graph_v2)-|-(thread_starting_points)-----|                                 |            
+                               |-(flattened_graph_v3)---------|-(flattened_graph_v4)------------|
+                                                              |-----(thread_starting_points_v2)-|        

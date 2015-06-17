@@ -1,11 +1,15 @@
 <?xml version="1.0"?>
 <root>
-    <info>
-        <name> if_root_io </name>
-        <description> It either generates the source(true) or it creates files to be passed to the main process.  </description>
-    </info>
-    <inputs>
-        <input name="prog_lang"/>
-        <input name="generate_function_src_deb" dependency="true"/>
-    </inputs>
+  <info>
+    <name> if_root_io </name>
+    <description> It either generates the source(true) or it creates files to be passed to the main process.  </description>
+  </info>
+  <inputs>
+    <input name="single_threaded"/>
+    <input name="fs"/>
+    <input generated="true" name="flattened_graph"/>
+    <input generated="true" name="starting_points"/>
+    <input name="prog_lang"/>
+  </inputs>
+  <outputs/>
 </root>

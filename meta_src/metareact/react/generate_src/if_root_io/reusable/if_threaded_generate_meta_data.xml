@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<root>
+  <info>
+    <name> if_threaded_generate_meta_data </name>
+    <description> Depending on whether we need a single threaded function or not, it generates the correct meta data. </description>
+  </info>
+  <inputs>
+	  <input name="single_threaded"/>
+	  <input name="starting_points"/>
+	  <input name="flattened_graph"/>
+	  <input name="leveled_graph"/>
+  </inputs>
+  <outputs>
+	  <output name="thread_starting_points_v2"/>
+	  <output name="ordered_set"/>
+	  <output name="flattened_graph_v4"/>
+  </outputs>
+</root>

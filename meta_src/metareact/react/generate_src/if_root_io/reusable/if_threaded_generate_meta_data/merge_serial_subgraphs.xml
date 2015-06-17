@@ -9,7 +9,7 @@
         
         
         
-    <input generated="true" name="starting_points"/><input generated="true" name="thread_starting_points"/><input generated="true" name="flattened_graph_v3"/></inputs>
+    <input name="starting_points"/><input generated="true" name="thread_starting_points"/><input generated="true" name="flattened_graph_v3"/></inputs>
     <outputs>
         
         

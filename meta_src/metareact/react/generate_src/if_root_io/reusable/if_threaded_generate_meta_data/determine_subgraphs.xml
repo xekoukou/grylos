@@ -8,7 +8,7 @@
         <input name="starting_points"/>
         
         
-    <input generated="true" name="flattened_graph"/><input generated="true" name="level_graph_dep"/></inputs>
+    <input name="flattened_graph"/></inputs>
     <outputs>
         
         

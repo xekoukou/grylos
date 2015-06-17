@@ -1194,6 +1194,7 @@ function generate_xml_content_from_children(cpath, parent) {
                     });
 
                     if (isTrue == 1) {
+			    //TODO improve that for all the attributes.
                         //check that the attributes of the children are the same with that of the parent.
                         if (parent("outputs output origin[origin_name='" + origin_names[0] + "'][origin_location='" + origin_locations[0] + "']").parent().attr("side-effect") != side_effect) {
                             console.log("Error: Child output has different attributes than its parent.");
@@ -1967,6 +1968,16 @@ fs.writeFileSync(source_path + "/" + folder + "/root_in_out.json", JSON.stringif
     //TODO remove      console.log(JSON.stringify(leveled_graph, null, 4));
 
 
+    ///////////////////////////////////////////////////////////////
+    //if_root_io
+    ////////////////
+    {
+        //////////////////////////////////////////////////////
+	//reusable
+	//////////////////////////////////////////////////////
+	//if_threaded_generate_meta_data
+	
+	    function if_threaded_generate_meta_data(single_threaded,starting_points,flattened_graph,leveled_graph ){
     /////////////////////////////////////////////////////////////////
     //determine_subgraphs
     var flattened_graph_v2;
@@ -2772,10 +2783,10 @@ fs.writeFileSync(source_path + "/" + folder + "/root_in_out.json", JSON.stringif
     //TODO remove 
     console.log("Ordered_set:\n" + JSON.stringify(ordered_set, null, 4));
 
-    ///////////////////////////////////////////////////////////////
-    //if_root_io
-    ////////////////
-    {
+
+
+	    }
+
         ///////////////////////////////////////////////////////
         //single_use
         ////////////////////////////////////////////////////////

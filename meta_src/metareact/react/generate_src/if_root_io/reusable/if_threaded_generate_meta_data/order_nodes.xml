@@ -5,14 +5,12 @@
         <description> It orders the function nodes of a concurrent/thread function.  </description>
     </info>
     <inputs>
-        <input name="source_path"/>
-        <input name="path"/>
         
         
         
         
         
-    <input generated="true" name="starting_points"/><input generated="true" name="merge_ser_subg"/><input generated="true" name="flattened_graph_v4"/><input generated="true" name="thread_starting_points_v2"/><input generated="true" name="leveled_graph"/></inputs>
+    <input name="starting_points"/><input generated="true" name="merge_ser_subg"/><input generated="true" name="flattened_graph_v4"/><input generated="true" name="thread_starting_points_v2"/><input name="leveled_graph"/></inputs>
     <outputs>
         
     <output generated="true" name="ordered_set"/></outputs>
