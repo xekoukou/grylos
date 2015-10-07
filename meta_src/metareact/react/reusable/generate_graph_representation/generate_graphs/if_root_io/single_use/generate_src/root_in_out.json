@@ -1,0 +1,12 @@
+{
+    "inputs": {
+        "flattened_graph": {},
+        "prog_lang": {},
+        "source_path": {},
+        "path": {},
+        "thread_starting_points": {},
+        "ordered_set": {},
+        "fs": {}
+    },
+    "outputs": {}
+}

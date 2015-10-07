@@ -1,0 +1,86 @@
+{
+    "1": {
+        "name": "",
+        "input_local_var": {},
+        "input_not_local_var": {},
+        "input_external_var": {},
+        "input_not_external_var": {},
+        "output_external_var": {},
+        "output_historical_var": {},
+        "output_dynamic_var": {},
+        "output_not_external_var": {},
+        "set": [
+            {
+                "name": "index_functions",
+                "input_local_var": {},
+                "input_not_local_var": {},
+                "input_external_var": {},
+                "input_not_external_var": {},
+                "output_external_var": {},
+                "output_not_external_var": {
+                    "f_index": true
+                },
+                "output_historical_var": {},
+                "output_dynamic_var": {},
+                "set": [],
+                "type": "node"
+            },
+            {
+                "name": "find_functions",
+                "input_local_var": {
+                    "f_index": true
+                },
+                "input_not_local_var": {},
+                "input_external_var": {},
+                "input_not_external_var": {
+                    "f_index": true
+                },
+                "output_external_var": {},
+                "output_not_external_var": {
+                    "f_index_v2": true
+                },
+                "output_historical_var": {},
+                "output_dynamic_var": {},
+                "set": [],
+                "type": "node"
+            },
+            {
+                "name": "check_deterministic_mutation_losslessness",
+                "input_local_var": {
+                    "f_index_v2": true
+                },
+                "input_not_local_var": {},
+                "input_external_var": {},
+                "input_not_external_var": {
+                    "f_index_v2": true
+                },
+                "output_external_var": {},
+                "output_not_external_var": {
+                    "f_index_v3": true
+                },
+                "output_historical_var": {},
+                "output_dynamic_var": {},
+                "set": [],
+                "type": "node"
+            },
+            {
+                "name": "generate_src",
+                "input_local_var": {
+                    "f_index_v3": true
+                },
+                "input_not_local_var": {},
+                "input_external_var": {},
+                "input_not_external_var": {
+                    "f_index_v3": true
+                },
+                "output_external_var": {},
+                "output_not_external_var": {},
+                "output_historical_var": {},
+                "output_dynamic_var": {},
+                "set": [],
+                "type": "node"
+            }
+        ],
+        "type": "subgraph"
+    }
+}

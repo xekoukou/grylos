@@ -1,0 +1,51 @@
+        main                                                                                   generate_xml_content_from_children    
+         |---------------(source_path)----------------------------------------------------------------------------|      
+         |----------------------------------          parse_mr_files /-(insert_graph_content_to_xml_files_dep)-d--|                                                         
+         |                  prepare_src    \---(source_path)------|---                                            |                                          check_ioputs_origins    check_only_side_effects_exist
+         |---(source_path)------|------(validate_XML_dep)----d----|--(insert_missing_io_tags_from_graph_dep)-d----|---(generate_xml_content_from_children_dep)-d-------|--(check_ioputs_origins_dep)--d---|
+                                |                                 |                                                                                                    |                      
+module_dependencies             |                                 |--------(mr_file_paths)-----------------------------------------------------------------------------|             
+   |------(fs)------------------|                                                                                                                            
+   |-------(exec)---------------|                                                                                                                            
+   |--------(path)--------------|
+   |-------(cheerio)------------|
+   |
+   |                        generate_xml_content_from_children
+   |-------------------(fs)-------------|
+   |-----------------(path)-------------|
+   |
+   |                                check_ioputs_origins 
+   |--------(cheerio)-------------------|
+   |---------------(fs)-----------------|
+   |
+   |                                parse_mr_files
+   |--------(cheerio)-------------------|
+   |---------------(fs)-----------------|
+   |--------------(path)----------------|
+   |
+   |                                generate_graphs
+   |-------------(fs)------------------|
+   |-------------(path)----------------|
+   |-------------(cheerio)-------------|
+   |
+   |                           generate_function_src
+   |-------(exec)----------------------|                                 generate_graphs
+   |--------(fs)-----------------------|----(generate_function_src_deb)--d---|
+   |
+   |                check_only_side_effects_exist
+   |-----(fs)-------------|
+   |----(cheerio)---------|
+                          |
+main                      |
+ |------(root_io)---------|
+ |------(source_path)-----|       generate_function_src
+ |------(source_path)-----------------------|
+ |-----(prog_lang)--------------------------|
+ |-----(gen_all)----------------------------|
+ |---------(single_threaded)-------
+ |-----(prog_lang)----------------\                generate_graphs
+ |------(source_path)------------\\---------------------|
+ |----(root_io)-----------------\\----------------------|      
+                               \\-----------------------|
+check_only_side_effects_exist  \------------------------|         
+      |-------(check_only_side_effects_exist_dep)--d----|

@@ -1,9 +1,9 @@
-flatten_graph                                                    if_root_io 
+flatten_graph                                                    generate_src 
       |---(starting_points)------------------------------------------|
       |                                                              |
       |---(flattened_graph)------------------------------------------|
       |                                                              |
       |                           level_graph                        |
-      |----(flattened_graph)----------|----(level_graph_dep)---------|
+      |----(flattened_graph)----------|----(leveled_graph)-----------|
 
 
