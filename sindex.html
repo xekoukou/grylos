@@ -200,26 +200,26 @@ parse_mr_file             check_node_properties   insert_graph_content_to_xml_fi
 ### load mr file
 
 ```xml
-%lt!--./output("./temp/generate_graph_xml_from_mr_file.xml")
+<!--./output("./temp/generate_graph_xml_from_mr_file.xml")
 ./dots(1)
---%gt
-%lt?xml version="1.0"?%gt
-%ltroot%gt
-    %ltinfo%gt
-        %ltname%gt load_mr_file%lt/name%gt
-        %ltdescription%gt It loads the mr_file and splits it into lines. %lt/description%gt
-    %lt/info%gt
-    %ltinputs%gt
-        %ltinput name="mr_file" side-effect="true"%gt
-            %ltdescription%gtIt is provided all the mr files of the source_path directory and its subdirectories.%lt/description%gt
-        %lt/input%gt
-    %lt/inputs%gt
-    %ltoutputs%gt
-    %lt/outputs%gt
-%lt/root%gt
-%lt!--
+-->
+<?xml version="1.0"?>
+<root>
+    <info>
+        <name> load_mr_file</name>
+        <description> It loads the mr_file and splits it into lines. </description>
+    </info>
+    <inputs>
+        <input name="mr_file" side-effect="true">
+            <description>It is provided all the mr files of the source_path directory and its subdirectories.</description>
+        </input>
+    </inputs>
+    <outputs>
+    </outputs>
+</root>
+<!--
 ./dots(-1)
---%gt
+-->
 ```
 
 ```javascript
