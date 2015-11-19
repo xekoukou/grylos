@@ -9,7 +9,6 @@ file.split("```xml").forEach(function(each){
     temp[0] = temp[0].replace(/</g,"%lt");
     temp[0] = temp[0].replace(/>/g,"%gt");
     result.push(temp.join('```'));
-    flip = false;
   } else {
     result.push(each);
     flip = true;

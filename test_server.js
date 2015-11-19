@@ -6,7 +6,7 @@ function test() {
   execSync("litprog -html index.html javascript > index.js");
   execSync("node index.js");
 
-  var xml = execSync("litprog -html index.html xml").toString('utf8').split('%%%%');
+  var xml = execSync("litprog -html -ar index.html xml").toString('utf8').split('\n%%%%\n');
   xml.forEach(function(each){
     each = each.replace(/%lt/g,"<");
     each = each.replace(/%gt/g,">");

@@ -187,7 +187,7 @@ In both cases, the data of the graph need to be inserted into the XML file. This
 ./output("./temp/generate_graph_xml_from_mr_file.mr")
 ./dots(1)
 load_mr_file               parse_mr_file
-    |------(srcodes)---------|
+    |------(lines)-------------|
 
 parse_mr_file             check_node_properties   insert_graph_content_to_xml_files
      |-----------(graphs)------|-(check_node_properties_dep)---d-----|
@@ -213,9 +213,9 @@ parse_mr_file             check_node_properties   insert_graph_content_to_xml_fi
         <input name="mr_file" side-effect="true">
             <description>It is provided all the mr files of the source_path directory and its subdirectories.</description>
         </input>
+        <input name="mr_file_path">
+        </input>
     </inputs>
-    <outputs>
-    </outputs>
 </root>
 <!--
 ./dots(-1)
@@ -263,8 +263,22 @@ find_functions                   find_end_points              path_traversal    
 ```
 
 ```xml
-
+<?xml version="1.0"?>
+<!--./output("./temp/generate_graph_xml_from_mr_file/parse_mr_file.xml")
+./dots(1)
+-->
+<root>
+  <info>
+    <name>parse_mr_file</name>
+    <description> It creates an object representation of the graph present in the mr file. </description>
+  </info>
+</root>
+<!--
+./dots(-1)
+-->
 ```
+
+
 
 
 
