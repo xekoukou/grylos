@@ -3,7 +3,7 @@ var execSync = require("child_process").execSync;
 function test() {
   console.log("\n\n\n\n\n\n\n\n\n\n\n\n");
   execSync("node convert.js");
-  var code = execSync("litprog -html index.html 'javascript.*'").toString('utf8').replace(/process.exit\((.*)\)/,'return "error " + "$1"');
+  var code = execSync("litprog -html index.html 'javascript.*'").toString('utf8').replace(/process.exit\((.*)\)/g,'return "error " + "$1"');
   eval(code);
 
   var xml = execSync("litprog -html -ar index.html xml").toString('utf8').split('\n%%%%\n');
@@ -15,6 +15,4 @@ function test() {
 }
 
 
-setInterval(function(){
-  test();
-},1000);
+test();

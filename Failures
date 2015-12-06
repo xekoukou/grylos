@@ -1,0 +1,86 @@
+We have spefified that metareact guantantees logical consistency because it waits for all values to propagate from all possible paths before executing the next node. 
+
+ex.
+
+A   B        C
+|---|--------|
+|------------|
+
+
+If C is executed with the variable of A with the outdated variable of B, then C becomes logically inconsistent.
+
+What if we add failures into our example?
+
+If there is no state, we simply forget the computation. We restart it or not. It is our choice.
+If the computation finishes, we will get the correct results. Metareact guarantees that.
+
+If there is state, then 2 cases:
+
+a) Due to a historical input.
+
+If Both A and B have historical inputs, and there is a network problem between A and B, and B is not updated, then we have logical incosistency.
+
+
+Eventual logical consistency is the property in which subsets of the graph have different levels of logical consistency, they reject any further processing unless their inputs are logically consistent. 
+
+An input that is required to be ordered will halt the system entirely.
+
+Ordered data are impossible in a distributed environment because an unreliable agent can lock any future computation.
+If we control all the infrustructure, maybe it is possible.
+Ordered data can work locally because we control all parts of the systema
+
+Partial logical consistency is the acceptance that our system will have different truths at different parts of the system. We only need to decide which point of the system represents our truth.
+
+
+
+
+
+
+ 
+
+
+A) Controlled Environment. We assume that all sub-components will be restarted upon failure.
+
+C rejects any new processing unless B is up again. A retransmits the data to B which in turn transmits to C. Eventual Consistency. 
+
+B having state means that if B fails, all the processes stop. (Sequencial, they need to pass from a single process, not requiring to be ordered).
+
+B requiring ordered data means that if a partial network failure between A and B happens, all processing stops.
+
+IF STATEMENTS
+
+If B consists of an if/switch statements with function that have state and those functions are computed different servers, then B will only partially fail based on which functions have failed. (needs more investigation).
+
+
+Parallel State is of this form (a,b) = (f(a),f(b)), it means that the output of one variable does not depend on the other. To guarantee that assumption, we need to allow the next computation to only get as input only f(a) or f(b), not both. All future nodes should only have parallel state.
+Parallel state is not a state per se, we just save the queue.
+
+B) Uncontroled Environment.
+
+We need to take multiple cases:
+
+a) B sequential -> if B fails, everything fails.
+b) B ordered -> if we have partial network failure, processing stops.(same as before) (ordered assumes sequential).
+c) lossless -> we cannot guarantee losslessness across servers.
+
+c) With parallel state, things continue to work.
+Because we cannot guarantee that some server will go up to continue the computation, we have partial logical consistency.
+
+Local logical consistency is the property of a system that is locall consistent, but might be inconsistent to its environment.
+An application can have the property of not caring about global logical consistency. (under some boundary conditions).
+
+-----------------------------------------------------------------------------------------------------
+
+Consistency with guarantees. IF things partially fail, we will continue to have consistency.
+(State replication)
+
+Byzantine failure.
+
+
+
+
+
+
+
+
+

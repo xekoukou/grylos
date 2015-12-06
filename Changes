@@ -1,2 +1,90 @@
 1. Insert missing_io_tags needs to be executed outside of the parse_mr graph node.
 2. Check that side effects with the same name are not put together by default. It should require programmer intervention.
+
+4. All inputs should have a timeout that is set by default to infinity. In a distributed system, timeout is set to zero by default, thus it must be explicitely set. (We need to provide compile checks in case we have infinite timeout but we are in a distributed system.)
+
+3.
+-----------------------------------------------
+//TODO IMPORTANT
+
+If we assume only one input to be historical,
+
+then if the other input changes and then reverts back to th original value,we get the same output. Thus it would be good to only assume that either all are historical or none. Thus talk about an output as historical, all inputs will need to be historical, another output of the same node doesn't have to be. This way we guarantee the previous property.
+
+
+4. state side-effects should be treated similarly to mutable variables. They should be tracked. Tracking them though might give the programmer the belief that they should not check for side-effects.
+If we track state side-effects, we need to decompose them into mutable immutable, etc. We need to think of the db storages and how they work.
+
+There are 2 other categories of side-effects: a) Interactions with the users. ??b) Altering the program itself. (dynamic graph).??
+
+
+5. Dynamic functions should be able to connect to if statements?
+Yes.
+
+\\TODO IMPORTANT
+////  WRONG WRONG Even this can not guarantee consistency. We simply lose all further steps that are based on this historical value if there are imtermeidary inputs that this historical value uses to determine its oputput.
+
+6. State side-effects should have ordered savings of state. In the graph, one after the other. This way, in case of failure, we can recover and become logically consistent.
+
+7. The same applies for historical outputs in case there is a possibility that only a part of the graph of execution fails. This way we can make sure that we have consistency. This certainly applies to disitributed applications.
+////
+
+\\Important
+In a distributed environment, even linearity doesn't allow us to have consisistency because we lose the data from the intermediary inputs. Thus, in a distributed environment, one historical output should not depend on another.
+
+
+3 cases in distributed systems:
+
+1. One historical value doesn't depend on the other.
+2. Weak historical values are those that depend loosely on the previous values of the inputs. (a forgetfull historical value)
+If a server that holds a historical value dies, it can recover after a while. For a period though, it will emit false data.
+
+3. Historical values are stored in safe distributed storage (ethereum,etc).
+4. If we can handle a percentage of incosistency, we give a measure of incosistency of the output and then give a maximum level of inconsistency that our distributed application can handle.
+Tests should be given that test that the bound holds. We generate bad data by failing nodes of the system.
+
+
+
+//TODO
+Inconsistency can also arise if a node sends bad information. What should one do then?
+
+1. All inputs can be saved and verified with cryptographic certificates.
+1. Intermediary nodes can certify their outputs and thus be able to check who send the bad data.
+
+2. Most computations can be put in ethereum. Those done by personal computers cannot though be put there.
+3. We could check the resistance of our application to bad data. in a similar way to the case when we have failure.
+
+
+-------------------------------------------------------------------------------------------------
+
+
+Regarding switching into a different server for communication, the server simply tells the client where to continue the processing of the next parts.
+This assumes a hierachical structure of resposibilities.
+
+We name each distributed part differently. If more than two can be used for the same subgraph, then It is assumed that a part is responsible for finishing all of the subgraph. No switching between the two is allowed in the middle. 
+
+
+If we do not assume the above, then it is certain that there must be a way for the client/server to deduce where the next part of the state machine is to be performed.
+
+(If we assume hierarchy, then the order of the hierarchy must 'follow' the order of d-part execution.)
+
+We should not assume hierarchy but create a command that must be issued to tell a d-part which next d-part to connect to, for the remaining part of the state-machine.
+
+-------------------------------------------------------------
+
+Consistency under dynamic graphs
+
+I think that the best we can say is that consistency is correnct under the current graph with all the dynamic sungraphs.
+
+We do have a problem under historical outputs. The correct thing to say is that the historical output is the result of both the inputs as well as the transformed graph.
+To be logically correct, we can assume that our equations have time as a varriable and the dynamic functions depend on them.
+
+Local mutations in the graph are our time. We track time with git commits. We need to introduce versioning for dynamic graphs as well.
+
+Only dynamic graphs inserted in If statements changes the output of a code node.
+
+If we consider time as a variable, then the only thing we need to do is to save the insertions/removal of dynamic graphs.
+Thus dynamic graphs introduce state, but we only care for the last value.
+
+
+
