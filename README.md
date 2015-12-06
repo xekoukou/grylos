@@ -2,6 +2,8 @@
 
 Grylos/Γρύλος/Grillo/Grillon/Cricket is a reactive metaprogramming framework based on XML and visual graph representations.
 
+The most current branch is the gh-pages one. Master will lag behind.
+
 ## Documentation
 
 Check the [website](https://xekoukou.github.io/grylos)
