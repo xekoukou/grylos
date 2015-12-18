@@ -1,7 +1,7 @@
-hello:ac          world
+hello:cp          world
   |----(var_name)-|
 
-Hi:c       there:cao
+Hi:c       there:cr
 |----(y)----|
    
 

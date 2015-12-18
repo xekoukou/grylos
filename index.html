@@ -18,137 +18,209 @@
        <div class="markdown">
 # Introduction {#introduction}
 
-**Grylos** is a programming framework and a compiler that was build with the purpose of making 
-decentralized programming easier. It is part of the software that will be used by [ryaki](http://ryaki.org),
- an organization that aims to build p2p productive processes, like Uber but with an emphasis on Democracy 
-above all other [properties](http://ryaki-org.blogspot.gr/2015/10/it-is-about-democracy-not-economic.html).
+**Grylos** is a programming framework and a compiler that was build with the purpose of making decentralized programming easier. It
+is part of the software that will be used by [ryaki](http://ryaki.org), an organization that aims to build p2p productive processes,
+like Uber but with an emphasis on Democracy above all other
+[properties](http://ryaki-org.blogspot.gr/2015/10/it-is-about-democracy-not-economic.html).
 
 ## Automation Challenges {#Automation_Challenges}
 
-The rise of automation and the emergence of p2p production processes has introduced new requirements 
-for software both technical and ethical.
+The rise of automation and the emergence of p2p production processes has introduced new requirements for software both technical and
+ethical.
 
-The automation of production processes with the use of computers makes it more difficult for people to understand why each production choice is made. People have to do what the program tells them to do. This is already true for companies, an employee doesn't know why he does something but automation has the potential to determine more parts of our life.
-Grylos tries to alleviate this problem by requesting that all p2p automation software use free software licenses(GPL).
-Secondly, its goal is to make these software easier to read. The end goal is that any person whose life is automated by software should be able to understand the software code and be able to change it. 
+The automation of production processes with the use of computers makes it more difficult for people to understand why each
+production choice is made. People have to do what the program tells them to do. This is already true for companies, an employee
+doesn't know why he does something but automation has the potential to determine more parts of our life.  Grylos tries to alleviate
+this problem by requesting that all p2p automation software use free software licenses(GPL).  Secondly, its goal is to make these
+software easier to read. The end goal is that any person whose life is automated by software should be able to understand the
+software code and be able to change it. 
 
 To achieve those goals, grylos implements the below characteristics:
 
-* It uses [literate programming](https://en.wikipedia.org/wiki/Literate_programming). Each program is a book that contain pieces of code. The book explains the motivation behind the code.
-It has a very powerful metaprgramming framework that allows for the creation of models and the generation of code from them.
+* It uses [literate programming](https://en.wikipedia.org/wiki/Literate_programming). Each program is a book that contain pieces of
+code. The book explains the motivation behind the code.
+* It has a very powerful metaprgramming framework that allows for the creation of models and the generation of code from them.
 * It uses visual graph representations for programming distributed applications.
 
 ## Distributed systems Cost of Developing {#Distributed_Systems_Cost}
 
-Apart from the ethical requirements of automating p2p processes, there are technical problems as well. Writing distributed applications is very difficult. Thus it requires a considerable amount of capital for them to be built. Investors have the tendency of controlling whatever they invest on. Uber for example has created a very good p2p application but the control of that application has resulted in making a fortune while the people that work as taxi drivers earning very little. Thus, if we want to create a myriad of p2p processes that are controlled democraticly, we need to decrease the cost of building them.
+Apart from the ethical requirements of automating p2p processes, there are technical problems as well. Writing distributed
+applications is very difficult. Thus it requires a considerable amount of capital for them to be built. Investors have the tendency
+of controlling whatever they invest on. Uber for example has created a very good p2p application but the control of that application
+has resulted in making a fortune while the people that work as taxi drivers earning very little. Thus, if we want to create a myriad
+of p2p processes that are controlled democraticly, we need to decrease the cost of building them.
 
 To reduce the cost of Developing, grylos has te below characteristics:
 
-* It is reactive and functional.
-  * It promotes programming without side effects. Side effects, when present, are explicitly handled.
-  * It promotes programming without state. If state is present, it has rules that make distributed programming safe.
+* It is reactive and functional.  It promotes programming without side effects. Side effects, when present, are explicitly handled.
+* It promotes programming without state. If state is present, it has rules that make distributed programming safe.
 Those rules are checked by the compiler.
   * The visual graph representation consists of a number of functions and their composition. There are no loops.
 The graph is a series of statements and the program needs to guarantee their logical consistency.
 
 example: 
-```
-f(x) = 2x
+``` 
+f(x) = 2x 
 g(x) = 5 - x
 
 f->g
 
 ```
 
-When x = 2, f = 4, thus g must be 1, otherwise the program would be logically inconsistent.
-Being similar to declarative programming, it allows for easier reasoning than imperative programming with state.
+When x = 2, f = 4, thus g must be 1, otherwise the program would be logically inconsistent.  Being similar to declarative
+programming, it allows for easier reasoning than imperative programming with state.
 
-* It makes stateful distributed programming easy.
-  * Grylos uses the graph visualization to define state machines. The code follows the logic of the application.
-State machine code is generated by the compiler. This is the most important feature of grylos because p2p processes are stateful. 
+* It makes stateful distributed programming easy.  Grylos uses the graph visualization to define state machines. The code follows
+the logic of the application.
+* State machine code is generated by the compiler. This is the most important feature of grylos because p2p processes are stateful. 
 //TODO update this when I finish implementing the reamining features.
-  * It is easy to split state machines and create a hierarchy of them. That is important because p2p processes and group organizations are fractal.
+  * It is easy to split state machines and create a hierarchy of them. That is important because p2p processes and group
+  * organizations are fractal.
 
-* It introduces a metaprogramming framework, [protein](https://github.com/xekoukou/protein). This allows people to make abstractions of the p2p processes. It allows them to create models of them. 
-  * Models compresses information about the p2p processes into the important parts and that allows people to better understand them and reason about. 
-  * It allows them to create a multitude of different p2p processes using the template system of the model and thus it reduces the cost of programming.
+* It introduces a metaprogramming framework, [protein](https://github.com/xekoukou/protein). This allows people to make abstractions
+of the p2p processes. It allows them to create models of them.  Models compresses information about the p2p processes into the
+important parts and that allows people to better understand them and reason about.  It allows them to create a multitude of
+different p2p processes using the template system of the model and thus it reduces the cost of programming.
 
 ## Additional Properties of Grylos {#additional_properties_of_grylos}
 
+* **Order of execution**: Grylos only guarantees the logical consistency of function composition. The order of execution can not be
+determined beforehand. 
+* Grylos code is **implicitly concurrent** and **explicitly parallel**. The same function, if given two sets
+of arguments, can execute concurrently. Two subgraphs that do not depend to each other can executed in parallel.  Grylos uses
+**multi-level visual graph representations** that allow people to organize code thematically.
+
 # Description {#Description}
 
-Grylos uses graph visualizations to describe the composition of different functions, as well as to define special properties that edges and nodes of the graph have.
-
-Some of the properties of grylos follow:
-
-* **Order of execution**: Grylos only guarantees the logical consistency of function composition. The order of execution can not be determined beforehand.
-* Grylos code is **implicitly concurrent** and **explicitly parallel**. The same function, if given two sets of arguments, can execute concurrently. Two subgraphs that do not depend to each other can executed in parallel.
-* Grylos uses **multi-level visual graph representations** that allow people to organize code thematically.
-
-
-
+Grylos uses graph visualizations to describe the composition of different functions, as well as to define special properties that
+edges and nodes of the graph have.
 
 ## Graphs and nodes {#Graphs_and_Nodes}
 
-Each program consists of nodes. A node can either contain code or a graph that contains nodes. We call them **code nodes** and **graph nodes** respectively. 
+Each program consists of nodes. A node can either contain code or a graph that contains nodes. We call them **code nodes** and
+**graph nodes** respectively. 
 
-A graph is **directed** and **acyclic**. Each node requires all inputs to execute and produce an output, like a normal function. A node though can create side-effects. It is up to the programmer to explicitly point them. This information is propagated to the higher graph levels. The programmer will need to check whether the order of execution of certain parts of the graph are important and if necessary create a dependency so that the compiler will ensure the order of execution.
+A graph is **directed** and **acyclic**. Each node requires all inputs to execute and produce an output, like a normal function. 
 
 //TODO These will probably change in the future.
 
 Nodes can have these properties:
 
-* Parellelized: This node should be executed in a different thread.
-* ?Asynchronous?: This node is the connection of the program to the outer world. It creates events that the program needs to react to. //TODO We should remove this property alltogether and have complete systems expressed in grylos.
-* Ordered: This node requires that its output is ordered by the order of the input. FIFO.
+* Parallelized/Concurrent: This node should be executed in a different thread.
+* Impure/User interaction: The node represents an interaction with a user and that makes the node impure, or we need to interact
+with computers whose internal working are not known.
+* safe/pure: The graph node contains impure code, but the protocol itself guarantees that the graph node is pure. By tagging the
+graph node as pure we tell the compiler that it should be treated as safe/pure. 
+* restriction: The node checks the input if it has specific properties. If not it exits, else it continues its computation. This
+can be thought as a domain restriction. For clarity's sake we allow this node to have the ability to exit, thus have side-effects.
+
+Keep in mind that restrictions should be prohibited in a distributed environment. The application should never have to halt on a
+specific input.
 
 Edges can have these properties:
 
-* mutable: The output is mutable but must also abide by restrictions. The mutable variable can only be passed to only one node in a different thread.
+* mutable: The output is mutable but must also abide by restrictions. The mutable variable can only be passed to only one node in a
+different thread. 
 * lossless: This output requires that it is computed for all input sent to the node.
-* historical: This output depends on all previous inputs of the node. The node is ordered and the edge is also lossless.
-* dependency: This output doesn't contain data. It only signifies a logical dependency between 2 parts of the graph because of side-effects.
+* Ordered: This output requires that it is computed in the order of the input received. FIFO.
+* historical: This output depends on previous inputs of the node. It needs to be ordered and lossless.
 * passive: This output doesn't propagate the execution. It waits to be used when events from other parts of the graph are triggered.
+* saved: The output is saved into a database/file.
+* timed out: This output returns nothing if the timeout passes without data received. This introduces impurity because the
+result depends on the execution timings.
 
 
-## Level functions {#Level_functions}
+## Local functions {#Local_functions}
 
-Each graph has also 3 types of functions that can be used by the contained nodes and recursively by all the contained nodes of the graph nodes.
+Each graph has also 3 types of functions that can be used by the contained nodes and recursively by all the contained nodes of the
+graph nodes.
 
-* reusable functions: Functions that can be used multiple times.
-* single use functions: Functions that are used only once from a code node of this graph. Since there can be no if-statements in the graph, paths express functional composition, single_use functions are used inside code nodes in if statements.
+* reusable functions: Functions that can be used multiple times. 
+* single use functions: Functions that are used only once from a code node of this graph. Since there can be no if-statements in 
+the graph, paths express functional composition, single_use functions are used inside code nodes in if statements.
 * dynamic functions: Functions that are plugged into the graph at runtime. In this way we mutate the graph at runtime.
 
-We will all call them **level functions**.
+We will all call them **local functions**.
 
-## Hierarchical State machines {Hierarchical_State_Machines}
+## Continuation style of programming and distributed closed systems. {#Continuation_style}
+
+In grylos, all interactions of distributed parts/servers are expressed with a directed edge in a graph tha represents that
+interaction.
+
+Grylos models complete distributed systems. All applications's code is part of the same source code. Interacting with the outside
+world happens in 2 cases:
+
+* Software and apis we do not control and thus we can not integrate with the remaining source code.
+* The interactions of users with the software itself.
+
+Both interactions introduce impurity because there are factors that can not be modeled and affect the outcome of the computation. In
+the first case, because the working of the software is not known to us. In the second case because we do not simulate the physics
+that determine the actions of humans or the results of sensors.
+
+Since interacting with other software can be avoided, we say that grylos is a platform for the generation of distributed closed
+systems, closed because all software parts of the distributed system are in the same source code/generated by the same compiler.
+
+### Functional Homeomorphism and Impurity {#Functional_Homeomorhism}
+
+In mathematics, two functions are equal if for the same input, they give the same output.
+
+Grylos compiles closed distributed systems. What this means is that the root/main function gets 1 as input and returns 0. 
+Thus one could then go and say that all programs written in Grylos are homeomorphic to the trivial one of returning 0.
+
+As we know from the previous section, all our programs are impure because we want them to be meaningful to the outside world.
+Thus, functional homeomorphism can not apply here. It can only apply to sections of our program that is pure. Grylos tries to
+separate those parts from the impure parts.
+
+### Handling impurity {#Handling_Impurity}
+
+Since inpure parts of the code, places where users interact with the software, give different outputs on the same inputs. We cannot
+test those parts of the code. We can though add software that simulates the users in a deterministic way. That way, impurities turn
+into purities and we can test the code that previously was inpure as if it is pure. 
+ 
+## Subgraph Code Plurariry and Code evolution. {#Subgraph_Code_Plurarity_Code_Evolution}
 
 //TODO Implement this and rewrite this section.
 
-State machines are used in grylos to allow for a continuation style of programming in distributed applications. The state is simply the position in the graph that computations will follow as soon as a network response is received.
+Subgraphs of our distributed system can be implemented in multiple different ways but at the same time they must obey the
+resitrictions of the global graph. This way we can allow our distributed system to have plurarity in the way subalgorithms are
+handled. This can allow new algorithms to be tested and if better than others to replace the previous algorithms naturally, without
+requiring a restart of the system.
 
-* A state machine has a name that works as an unique id in the application.
-* A state machine transition might allow the handling of the lower level state machine to be handled by other servers. That transition should provide a name that acts as a unique id for that handling.
-* The server should be able to add servers as eligible to handle the lower state machine.
-* Grylos should be able to provide an optional security mechanism that only accepts inputs that have been handled by those servers. (with a signature mechanism).
+//TODO This has not been implemented yet.
+
+At the same time our source code needs to change. We have mananged to make our source code purely functional but any transition from
+one git commit to another is not functional. We need to consider time and git commits as a varriable that when explicitly taken into
+account make the system functional even when the code changes.
+
+//TODO This needs to be removed. It contains some useful information that might need to be kept though.
+
+State machines are used in grylos to allow for a continuation style of programming in distributed applications. The state is simply
+the position in the graph that computations will follow as soon as a network response is received.
+
+* A state machine has a name that works as an unique id in the application.  A state machine transition might allow the handling of
+* the lower level state machine to be handled by other servers. That transition should provide a name that acts as a unique id for
+* that handling.  The server should be able to add servers as eligible to handle the lower state machine.  Grylos should be able to
+* provide an optional security mechanism that only accepts inputs that have been handled by those servers. (with a signature
+* mechanism).
 
 
 # Compiler Overview {#Compiler_Overview}
 
 ## Modularity and recursive execution. {#Modularity_and_Recursive_Execution}
 
-Tests can be applied at each node. Because of that, the code for that node will need to be generated seperately from the main program. That forces our compilation and code generation to be modular. 
+Tests can be applied at each node. Because of that, the code for that node will need to be generated seperately from the main
+program. That forces our compilation and code generation to be modular. 
 
 The process of joining nodes to compile graph nodes and ultimately the program is as follows:
-* If a node is a code node, we find all the dependencies it has with reusable or single use functions. (TODO dynamic?). We compile them and then compile the code node.
-* If a node is a graph node, we compile all containing nodes and then compile the graph node.
+* If a node is a code node, we find all the dependencies it has with reusable or single use functions. (TODO dynamic?). We compile
+them and then compile the code node.  If a node is a graph node, we compile all containing nodes and then compile the graph node.
 
-Please note that level functions have also level functions inside them. Also it is important to note these implementation details:
-* If multiple nodes depend on one reusable function, only one compilation should happen.(check following section).
-* For multiple levels of graphs to join, some requirements need to be met:
-    *  All inputs need of a lower graph need to be provided by the previous graph.
-    * All outputs of the higher graph need to have a corresponding node that provides that output.
-* On the top level, there should be only side-effects or inputs/outputs that have been explicitly defined.
+Please note that local functions have also local functions inside them. Also it is important to note these implementation details:
+* If multiple nodes depend on one reusable function, only one compilation should happen.(check following section). 
+* For multiple levels of graphs to join, some requirements need to be met: 
+  * All inputs of a lower graph need to be provided by the previous graph.  
+  * All outputs of the higher graph need to have a corresponding node that provides that output.  On the top level, there
+* should be no inputs/outputs or inputs/outputs(in case it is a local function/aka library) that have been explicitly defined.
 
 ## Recompilation {#Recompilation}
 
@@ -156,23 +228,29 @@ At the same time we want our compiler to know which parts of the code changed an
 
 There are 2 cases:
 
-* a node changes: That node needs to be recompiled and all the graphs that recursively contain it.
-* A reusable or single use function changes: All nodes that are at lower levels need to be compiled if they depend on this function. (thus we need to keep track of those dependencies). The graph that contains this function and recursively all higher graphs need to recompile , similarly to when a node changes.
+* a node changes: This node needs to be recompiled and all the graphs that recursively contain it. (unless we use the inline
+key word, in which case if its input/output and name do not change, then only need to compilte itself.)
+* A reusable or single use function changes: All nodes that are at lower levels need to be compiled if they depend on this 
+function. (thus we need to keep track of those dependencies). The graph that contains this function and recursively all higher 
+graphs need to recompile , similarly to when a node changes.
 
-Certainly, the compiler needs to keep track of changes in the nodes. Thus it needs to keep a list of time of last change of a node that was compiled and check it with the current time of last change. 
+Certainly, the compiler needs to keep track of changes in the nodes. Thus it needs to keep a list of time of last change of a node
+that was compiled and check it with the current time of last change. 
 
 ## Two steps of compilation {#Two_Steps_of_Compilation}
 
 There are two steps in the compilation.
 
-The first compilation has to do with generating the information required for the second step as well as provide checks that all the information is correct, that the restrictions we have put have been upheld are correct.
-(Some restrictions might need the complete information from all the nodes to be checked and thus cannot be modular (?))
+The first compilation has to do with generating the information required for the second step as well as provide checks that all the
+information is correct, that the restrictions we have put have been upheld are correct.  (Some restrictions might need the complete
+information from all the nodes to be checked and thus cannot be modular (?))
 
 
 //TODO Find a solution.
-The second process deals with generating the code based on the information provided by the first process. In this case as well, we can not be modular. There are multiple reasons for this:
+The second process deals with generating the code based on the information provided by the first process. In this case as well, we
+can not be modular. There are multiple reasons for this:
 
-* The lossless property progates backward.
+* The lossless property progates backward.  
 * The code needed for the reactive scheduler needs to be modular. (maybe we can do this). In any case, the final step of joining all the modular parts will need to happen at the end.
 
 # Testing {#Testing}
@@ -247,7 +325,8 @@ var execSync = require('child_process').execSync;
 
 # Generate graph xml from mr file {#Generate_Graph_xml_from_mr_file}
 
-A graph node contains all the data about the graph in its xml file. The graph itself could be created through a nice gui or it could be provide in a simple text file with an '.mr' extension.
+A graph node contains all the data about the graph in its xml file. The graph itself could be created through a nice gui or it could
+be provided in a simple text file with an '.mr' extension.
 
 In both cases, the data of the graph need to be inserted into the XML file. This is the purpose of this graph node:
 
@@ -256,11 +335,8 @@ In both cases, the data of the graph need to be inserted into the XML file. This
 ```mr
 ./output("./temp/generate_graph_xml_from_mr_file.mr")
 ./dots(1)
-parse_mr_file             check_node_properties   insert_graph_content_to_xml_files
-     |-----------(graphs)------|-(check_node_properties_dep)---d-----|
-     |----(graphs)---------------------------------------------------|
-     |                   check_same_output_name                      |
-     |-----------(graphs)-------|--(check_same_output_name_dep)--d---|
+parse_mr_file  check_node_properties:l  check_same_output_name:l    insert_graph_content_to_xml_files
+     |-(graph)-------|-----(graph_v1)--------|-----(graph_v2)------------------|
 ./dots(-1)
 ```
 
@@ -285,25 +361,27 @@ The syntax of the .mr file is as follows:
 
 * Function names
     *  are strings without spaces that do not contain parenthesis.
-    * can contain single properties which are seperated from the name with a colon ":".
+    * can contain 'single character' properties which are seperated from the name with a colon ":".
     * can contain a name that represents the server type responsible for this node, seperated by a secondary ":".
 * Below each function name, there is only one pipe sympol "|" and below that pipe sympol more can follow.
 * A Path
-    * is a series of minuses "-" that connect one pipe of a function with another, the left side representing the output of a variable and the right the input. Let us call this a *path*.
+    * is a series of minuses "-" that connect one pipe of a function with another, the left side representing the
+ output of a variable and the right the input. Let us call this a *path*.
     * can go down one line with a backslash "\" and up with a forward slash "/".
     * **must** contain the name of the variable contained in parentheses.
-    * can have properties that are single characters that are put together and do not have parentheses.
+    * can have properties that are single characters that are separated from the name with a colon.
+    * can contain a name that represents the type of connection between 2 distributed parts, separated by a secondary colon ":".
 
 In this graph node, we will parse the .mr file and we will create a  graph object of its data.
 
 ```mr
 ./output("./temp/generate_graph_xml_from_mr_file/parse_mr_file.mr")
 ./dots(1)
-load_mr_file find_function_names              find_end_points              path_traversal        build_graph
-  |          |-----------(function_names)-------|--------(end_points)---------|-------(gpaths)----|
-  |          |------------(function_names)--------------------------------------------------------|
-  |-(lines)--|                           find_end_points                    
-  |-(lines)-------------------------------------|                         path_traversal
+load_mr_file:r find_function_names:r     find_end_points:r            path_finding        build_graph
+  |            |-----------(function_names)-------|--------(end_points)---------|-------(gpaths)----|
+  |            |------------(function_names)--------------------------------------------------------|
+  |-(lines)----|                           find_end_points                    
+  |-(lines)-------------------------------------|                         path_finding
   |-(lines)-------------------------------------------------------------------|
 ./dots(-1)
 ```
@@ -355,7 +433,12 @@ It loads the mr_file and splits it into lines.
 function load_mr_file(file_path) {
 var lines;
 ////
-var file = fs.readFileSync(file_path,"utf8");
+var file;
+try {
+  file = fs.readFileSync(file_path,"utf8");
+} catch(e) {
+  process.exit(4);
+}
 lines = file.split("\n");
 ////
 return lines;  
@@ -384,9 +467,6 @@ Returns the function names of the nodes and their position inside the mr file.
 %ltinput name="mr_file_path"/%gt
 %lt/inputs%gt
 %ltoutputs%gt
-%ltoutput name="wrong_node_property" side-effect="true"%gt
-    %ltdescription%gt It returns an error when a node has been given a property that doesn't exist. The side effect is that the application exits.%lt/description%gt
-%lt/output%gt
 %lt/outputs%gt
 %lt/root%gt
 %lt!--
@@ -430,12 +510,16 @@ while (x < line.length) {
 			function_name.properties.concurrent = true;
                         break;
                       }
-                      case "a": {
-		        function_name.properties.asynchronous = true;
+                      case "i": {
+		        function_name.properties.impure = true;
                         break;
                       }
-                      case "o": {
-		        function_name.properties.ordered = true;
+                      case "p": {
+		        function_name.properties.pure = true;
+                        break;
+                      }
+                      case "r": {
+		        function_name.properties.restriction = true;
                         break;
                       }
                       default: {
@@ -462,7 +546,8 @@ return function_names;
 ```
 
 ```javascript test
-assert(find_function_names(load_mr_file("./tests/generate_graph_xml_from_mr_file/parse_mr_file/find_function_names/1.mr"),"./tests/generate_graph_xml_from_mr_file/parse_mr_file/find_function_names/1.mr"), [{'fn_name':'hello','x':0,'y':0,properties:{'concurrent':true,'asynchronous':true}},{'fn_name':'world','x':18,'y':0,properties:{}},{'fn_name':'Hi','x':0,'y':3,properties:{'concurrent':true}},{'fn_name':'there','x':11,'y':3,properties:{'concurrent':true,'asynchronous':true,'ordered':true}}],"find function_names 1 test Failed");
+assert(find_function_names(load_mr_file("./tests/generate_graph_xml_from_mr_file/parse_mr_file/find_function_names/1.mr"),"./tests/generate_graph_xml_from_mr_file/parse_mr_file/find_function_names/1.mr"),
+[{'fn_name':'hello','x':0,'y':0,properties:{'concurrent':true,'restriction':true}},{'fn_name':'world','x':18,'y':0,properties:{}},{'fn_name':'Hi','x':0,'y':3,properties:{'impure':true}},{'fn_name':'there','x':11,'y':3,properties:{'concurrent':true,'restriction':true,'pure':true}}],"find function_names 1 test Failed");
 
 assert(find_function_names(load_mr_file("./tests/generate_graph_xml_from_mr_file/parse_mr_file/find_function_names/2.mr"),"./tests/generate_graph_xml_from_mr_file/parse_mr_file/find_function_names/2.mr"),"error 1","find_function_names 2 test Failed");
 ```
@@ -570,19 +655,206 @@ assert(find_end_points(test_lines, find_function_names(test_lines,"./tests/gener
 --%gt
 %ltroot%gt
     %ltinfo%gt
-        %ltname%gt path_traversal %lt/name%gt
+        %ltname%gt path_finding %lt/name%gt
         %ltdescription%gt It finds all the paths of the graphs. %lt/description%gt
     %lt/info%gt
     %ltinputs%gt
-        %ltinput name="srcodes"/%gt
-        %ltinput name="mr_file_paths"/%gt
-        
-    %ltinput generated="true" name="end_points"/%gt%lt/inputs%gt
+        %ltinput name="mr_file_path"/%gt
+    %lt/inputs%gt
     %ltoutputs%gt
-        
-    %ltoutput generated="true" name="gpaths"/%gt%lt/outputs%gt
+    %lt/outputs%gt
 %lt/root%gt
+%lt!--
+./dots(-1)
+--%gt
 ```
+
+```javascript
+function path_finding() {
+    var gpaths;
+    ///////////////////////////
+    gpaths = [];
+
+    end_points.forEach(function(lend_points, index) {
+        var code = srcodes[index];
+        var paths = [];
+        Object.keys(lend_points).forEach(function(y_key) {
+            Object.keys(lend_points[y_key]).forEach(function(x_key) {
+                var path = {
+                    y: +y_key,
+                    x: +x_key,
+                    origin_fn_name: lend_points[y_key][x_key]
+                };
+                while (true) {
+                    //Checking which way to go next.
+                    //up
+                    var up = 0;
+                    var y = path.y - 1;
+                    var x = path.x;
+                    var line = code[y];
+                    var xar;
+                    if (x < line.length) {
+                        xar = line.charAt(x);
+                        if (xar == "/") {
+                            up = 1;
+                        }
+                    }
+
+                    //down
+                    var down = 0;
+                    y = path.y + 1;
+                    x = path.x;
+                    if (y < code.length) {
+                        line = code[y];
+                        if (x < line.length) {
+                            xar = line.charAt(x);
+                            if (xar == "\\") {
+                                down = 1;
+                            }
+                        }
+                    }
+
+
+
+                    var right = 0;
+                    y = path.y;
+                    x = path.x + 1;
+                    line = code[y];
+                    if (x < line.length) {
+                        xar = line.charAt(x);
+                        if ((xar != " ") && (xar != "\\") && (xar != "/")) {
+                            right = 1;
+                        }
+                    }
+
+                    //Making sure there are no paths without ending.
+                    if (!(up || down || right)) {
+                        line = code[path.y];
+                        xar = line.charAt(path.x);
+                        if (xar != "|") {
+                            console.log("\nError: mr_file:" + mr_file_paths[index] + ".mr(line: " + path.y + "," + "position: " + path.x + ")");
+                            console.log("A path with no end.");
+                            format_XML(source_path);
+                            process.exit(1);
+                        } else {
+                            return;
+                        }
+                    }
+                    //Maling sure paths have only one possible direction to go.
+                    if ((up && down) || (up && right) || (down && right)) {
+                        console.log("\nError: mr_file:" + mr_file_paths[index] + ".mr(line: " + path.y + "," + "position: " + path.x + ")");
+                        console.log("Multiple paths detected.");
+                        format_XML(source_path);
+                        process.exit(1);
+                    }
+                    //Moving forward.
+                    if (up) {
+                        path.y = path.y - 1;
+                        path.x = path.x;
+                    }
+
+                    if (down) {
+                        path.y = path.y + 1;
+                        path.x = path.x;
+
+                    }
+
+                    if (right) {
+                        path.y = path.y;
+                        path.x = path.x + 1;
+
+
+                        line = code[path.y];
+                        xar = line.charAt(path.x);
+                        //Checking if this is a value name declaration
+                        if (xar == "(") {
+                            var array = line.substring(path.x + 1).split(")");
+                            if (array.length < 1) {
+
+                                console.log("\nError: mr_file:" + mr_file_paths[index] + ".mr(line: " + path.y + "," + "position: " + path.x + ")");
+                                console.log("There is a missing ')'.");
+                                format_XML(source_path);
+                                process.exit(1);
+                            } else {
+                                path.vname = array[0];
+                                path.x = path.x + array[0].length + 2;
+                            }
+
+
+                        } else {
+                            //Checking if this is the end of the path.
+                            if (xar == "|") {
+
+                                path.end_fn_name = lend_points[path.y][path.x];
+                                break;
+
+                            } else {
+                                //Checking for the existence of options or return an error if it doesn't match any of the possible options.
+                                if (xar != "-") {
+                                    var options = line.substring(path.x).split("-")[0];
+                                    path.x = path.x + options.length - 1;
+                                    for (var i = 0; i < options.length; i++) {
+                                        var each = options.charAt(i);
+                                        //'e' is for endpoint
+                                        if (each == "p") {
+                                            path.passive = true;
+                                        } else {
+
+                                            if (each == "e") {
+                                                path.dynamic = true;
+                                            } else {
+                                                if (each == "h") {
+                                                    path.historical = true;
+                                                } else {
+                                                    if (each == "m") {
+                                                        path.mutable = true;
+
+                                                    } else {
+                                                        if (each == "d") {
+                                                            path.dependency = true;
+                                                        } else {
+                                                            if (each == "l") {
+                                                                path.lossless = true;
+
+                                                            } else {
+                                                                console.log("\nError: mr_file:" + mr_file_paths[index] + ".mr(line: " + path.y + "," + "position: " + path.x + ")");
+                                                                console.log("Wrong option type.");
+                                                                format_XML(source_path);
+                                                                process.exit(1);
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+
+
+
+                                }
+                            }
+
+
+                        }
+                    }
+
+                }
+                //Remove unnecessary properties and store path.
+                delete path.x;
+                delete path.y;
+                paths.push(path);
+            });
+        });
+
+
+        gpaths.push(paths);
+    });
+}
+
+
+```
+
+
 
        </div>
     </div>

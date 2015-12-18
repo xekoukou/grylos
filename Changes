@@ -87,4 +87,28 @@ If we consider time as a variable, then the only thing we need to do is to save 
 Thus dynamic graphs introduce state, but we only care for the last value.
 
 
+---------------------------------------------------------------
 
+Our distributed system will be modeled as a closed one, meaning that all input originates from itself. To model open systems, which are more useful, they can allow human interaction for example, we add fake nodes that do not contain any code.
+
+
+We need the code to be able to mutate locally while adhering to a specific api. 
+Multiple mutable strings need to be able to attach to the same api.
+
+We need to have each graph node that represents a specific distributed part/server code generate the condition under which any other code would do as this one, thus allow for mutability.
+
+------------------------------------------------------------
+
+We cannot have historical output that is not ordered and get the same results per single computation. Orderedlessness assumes that
+output is not historical.
+
+If we can accept that the result can be different depending on the computation itself, then we can have historical values that are
+not ordered. But then we lose functional purity.
+
+
+
+Timouts introduce impurity because the result depends on the execution timing of applications/events/interactions/side-effects.
+We need to put them together with other impure code.
+
+Distributed protocols might require timeouts to function but they guarantee consistency as a whole. We might need to add a safety
+w
