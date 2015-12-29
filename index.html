@@ -128,6 +128,7 @@ different thread.
 * saved: The output is saved into a database/file.
 * timed out: This output returns nothing if the timeout passes without data received. This introduces impurity because the
 result depends on the execution timings.
+* ??dynamic: Here dynamic functions/subgraphs can attach to.
 
 
 ## Local functions {#Local_functions}
@@ -251,7 +252,8 @@ The second process deals with generating the code based on the information provi
 can not be modular. There are multiple reasons for this:
 
 * The lossless property progates backward.  
-* The code needed for the reactive scheduler needs to be modular. (maybe we can do this). In any case, the final step of joining all the modular parts will need to happen at the end.
+* The code needed for the reactive scheduler needs to be modular. (maybe we can do this). In any case, the final step of joining
+all the modular parts will need to happen at the end.
 
 # Testing {#Testing}
 
@@ -305,11 +307,17 @@ function are_objects_equal(obj1,obj2) {
 
 function assert(var1, var2, msg) {
   if(!are_var_equal(var1,var2)) {
+    debug(var1);
+    debug(var2);
     throw new Error(msg);
   }
 }
 
 function debug(data) {
+  process.stderr.write(JSON.stringify(data) + "\n");
+}
+
+function error(data) {
   process.stderr.write(JSON.stringify(data) + "\n");
 }
 ```
@@ -335,7 +343,7 @@ In both cases, the data of the graph need to be inserted into the XML file. This
 ```mr
 ./output("./temp/generate_graph_xml_from_mr_file.mr")
 ./dots(1)
-parse_mr_file  check_node_properties:l  check_same_output_name:l    insert_graph_content_to_xml_files
+parse_mr_file  check_node_properties:r  check_same_output_name:r    insert_graph_content_to_xml_files
      |-(graph)-------|-----(graph_v1)--------|-----(graph_v2)------------------|
 ./dots(-1)
 ```
@@ -377,7 +385,7 @@ In this graph node, we will parse the .mr file and we will create a  graph objec
 ```mr
 ./output("./temp/generate_graph_xml_from_mr_file/parse_mr_file.mr")
 ./dots(1)
-load_mr_file:r find_function_names:r     find_end_points:r            path_finding        build_graph
+load_mr_file:r find_function_names:r     find_end_points:r            path_finding:r      build_graph
   |            |-----------(function_names)-------|--------(end_points)---------|-------(gpaths)----|
   |            |------------(function_names)--------------------------------------------------------|
   |-(lines)----|                           find_end_points                    
@@ -523,9 +531,9 @@ while (x < line.length) {
                         break;
                       }
                       default: {
-	        	debug("Error: There is no option '" + xar + "' for a function");
-			debug("File: " + mr_file_path);
-			debug("Function Name: " + value[0]);
+	        	error("Error: There is no option '" + xar + "' for a function");
+			error("File: " + mr_file_path);
+			error("Function Name: " + value[0]);
 			process.exit(1);
                       }
                     }
@@ -588,9 +596,9 @@ for(var i = 0; i < function_names.length; i++) {
     var fn = function_names[i];
 
     if (fn.y + 1 == lines.length) {
-      debug("Error: There is a function that isn't connected to another function.");
-      debug("File: " + mr_file_path);
-      debug("Function Name: " + fn.fn_name);
+      error("Error: There is a function that isn't connected to another function.");
+      error("File: " + mr_file_path);
+      error("Function Name: " + fn.fn_name);
       process.exit(2);
     }
 
@@ -624,9 +632,9 @@ for(var i = 0; i < function_names.length; i++) {
     }
 
     if (once == 0) {
-      debug("Error: There is a function that isn't connected to another function.");
-      debug("File: " + mr_file_path);
-      debug("Function Name: " + fn.fn_name);
+      error("Error: There is a function that isn't connected to another function.");
+      error("File: " + mr_file_path);
+      error("Function Name: " + fn.fn_name);
       process.exit(3);
     }
 
@@ -647,6 +655,8 @@ assert(find_end_points(test_lines, find_function_names(test_lines,"./tests/gener
 
 
 ## Path finding {#Path_finding}
+        
+It finds all the paths of the graphs.
 
 ```xml
 %lt?xml version="1.0"?%gt
@@ -656,7 +666,6 @@ assert(find_end_points(test_lines, find_function_names(test_lines,"./tests/gener
 %ltroot%gt
     %ltinfo%gt
         %ltname%gt path_finding %lt/name%gt
-        %ltdescription%gt It finds all the paths of the graphs. %lt/description%gt
     %lt/info%gt
     %ltinputs%gt
         %ltinput name="mr_file_path"/%gt
@@ -670,188 +679,229 @@ assert(find_end_points(test_lines, find_function_names(test_lines,"./tests/gener
 ```
 
 ```javascript
-function path_finding() {
-    var gpaths;
+//.dots(-1)("./temp/generate_graph_xml_from_mr_file/parse_mr_file/path_finding.js")
+//./dots(1)
+function path_finding(lines, end_points, function_names, mr_file_path) {
+    var paths;
     ///////////////////////////
-    gpaths = [];
+    paths = [];
 
-    end_points.forEach(function(lend_points, index) {
-        var code = srcodes[index];
-        var paths = [];
-        Object.keys(lend_points).forEach(function(y_key) {
-            Object.keys(lend_points[y_key]).forEach(function(x_key) {
-                var path = {
-                    y: +y_key,
-                    x: +x_key,
-                    origin_fn_name: lend_points[y_key][x_key]
-                };
-                while (true) {
-                    //Checking which way to go next.
-                    //up
-                    var up = 0;
-                    var y = path.y - 1;
-                    var x = path.x;
-                    var line = code[y];
-                    var xar;
+    var y_keys = Object.keys(end_points);
+    for(var i = 0; i < y_keys.length; i++) {
+        var y_key = y_keys[i];
+        var x_keys = Object.keys(end_points[y_key]);
+        for(var j = 0; j < x_keys.length; j++) {
+            var x_key = x_keys[j];
+            var path = {
+                y: +y_key,
+                x: +x_key,
+                origin_fn_name: end_points[y_key][x_key]
+            };
+            while (true) {
+                //Checking which way to go next.
+                //up
+                var up = 0;
+                var y = path.y - 1;
+                var x = path.x;
+                var line = lines[y];
+                var xar;
+                if (x < line.length) {
+                    xar = line.charAt(x);
+                    if (xar == "/") {
+                        up = 1;
+                    }
+                }
+
+                //down
+                var down = 0;
+                y = path.y + 1;
+                x = path.x;
+                if (y < lines.length) {
+                    line = lines[y];
                     if (x < line.length) {
                         xar = line.charAt(x);
-                        if (xar == "/") {
-                            up = 1;
+                        if (xar == "\\") {
+                            down = 1;
                         }
                     }
+                }
 
-                    //down
-                    var down = 0;
-                    y = path.y + 1;
-                    x = path.x;
-                    if (y < code.length) {
-                        line = code[y];
-                        if (x < line.length) {
-                            xar = line.charAt(x);
-                            if (xar == "\\") {
-                                down = 1;
-                            }
-                        }
+
+
+                var right = 0;
+                y = path.y;
+                x = path.x + 1;
+                line = lines[y];
+                if (x < line.length) {
+                    xar = line.charAt(x);
+                    if ((xar == "-") || (xar == "|") || (xar == "(")) {
+                        right = 1;
                     }
+                }
 
-
-
-                    var right = 0;
-                    y = path.y;
-                    x = path.x + 1;
-                    line = code[y];
-                    if (x < line.length) {
-                        xar = line.charAt(x);
-                        if ((xar != " ") && (xar != "\\") && (xar != "/")) {
-                            right = 1;
-                        }
+                //Making sure there are no paths without ending.
+                if (!(up || down || right)) {
+                    line = lines[path.y];
+                    xar = line.charAt(path.x);
+                    if (xar != "|") {
+                        error("\nError: mr_file:" + mr_file_path + ".mr(line: " + path.y + "," + "position: " + path.x + ")");
+                        error("A path with no end.");
+                        process.exit(5);
+                    } else {
+                        break;
                     }
+                }
+                //Maling sure paths have only one possible direction to go.
+                if ((up && down) || (up && right) || (down && right)) {
+                    error("\nError: mr_file:" + mr_file_path + ".mr(line: " + path.y + "," + "position: " + path.x + ")");
+                    error("Multiple paths detected.");
+                    process.exit(6);
+                }
+                //Moving forward.
+                if (up) {
+                    path.y = path.y - 1;
+                    path.x = path.x;
+                }
 
-                    //Making sure there are no paths without ending.
-                    if (!(up || down || right)) {
-                        line = code[path.y];
-                        xar = line.charAt(path.x);
-                        if (xar != "|") {
-                            console.log("\nError: mr_file:" + mr_file_paths[index] + ".mr(line: " + path.y + "," + "position: " + path.x + ")");
-                            console.log("A path with no end.");
-                            format_XML(source_path);
-                            process.exit(1);
-                        } else {
-                            return;
-                        }
-                    }
-                    //Maling sure paths have only one possible direction to go.
-                    if ((up && down) || (up && right) || (down && right)) {
-                        console.log("\nError: mr_file:" + mr_file_paths[index] + ".mr(line: " + path.y + "," + "position: " + path.x + ")");
-                        console.log("Multiple paths detected.");
-                        format_XML(source_path);
-                        process.exit(1);
-                    }
-                    //Moving forward.
-                    if (up) {
-                        path.y = path.y - 1;
-                        path.x = path.x;
-                    }
-
-                    if (down) {
-                        path.y = path.y + 1;
-                        path.x = path.x;
-
-                    }
-
-                    if (right) {
-                        path.y = path.y;
-                        path.x = path.x + 1;
-
-
-                        line = code[path.y];
-                        xar = line.charAt(path.x);
-                        //Checking if this is a value name declaration
-                        if (xar == "(") {
-                            var array = line.substring(path.x + 1).split(")");
-                            if (array.length < 1) {
-
-                                console.log("\nError: mr_file:" + mr_file_paths[index] + ".mr(line: " + path.y + "," + "position: " + path.x + ")");
-                                console.log("There is a missing ')'.");
-                                format_XML(source_path);
-                                process.exit(1);
-                            } else {
-                                path.vname = array[0];
-                                path.x = path.x + array[0].length + 2;
-                            }
-
-
-                        } else {
-                            //Checking if this is the end of the path.
-                            if (xar == "|") {
-
-                                path.end_fn_name = lend_points[path.y][path.x];
-                                break;
-
-                            } else {
-                                //Checking for the existence of options or return an error if it doesn't match any of the possible options.
-                                if (xar != "-") {
-                                    var options = line.substring(path.x).split("-")[0];
-                                    path.x = path.x + options.length - 1;
-                                    for (var i = 0; i < options.length; i++) {
-                                        var each = options.charAt(i);
-                                        //'e' is for endpoint
-                                        if (each == "p") {
-                                            path.passive = true;
-                                        } else {
-
-                                            if (each == "e") {
-                                                path.dynamic = true;
-                                            } else {
-                                                if (each == "h") {
-                                                    path.historical = true;
-                                                } else {
-                                                    if (each == "m") {
-                                                        path.mutable = true;
-
-                                                    } else {
-                                                        if (each == "d") {
-                                                            path.dependency = true;
-                                                        } else {
-                                                            if (each == "l") {
-                                                                path.lossless = true;
-
-                                                            } else {
-                                                                console.log("\nError: mr_file:" + mr_file_paths[index] + ".mr(line: " + path.y + "," + "position: " + path.x + ")");
-                                                                console.log("Wrong option type.");
-                                                                format_XML(source_path);
-                                                                process.exit(1);
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-
-
-
-                                }
-                            }
-
-
-                        }
-                    }
+                if (down) {
+                    path.y = path.y + 1;
+                    path.x = path.x;
 
                 }
-                //Remove unnecessary properties and store path.
-                delete path.x;
-                delete path.y;
-                paths.push(path);
-            });
-        });
+
+                if (right) {
+                    path.y = path.y;
+                    path.x = path.x + 1;
 
 
-        gpaths.push(paths);
-    });
+                    line = lines[path.y];
+                    xar = line.charAt(path.x);
+                    //Checking if this is a value name declaration
+                    if (xar == "(") {
+                        var array = line.substring(path.x + 1).split("-");
+                        if (array[0][array[0].length - 1] != ")") {
+
+                            error("\nError: mr_file:" + mr_file_path + ".mr(line: " + path.y + "," + "position: " + path.x + ")");
+                            error("There is a missing ')'.");
+                            process.exit(7);
+                        } else {
+                            array[0] = array[0].slice(0,-1);
+                            var temp = array[0].split(":");
+                            switch (temp.length) {
+                              case 3:{
+                                path.net_name = temp[2];
+                              }
+                              case 2:{
+                                for (var i = 0; i < temp[1].length; i++) {
+                                    var each = temp[1].charAt(i);
+                                    switch (each) {
+                                      case "p": {
+                                        path.passive = true;
+                                        break;
+                                      } 
+                                      case "d": {
+                                        path.dynamic = true;
+                                        break;
+                                      }
+                                      case "h": {
+                                        path.historical = true;
+                                        break;
+                                      }
+                                      case "m": {
+                                        path.mutable = true;
+                                        break;
+                                      }
+                                      case "s": {
+                                        path.saved = true;
+                                        break;
+                                      }
+                                      case "t": {
+                                        path.timed_out = true;
+                                        break;
+                                      }
+                                      case "l": {
+                                        path.lossless = true;
+                                        break;
+                                      }
+                                      case "o": {
+                                        path.ordered = true;
+                                        break;
+                                      }
+                                      default: {
+                                        error("\nError: mr_file:" + mr_file_path + ".mr(line: " + path.y + "," + "position: " + path.x + ")");
+                                        error("Wrong option type.");
+                                        process.exit(8);
+                                      }
+                                  }
+                                }
+                              }
+                              case 1:{
+                                path.vname = temp[0];
+                              }
+                            }
+                            path.x = path.x + array[0].length + 2;
+                        }
+
+
+                    } else {
+                        //Checking if this is the end of the path.
+                        if (xar == "|") {
+
+                            path.end_fn_name = end_points[path.y][path.x];
+                            //Remove unnecessary properties and store path.
+                            delete path.x;
+                            delete path.y;
+                            paths.push(path);
+                            break;
+
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+
+    return paths;
 }
+//./dots(-1)
+```
 
+```javascript test
+var mr_file_path = "./tests/generate_graph_xml_from_mr_file/parse_mr_file/path_finding/1.mr";
+var lines = load_mr_file(mr_file_path);
+var function_names = find_function_names(lines,mr_file_path);
+var end_points = find_end_points(lines, function_names,mr_file_path)
+assert(path_finding(lines, end_points, function_names,mr_file_path
+),[{"origin_fn_name":"hello","net_name":"net","vname":"var_name","end_fn_name":"world"},{"origin_fn_name":"Hi","mutable":true,"passive":true,"vname":"y","end_fn_name":"there"}],"path finding test 1 Failed");
 
+var mr_file_path = "./tests/generate_graph_xml_from_mr_file/parse_mr_file/path_finding/2.mr";
+var lines = load_mr_file(mr_file_path);
+var function_names = find_function_names(lines,mr_file_path);
+var end_points = find_end_points(lines, function_names,mr_file_path)
+assert(path_finding(lines, end_points, function_names,mr_file_path
+), "error 5","path finding test 2 Failed");
+
+var mr_file_path = "./tests/generate_graph_xml_from_mr_file/parse_mr_file/path_finding/3.mr";
+var lines = load_mr_file(mr_file_path);
+var function_names = find_function_names(lines,mr_file_path);
+var end_points = find_end_points(lines, function_names,mr_file_path)
+assert(path_finding(lines, end_points, function_names,mr_file_path
+), "error 6","path finding test 3 Failed");
+
+var mr_file_path = "./tests/generate_graph_xml_from_mr_file/parse_mr_file/path_finding/4.mr";
+var lines = load_mr_file(mr_file_path);
+var function_names = find_function_names(lines,mr_file_path);
+var end_points = find_end_points(lines, function_names,mr_file_path)
+assert(path_finding(lines, end_points, function_names,mr_file_path
+), "error 7","path finding test 4 Failed");
+
+var mr_file_path = "./tests/generate_graph_xml_from_mr_file/parse_mr_file/path_finding/5.mr";
+var lines = load_mr_file(mr_file_path);
+var function_names = find_function_names(lines,mr_file_path);
+var end_points = find_end_points(lines, function_names,mr_file_path)
+assert(path_finding(lines, end_points, function_names,mr_file_path
+), "error 8","path finding test 5 Failed");
 ```
 
 

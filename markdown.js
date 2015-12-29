@@ -18,7 +18,11 @@ $(document).ready(function() {
       var text = $(this).text().replace(/%lt/g,"<");
       text = text.replace(/%gt/g,">");
       $(this).text(text);
-    });
+    })
+
+    $("code").before('<p class="code_toggle">Code:</p>');
+    $(".code_toggle").click(function(){$(this).next().toggle()});
+    setTimeout(function(){$(".code_toggle").next().toggle();},1);
 
         hljs.initHighlighting();
         MathJax.Hub.Typeset();
