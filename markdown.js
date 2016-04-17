@@ -20,7 +20,10 @@ $(document).ready(function() {
       $(this).text(text);
     })
 
-    $("code").before('<p class="code_toggle">Code:</p>');
+    $("code.javascript:not(.test)").before('<p class="code_toggle">Code:</p>');
+    $("code.javascript.test").before('<p class="code_toggle">Test:</p>');
+    $("code.xml").before('<p class="code_toggle">XML:</p>');
+    $("code.mr").before('<p class="code_toggle">Mr:</p>');
     $(".code_toggle").click(function(){$(this).next().toggle()});
     setTimeout(function(){$(".code_toggle").next().toggle();},1);
 
@@ -41,8 +44,6 @@ $(document).ready(function() {
         $(toc).nextAll("h1").each(function() {
           var id = $(this).attr("id");
           var text = $(this).text();
-          console.log("ds"+id);
-          console.log(text);
           if(id != null) {
             $(current).append("<li><a href='#"+ id +"'>"+ text +"</a></li>");
             $(current).append("<ul></ul>");

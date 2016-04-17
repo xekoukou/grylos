@@ -385,8 +385,8 @@ In this graph node, we will parse the .mr file and we will create a  graph objec
 ```mr
 ./output("./temp/generate_graph_xml_from_mr_file/parse_mr_file.mr")
 ./dots(1)
-load_mr_file:r find_function_names:r     find_end_points:r            path_finding:r      build_graph
-  |            |-----------(function_names)-------|--------(end_points)---------|-------(gpaths)----|
+load_mr_file:r find_function_names:r     find_end_points:r            path_finding:r         build_graph
+  |            |-----------(function_names)-------|--------(end_points)---------|-------(paths)-----|
   |            |------------(function_names)--------------------------------------------------------|
   |-(lines)----|                           find_end_points                    
   |-(lines)-------------------------------------|                         path_finding
@@ -903,6 +903,37 @@ var end_points = find_end_points(lines, function_names,mr_file_path)
 assert(path_finding(lines, end_points, function_names,mr_file_path
 ), "error 8","path finding test 5 Failed");
 ```
+
+## Build graph {#build_graph}
+
+It creates an object representation of the graph that is in the mr files.
+
+```xml
+%lt?xml version="1.0"?%gt
+%lt!--./output("./temp/generate_graph_xml_from_mr_file/parse_mr_file/build_graph.xml")
+./dots(1)
+--%gt
+%ltroot%gt
+    %ltinfo%gt
+        %ltname%gt build_graph %lt/name%gt
+    %lt/info%gt
+    %ltoutputs%gt
+        %ltoutput name="graphs"%gt
+            %ltdescription%gt An object representation of the graph that is in the mr files. %lt/description%gt
+        %lt/output%gt
+    %lt/outputs%gt
+    %ltinputs%gt
+        %ltinput name="mr_file_paths"/%gt
+        
+        
+    %ltinput generated="true" name="function_names"/%gt%ltinput generated="true" name="gpaths"/%gt%lt/inputs%gt
+%lt/root%gt
+%lt!--
+./dots(-1)
+--%gt
+
+```
+
 
 
 
